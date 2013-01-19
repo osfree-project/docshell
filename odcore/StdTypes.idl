@@ -1,0 +1,99 @@
+/**************************************************************************
+ *
+ *  Copyright 2008, Roger Brown
+ *
+ *  This file is part of Roger Brown's Toolkit.
+ *
+ *  This program is free software: you can redistribute it and/or modify it
+ *  under the terms of the GNU Lesser General Public License as published by the
+ *  Free Software Foundation, either version 3 of the License, or (at your
+ *  option) any later version.
+ * 
+ *  This program is distributed in the hope that it will be useful, but WITHOUT
+ *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ *  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ *  more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>
+ *
+ */
+
+/*
+ * $Id$
+ */
+
+#ifndef _STDTYPES_
+#define _STDTYPES_
+
+#include <ODTypesB.idl>
+
+#if defined(__SOMIDL__) && defined(EMIT_GLOBAL_CONSTANTS)
+#pragma somemittypes on
+#endif
+
+const ODValueType kODBoolean="+//ISO 9070/ANSI::113722::US::CI LABS::OpenDoc:Type:Boolean";
+const ODValueType kODUShort="+//ISO 9070/ANSI::113722::US::CI LABS::OpenDoc:Type:UShort";
+const ODValueType kODSShort="+//ISO 9070/ANSI::113722::US::CI LABS::OpenDoc:Type:SShort";
+const ODValueType kODULong="+//ISO 9070/ANSI::113722::US::CI LABS::OpenDoc:Type:ULong";
+const ODValueType kODSLong="+//ISO 9070/ANSI::113722::US::CI LABS::OpenDoc:Type:SLong";
+const ODValueType kODISOStr="+//ISO 9070/ANSI::113722::US::CI LABS::OpenDoc:Type:ISOStr";
+const ODValueType kODISOStrList="+//ISO 9070/ANSI::113722::US::CI LABS::OpenDoc:Type:ISOStrList";
+const ODValueType kODMacIText="+//ISO 9070/ANSI::113722::US::CI LABS::MacOS:Type:IntlText";
+const ODValueType kODWindowsIText="+//ISO 9070/ANSI::113722::US::CI LABS::Windows:Type:IntlText";
+const ODValueType kODOS2IText="+//ISO 9070/ANSI::113722::US::CI LABS::OS2:Type:IntlText";
+const ODValueType kODX11IText="+//ISO 9070/ANSI::113722::US::CI LABS::X11:Type:IntlText";
+const ODValueType kODIntlText="+//ISO 9070/ANSI::113722::US::CI LABS::OpenDoc:Type:IntlText";
+const ODValueType kODWindowsRegionHandle="+//ISO 9070/ANSI::113722::US::CI LABS::Windows:Type:HRGN";
+const ODValueType kODOS2RegionHandle="+//ISO 9070/ANSI::113722::US::CI LABS::OS2:Type:HRGN";
+const ODValueType kODOS2DragImage="+//ISO 9070/ANSI::113722::US::CI LABS::OS2:Type:DRAGIMAGE";
+const ODValueType kODX11Region="+//ISO 9070/ANSI::113722::US::CI LABS::X11:Type:Region";
+
+#ifdef _PLATFORM_X11_
+const ODValueType kODPlatformIText=kODX11IText;
+#else
+const ODValueType kODPlatformIText=kODWindowsIText;
+#endif
+
+const ODValueType kODTime_T="+//ISO 9070/ANSI::113722::US::CI LABS::OpenDoc:Type:Time_T";
+const ODValueType kODPoint="+//ISO 9070/ANSI::113722::US::CI LABS::OpenDoc:Type:Point";
+const ODValueType kODRect="+//ISO 9070/ANSI::113722::US::CI LABS::OpenDoc:Type:Rect";
+const ODValueType kODPolygon="+//ISO 9070/ANSI::113722::US::CI LABS::OpenDoc:Type:Polygon";
+const ODValueType kODIconFamily="+//ISO 9070/ANSI::113722::US::CI LABS::OpenDoc:Type:IconFamily";
+const ODValueType kODIconFamilyMac="+//ISO 9070/ANSI::113722::US::CI LABS::OpenDoc:Type:IconFamily:Macintosh";
+const ODValueType kODIconFamilyWin="+//ISO 9070/ANSI::113722::US::CI LABS::OpenDoc:Type:IconFamily:Windows";
+const ODValueType kODIconFamilyOS2="+//ISO 9070/ANSI::113722::US::CI LABS::OpenDoc:Type:IconFamily:OS2";
+const ODValueType kODIconFamilyAIX="+//ISO 9070/ANSI::113722::US::CI LABS::OpenDoc:Type:IconFamily:AIX";
+const ODValueType kODTransform="+//ISO 9070/ANSI::113722::US::CI LABS::OpenDoc:Type:Transform";
+const ODValueType kODEditor="+//ISO 9070/ANSI::113722::US::CI LABS::OpenDoc:Type:Editor";
+const ODType kODStrongStorageUnitRef="+//ISO 9070/ANSI::113722::US::CI LABS::OpenDoc:Type:StorageUnitRef";
+const ODType kODWeakStorageUnitRef="+//ISO 9070/ANSI::113722::US::CI LABS::OpenDoc:Type:StorageUnitRef";
+const ODType kODStrongStorageUnitRefs="+//ISO 9070/ANSI::113722::US::CI LABS::OpenDoc:Type:StorageUnitRefs";
+const ODType kODWeakStorageUnitRefs="+//ISO 9070/ANSI::113722::US::CI LABS::OpenDoc:Type:StorageUnitRefs";
+const ODValueType kODLinkSpec="+//ISO 9070/ANSI::113722::US::CI LABS::OpenDoc:Type:LinkSpec";
+const ODValueType kODCloneKind="+//ISO 9070/ANSI::113722::US::CI LABS::OpenDoc:Type:CloneKind";
+const ODValueType kODObjectType="+//ISO 9070/ANSI::113722::US::CI LABS::OpenDoc:Type:ObjectType";
+const ODType kODFileType="+//ISO 9070/ANSI::113722::US::CI LABS::OpenDoc:Type:FileType";
+const ODValueType kODDSComponentIdValue="+//ISO 9070/ANSI::113722::US::IBM::OpenDoc:Type:ODDS_Component_ID"    ;
+const ODValueType kODDSExtensionNamesValue="+//ISO 9070/ANSI::113722::US::IBM::OpenDoc:Type:ODDS_Extension_Names" ;
+const ODValueType kODDSComponentDataValue="+//ISO 9070/ANSI::113722::US::IBM::OpenDoc:Type:ODDS_Component_Data"  ;
+
+#ifdef _PLATFORM_WIN32_
+const ODValueType kODDocfile="+//ISO 9070/ANSI::113722::US::IBM::Windows:Type:Docfile";   
+const ODValueType kODChangeID="+//ISO 9070/ANSI::113722::US::IBM::Windows:Type:ChangeID";             
+const ODValueType kODLinkSpecDescriptor="+//ISO 9070/ANSI::113722::US::IBM::Windows:Type:OleLinkSpecDescriptor"; 
+const ODValueType kODObjSpec="+//ISO 9070/ANSI::113722::US::IBM::Windows:Type:OleObjSpec";           
+const ODValueType kODObjSpecDescriptor="+//ISO 9070/ANSI::113722::US::IBM::Windows:Type:OleObjSpecDescriptor";   
+const ODValueType kODASCIIText="+//ISO 9070/ANSI::113722::US::IBM::Windows:Type:Text";               
+#endif
+
+#ifdef _PLATFORM_MACINTOSH_
+const ODPropertyName kODTypeQuickDrawPageSetup="+//ISO 9070/ANSI::113722::US::CI LABS::MacOS:Type:QuickDrawPageSetup";
+const ODPropertyName kODTypeGXPageSetup="+//ISO 9070/ANSI::113722::US::CI LABS::MacOS:Type:GXPageSetup";
+#endif 
+
+#if defined(__SOMIDL__) && defined(EMIT_GLOBAL_CONSTANTS)
+#pragma somemittypes off
+#endif
+
+#endif

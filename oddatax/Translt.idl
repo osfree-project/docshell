@@ -1,0 +1,105 @@
+/**************************************************************************
+ *
+ *  Copyright 2008, Roger Brown
+ *
+ *  This file is part of Roger Brown's Toolkit.
+ *
+ *  This program is free software: you can redistribute it and/or modify it
+ *  under the terms of the GNU Lesser General Public License as published by the
+ *  Free Software Foundation, either version 3 of the License, or (at your
+ *  option) any later version.
+ * 
+ *  This program is distributed in the hope that it will be useful, but WITHOUT
+ *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ *  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ *  more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>
+ *
+ */
+
+/*
+ * $Id$
+ */
+
+#ifndef _TRANSLT_
+#define _TRANSLT_
+
+#include <ODObject.idl>
+
+interface ODTypeList;
+interface ODStorageUnitView;
+interface ODSession;
+#ifdef _PLATFORM_WIN32_
+typedef somToken ODOLEManager;
+#endif
+
+#ifdef __PRIVATE__
+interface	ODPartWrapper;
+interface	ODSession;
+#endif
+
+#ifdef __PRIVATE__
+interface	TranslationDialog;
+#endif
+
+interface ODTranslation :  ODObject
+{
+	ODTranslateResult CanTranslate(in ODValueType fromType);
+	ODTypeList GetTranslationOf(in ODValueType fromType);
+	ODTranslateResult TranslateView(in ODStorageUnitView fromView,
+								in ODStorageUnitView toView);
+	ODTranslateResult Translate(in ODValueType fromType,
+								in ODByteArray fromData,
+								in ODValueType  toType,
+								out ODByteArray toData);
+	ODValueType GetISOTypeFromPlatformType(in ODPlatformType platformType,
+										in ODPlatformTypeSpace typeSpace);
+	ODPlatformType GetPlatformTypeFromISOType(in ODValueType type);
+#ifdef __PRIVATE__
+	void InitTranslation(in ODSession session);
+	ODBoolean ShowPartTranslateDialog(in ODPartWrapper partWrapper);
+	ODBoolean ShowTranslateDialog(
+					in ODTypeList translateToList,
+					in ODUShort initialKind,
+					out ODUShort selectedKind,
+					in ODEditor initialEditor,
+					in ODBoolean canChangeEditor,
+					out ODEditor selectedEditor);
+#endif
+	
+#ifdef __SOMIDL__
+	implementation
+	{
+		majorversion=1; minorversion=0;
+		dllname="oddatax.dll";
+#ifdef __PRIVATE__
+  		functionprefix=Translt_;
+  		override:
+			somUninit,
+			Purge;
+	#ifdef _PLATFORM_MACINTOSH_
+		ODBoolean fMEOExists;
+		TranslationDialog fTranslationDialog;
+	#endif
+		ODSession fSession;
+	#ifdef _PLATFORM_WIN32_
+		ODOLEManager *fOleManager;
+	#endif
+#endif
+		
+		releaseorder:
+			CanTranslate,
+			GetTranslationOf,
+			TranslateView,
+			Translate,
+			GetISOTypeFromPlatformType,
+			GetPlatformTypeFromISOType,
+			InitTranslation,
+			ShowPartTranslateDialog,
+			ShowTranslateDialog;
+	};
+#endif //# __SOMIDL__
+};
+#endif

@@ -1,0 +1,3 @@
+NAME odbento
+DEPENDS odbindng rhbbento odcm
+PROVIDES odbento

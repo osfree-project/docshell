@@ -1,0 +1,239 @@
+/**************************************************************************
+ *
+ *  Copyright 2008, Roger Brown
+ *
+ *  This file is part of Roger Brown's Toolkit.
+ *
+ *  This program is free software: you can redistribute it and/or modify it
+ *  under the terms of the GNU Lesser General Public License as published by the
+ *  Free Software Foundation, either version 3 of the License, or (at your
+ *  option) any later version.
+ * 
+ *  This program is distributed in the hope that it will be useful, but WITHOUT
+ *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ *  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ *  more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>
+ *
+ */
+
+/*
+ * $Id$
+ */
+
+#ifndef _ERRORDEF_
+#define _ERRORDEF_
+
+#include <ODTypesB.idl>
+
+#if defined(__SOMIDL__) && defined(EMIT_GLOBAL_CONSTANTS)
+#pragma somemittypes on
+#endif
+
+const ODError kODMinError=-29893; 
+#ifdef _PLATFORM_MACINTOSH_
+	const ODError kODMinUsedError=-29756;
+#endif
+
+#if (defined _PLATFORM_WIN32_ || defined _PLATFORM_X11_)
+	const ODError kODMinUsedError=-30818;
+	#if (defined _PLATFORM_WIN32_ || defined _PLATFORM_X11_)
+		const ODError kODErrFacetChangeToOrFromOnscreenDynamic=-30801;
+		const ODError kODErrInvalidParameter=-30802;
+		const ODError kODErrOnlyOwnerCanChangeCanvas=-30803;
+	#endif
+
+	#ifdef _PLATFORM_WIN32_
+		const ODError kODErrCannotExportToIDataObject=-30804;
+	#endif
+#endif
+
+const ODError kODNoError=0;
+const ODError kODMaxError=-29600;
+const ODError kODErrUndefined=-29600;
+const ODError kODErrAlreadyNotified=-29601;
+const ODError kODErrIllegalNullInput=-29602;
+const ODError kODErrIllegalNullDispatchModuleInput=-29603;
+const ODError kODErrIllegalNullFacetInput=-29604;
+const ODError kODErrIllegalNullFrameInput=-29605;
+const ODError kODErrIllegalNullPartInput=-29606;
+const ODError kODErrIllegalNullTransformInput=-29607;
+const ODError kODErrIllegalNullStorageSystemInput=-29608;
+const ODError kODErrIllegalNullTokenInput=-29609;
+const ODError kODErrIllegalNullShapeInput=-29610;
+const ODError kODErrIllegalNullStorageUnitInput=-29611;
+const ODError kODErrIllegalNullPropertyInput=-29612;
+const ODError kODErrIllegalNullSUCursorInput=-29613;
+const ODError kODErrIllegalNullContainerInput=-29614;
+const ODError kODErrIllegalNullDocumentInput=-29615;
+const ODError kODErrIllegalNullDraftInput=-29616;
+const ODError kODErrIllegalNullValueTypeInput=-29617;
+const ODError kODErrIllegalNullIDInput=-29618;
+const ODError kODErrValueOutOfRange=-29619;
+const ODError kODErrInsufficientInfoInParams=-29620;
+const ODError kODErrObjectNotInitialized=-29621;
+const ODError kODErrOutOfMemory=-29622;
+const ODError kODErrNotImplemented=-29623;
+const ODError kODErrInvalidPersistentFormat=-29624;
+const ODError kODErrSubClassResponsibility=-29625;
+const ODError kODErrUnsupportedExtension=-29626;
+const ODError kODErrInvalidExtension=-29627;
+const ODError kODErrUnknownExtension=-29628;
+const ODError kODErrInvalidObjectType=-29629;
+const ODError kODErrInvalidPersistentObjectID=-29630;
+const ODError kODErrInvalidPersistentObject=-29631;
+const ODError kODErrZeroRefCount=-29632;
+const ODError kODErrRefCountGreaterThanZero=-29633;
+const ODError kODErrRefCountNotEqualOne=-29634;
+const ODError kODErrIteratorOutOfSync=-29635;
+const ODError kODErrIteratorNotInitialized=-29636;
+const ODError kODErrInvalidIterator=-29755;
+const ODError kODErrCannotEmbed=-29637;
+const ODError kODErrDoesNotUndo=-29638;
+const ODError kODErrNoPromises=-29639;
+const ODError kODErrDoesNotDrop=-29640;
+const ODError kODErrDoesNotLink=-29641;
+const ODError kODErrPartNotWrapper=-29642;
+const ODError kODErrKeyAlreadyExists=-29643;
+const ODError kODErrInvalidNSName=-29644;
+const ODError kODErrInvalidNSType=-29645;
+const ODError kODErrPartInUse=-29646;
+const ODError kODErrInvalidITextFormat=-29647;
+const ODError kODErrInvalidGraphicsSystem=-29648;
+const ODError kODErrNoShapeGeometry=-29649;
+const ODError kODErrTransformErr=-29650;
+const ODError kODErrInvalidPlatformShape=-29651;
+const ODError kODErrCanvasNotFound=-29652;
+const ODError kODErrUnsupportedFramePositionCode=-29653;
+const ODError kODErrInvalidFacet=-29654;
+const ODError kODErrFacetNotFound=-29655;
+const ODError kODErrCanvasHasNoOwner=-29656;
+const ODError kODErrNotRootFrame=-29657;
+const ODError kODErrIllegalRecursiveEmbedding=-29658;
+const ODError kODErrInvalidFrame=-29659;
+const ODError kODErrFrameHasFacets=-29660;
+const ODError kODErrInvalidLinkStatus=-29754;
+const ODError kODErrInvalidBlock=-29661; 
+const ODError kODErrNotAnODToken=-29662;
+const ODError kODErrCantCountFromLists=-29663;
+const ODError kODErrUnsupportedPosCode=-29664;
+const ODError kODErrInvalidPermissions=-29665;
+const ODError kODErrCannotCreateContainer=-29666;
+const ODError kODErrCannotOpenContainer=-29667;
+const ODError kODErrFatalContainerError=-29756;
+const ODError kODErrContainerDoesNotExist=-29668;
+const ODError kODErrDocumentDoesNotExist=-29669;
+const ODError kODErrDraftDoesNotExist=-29670;
+const ODError kODErrDraftHasBeenDeleted=-29671;
+const ODError kODErrInvalidStorageUnit=-29672;
+const ODError kODErrIllegalOperationOnSU=-29673;
+const ODError kODErrSUValueDoesNotExist=-29674;
+const ODError kODErrIllegalNonTopmostDraft=-29675;
+const ODError kODErrNoSysTranslationFacility=-29680;
+const ODError kODErrNoValueAtThatIndex=-29676;
+const ODError kODErrCannotAddProperty=-29677;
+const ODError kODErrUnfocusedStorageUnit=-29678;
+const ODError kODErrInvalidStorageUnitRef=-29679;
+const ODError kODErrStorageUnitLocked=-29680;
+const ODError kODErrInvalidStorageUnitKey=-29681;
+const ODError kODErrStorageUnitNotLocked=-29682;
+const ODError kODErrInvalidDraftKey=-29683;
+const ODError kODErrCloningInProgress=-29684;
+const ODError kODErrValueIndexOutOfRange=-29685;
+const ODError kODErrInvalidValueType=-29686;
+const ODError kODErrIllegalPropertyName=-29687;
+const ODError kODErrPropertyDoesNotExist=-29688;
+const ODError kODErrNoDraftProperties=-29689;
+const ODError kODErrCannotCreateFrame=-29690;
+const ODError kODErrCannotAcquireFrame=-29691;
+const ODError kODErrCannotCreatePart=-29692; 
+const ODError kODErrCannotAcquirePart=-29693;
+const ODError kODErrCannotCreateLink=-29694;
+const ODError kODErrCannotAcquireLink=-29695;
+const ODError kODErrInvalidID=-29696;
+const ODError kODErrInconsistentCloneKind=-29697;
+const ODError kODErrInvalidCloneKind=-29698;
+const ODError kODErrInvalidDestinationDraft=-29699;
+const ODError kODErrMoveIntoSelf=-29700;
+const ODError kODErrNullDestinationFrame=-29701;
+const ODError kODErrInvalidBelowDraft=-29702;
+const ODError kODErrCannotCollapseDrafts=-29704;
+const ODError kODErrNonEmptyDraft=-29705;
+const ODError kODErrNoPreviousDraft=-29706;
+const ODError kODErrOutstandingDraft=-29707;
+const ODError kODErrInvalidDraftID=-29708;
+const ODError kODErrCannotChangePermissions=-29709;
+const ODError kODErrContainerExists=-29710;
+const ODError kODErrCannotGetExternalLink=-29712;
+const ODError kODErrNoLinkSpecValue=-29713;
+const ODError kODErrUnknownLinkSpecVersion=-29714;
+const ODError kODErrCorruptLinkSpecValue=-29715;
+const ODError kODErrNotExportedLink=-29716;
+const ODError kODErrBrokenLink=-29717;
+const ODError kODErrCannotRevealLink=-29718;
+const ODError kODErrCorruptLink=-29719;
+const ODError kODErrLinkAlreadyExported=-29720;
+const ODError kODErrNoLinkContent=-29721;
+const ODError kODErrCannotRegisterDependent=-29722;
+const ODError kODErrNotImportedLink=-29723;
+const ODError kODErrInvalidLinkKey=-29724;
+const ODError kODErrBrokenLinkSource=-29725;
+const ODError kODErrCorruptLinkSource=-29726;
+const ODError kODErrCannotFindLinkSourceEdition=-29727; 
+const ODError kODErrCannotFindLinkSource=-29728;
+const ODError kODErrAlreadyImportedLink=-29729; 
+const ODError kODErrUnknownUpdateID=-29730;
+const ODError kODErrCannotEstablishLink=-29731;
+const ODError kODErrNoEditionManager=-29732;
+const ODError kODErrDocNotSaved=-29733;
+const ODError kODErrNullFacetInput=-29734;
+const ODError kODErrNullLinkInfoInput=-29735;
+const ODError kODErrNullLinkInfoResultInput=-29736;
+const ODError kODErrNullPasteAsResultInput=-29737;
+const ODError kODErrNoDragManager=-29738;
+const ODError kODErrNoDragSystemStorage=-29739;
+const ODError kODErrDragItemNotFound=-29740;
+const ODError kODErrCannotAllocateDragItem=-29741;
+const ODError kODErrUnknownDragImageType=-29742;
+const ODError kODErrDragTrackingException=-29743;
+const ODError kODErrDropFacetNotKnown=-30805;
+const ODError kODErrBackgroundClipboardClear=-29744;
+const ODError kODErrIllegalClipboardCloneKind=-29745;
+const ODError kODErrFocusAlreadyRegistered=-29746;
+const ODError kODErrFocusNotRegistered=-29747;
+const ODError kODErrDispatcherNotInitialized=-30806;
+const ODError kODErrExistingDispatchModule=-30807;
+const ODError kODErrInvalidDispatchModule=-30808;
+#ifdef _PLATFORM_MACINTOSH_
+const ODError kODErrInvalidCommandID=-29748;
+#endif
+const ODError kODErrNotEnoughSubmenuIDs=-30809;
+const ODError kODErrDuplicateID=-30810;
+const ODError kODErrUnknownID=-30811;
+const ODError kODErrCannotMarkAction=-29749;
+const ODError kODErrEmptyStack=-29750;
+const ODError kODErrNoBeginAction=-29751;
+const ODError kODErrCannotAddAction=-29752;
+const ODError kODErrCannotCreateWindow=-29753;
+const ODError kODErrOpeningMemContainer=-30812;
+const ODError kODErrClosingNonODWindow=-30813;
+const ODError kODErrNoDraftInWindow=-30814;
+const ODError kODErrRegistrationError=-30815;
+const ODError kODErrRegStartProcessFail=-30816;
+const ODError kODErrEnvVariableNotSet=-30817;
+const ODError kODErrWrongPlatformForODZ=-30818;
+
+#if defined(__SOMIDL__) && defined(EMIT_GLOBAL_CONSTANTS)
+#pragma somemittypes off
+#endif
+
+module OpenDoc_Errors
+{
+ const string OpenDoc_Errors_Version="1.0.";
+};
+
+#endif 
+
+

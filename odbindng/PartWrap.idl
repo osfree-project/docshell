@@ -1,0 +1,148 @@
+/**************************************************************************
+ *
+ *  Copyright 2008, Roger Brown
+ *
+ *  This file is part of Roger Brown's Toolkit.
+ *
+ *  This program is free software: you can redistribute it and/or modify it
+ *  under the terms of the GNU Lesser General Public License as published by the
+ *  Free Software Foundation, either version 3 of the License, or (at your
+ *  option) any later version.
+ * 
+ *  This program is distributed in the hope that it will be useful, but WITHOUT
+ *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ *  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ *  more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>
+ *
+ */
+
+/*
+ * $Id$
+ */
+
+#ifndef _PARTWRAP_
+#define _PARTWRAP_
+
+#include <Part.idl>
+
+interface ODPartWrapper : ODPart
+{
+#ifdef __PRIVATE__
+	void InitPartWrapper();
+#endif
+	void SetRealPart(in ODPart realPart, in ODEditor editor);
+	void UseEditor(in ODEditor editor);
+	ODEditor GetEditor();
+
+#ifdef __SOMIDL__
+	implementation
+	{
+		majorversion=1;	
+		minorversion=0;
+		dllname="odbindng.dll";
+#ifdef __PRIVATE__
+		functionprefix=PartWrap_;
+
+		override:
+			somInit,
+			somUninit,
+			InitObject,
+			HasExtension,
+			AcquireExtension,
+			ReleaseExtension,
+			Purge,
+			IsEqualTo,
+			SubClassResponsibility,
+			InitRefCntObject,
+			Acquire,
+			Release,
+			GetRefCount,
+			InitPersistentObject,
+			InitPersistentObjectFromStorage,
+			ReleaseAll,
+			Externalize,
+			GetStorageUnit,
+			GetID,
+			FulfillPromise,
+			DropCompleted,
+			DragEnter,
+			DragWithin,
+			DragLeave,
+			Drop,
+			ContainingPartPropertiesUpdated,
+			AcquireContainingPartProperties,
+			RevealFrame,
+			EmbeddedFrameSpec,
+			CreateEmbeddedFramesIterator,
+			DisplayFrameAdded,
+			DisplayFrameRemoved,
+			DisplayFrameConnected,
+			DisplayFrameClosed,
+			AttachSourceFrame,
+			FrameShapeChanged,
+			ViewTypeChanged,
+			PresentationChanged,
+			SequenceChanged,
+			ReadPartInfo,
+			WritePartInfo,
+			ClonePartInfo,
+			Open,
+			RequestEmbeddedFrame,
+			RemoveEmbeddedFrame,
+			RequestFrameShape,
+			UsedShapeChanged,
+			AdjustBorderShape,
+			FacetAdded,
+			FacetRemoved,
+			CanvasChanged,
+			GeometryChanged,
+			Draw,
+			CanvasUpdated,
+			HighlightChanged,
+			GetPrintResolution,
+			CreateLink,
+			LinkUpdated,
+			RevealLink,
+			EmbeddedFrameUpdated,
+			EditInLinkAttempted,
+			LinkStatusChanged,
+			BeginRelinquishFocus,
+			CommitRelinquishFocus,
+			AbortRelinquishFocus,
+			FocusAcquired,
+			FocusLost,
+			CloneInto,
+			ExternalizeKinds,
+			ChangeKind,
+			#ifdef _PLATFORM_MACINTOSH_
+			CreateRootMenuBar,
+			#endif
+			IsRealPart,
+			GetRealPart,
+			ReleaseRealPart,
+			HandleEvent,
+			AdjustMenus,
+			UndoAction,
+			RedoAction,
+			DisposeActionState,
+			WriteActionState,
+			ReadActionState,
+			InitPart,
+			InitPartFromStorage;
+
+		ODPart fPart;
+		ODEditor fEditor;
+		ODBoolean fPartInUse;
+#endif
+		releaseorder:
+			InitPartWrapper,
+			UseEditor,GetEditor,SetRealPart;
+  };
+#endif
+};
+
+#endif
+

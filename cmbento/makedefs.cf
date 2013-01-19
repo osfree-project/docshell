@@ -1,0 +1,3 @@
+NAME cmbento
+PROVIDES cmbento
+DEPENDS buildenv

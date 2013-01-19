@@ -1,0 +1,3 @@
+NAME odsomuc
+DEPENDS somutils
+PROVIDES odsomuc

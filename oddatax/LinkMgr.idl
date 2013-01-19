@@ -1,0 +1,117 @@
+/**************************************************************************
+ *
+ *  Copyright 2008, Roger Brown
+ *
+ *  This file is part of Roger Brown's Toolkit.
+ *
+ *  This program is free software: you can redistribute it and/or modify it
+ *  under the terms of the GNU Lesser General Public License as published by the
+ *  Free Software Foundation, either version 3 of the License, or (at your
+ *  option) any later version.
+ * 
+ *  This program is distributed in the hope that it will be useful, but WITHOUT
+ *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ *  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ *  more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>
+ *
+ */
+
+/*
+ * $Id$
+ */
+
+#ifndef _LINKMGR_
+#define _LINKMGR_
+
+#include <ODObject.idl>
+#include <StorageU.idl>
+
+interface  ODSession;
+interface  ODDocument;
+interface  ODDraft;
+interface  ODLink;
+interface  ODLinkSource;
+interface  ODBaseLinkSource;
+interface  ODLinkSpec;
+
+#ifdef __PRIVATE__
+interface  ODBaseLinkSource;
+typedef somToken DraftInfo;
+typedef somToken ODRefCntCollection;
+typedef somToken OrderedCollection;
+typedef somToken ODObjectCollection;
+#ifdef _PLATFORM_MACINTOSH_
+typedef somToken NMUPP;
+typedef ODPtr NMRecPtr;
+#endif
+#endif
+
+interface ODLinkManager : ODObject
+{
+	ODULong NewSectionID(in ODDraft draft);
+	ODBoolean ReserveSectionID(in ODULong sectionID,in ODDraft draft);
+	ODBoolean UnsavedExportedLinks(in ODDraft draft);
+	ODBoolean AnyLinkImported(in ODDraft draft);
+	void DraftOpened(in ODDraft draft);
+	void DraftSaved(in ODDraft draft);
+	void DraftClosing(in ODDraft draft);
+#ifdef __PRIVATE__
+	void InitLinkManager(in ODSession session);
+	ODLinkSource CreateLink(in ODDraft draft,in ODLinkSpec linkSpec);
+	ODBoolean ExportOnSave(in ODLink link, in ODBoolean doExport);
+	ODBoolean DeleteOnSave(in ODLink link, in ODBoolean doDelete);
+	void NewDraftInfo(in ODDraft draft);
+	DraftInfo* GetDraftInfo(in ODDraft draft);
+	ODLinkUpdateResult ShowLinkUpdateAlert(in ODBaseLinkSource link);
+#ifdef _PLATFORM_MACINTOSH_
+	void SuspendResume(in ODEventData event);
+#endif
+#ifdef _PLATFORM_WIN32_
+	ODLink FetchLink( in ODDraft draft, in char *pszItemName );
+#endif
+#endif
+
+#ifdef __SOMIDL__
+	implementation
+	{
+        majorversion = 1; minorversion = 0;
+ 		dllname="oddatax.dll";
+#ifdef __PRIVATE__
+        functionprefix=LinkMgr_;
+        override:
+             somUninit;
+        ODRefCntCollection* fSuspendedUpdateLinks;
+        OrderedCollection* fDraftInfos;
+#ifdef _PLATFORM_MACINTOSH_
+        NMUPP fNMResponseUPP;
+        NMRecPtr fNMRecPtr;
+#endif 
+        ODSession fSession;
+        ODBoolean fInBackground;
+#endif
+        releaseorder:
+            NewSectionID,
+            ReserveSectionID,
+            UnsavedExportedLinks,
+            AnyLinkImported,
+            DraftOpened,
+            DraftSaved,
+            DraftClosing,
+            FetchLink,
+            InitLinkManager,
+            CreateLink,
+            ExportOnSave,
+            DeleteOnSave,
+            NewDraftInfo,
+            GetDraftInfo,
+            ShowLinkUpdateAlert,
+            SuspendResume;
+	};
+#endif 
+};
+
+#endif 
+

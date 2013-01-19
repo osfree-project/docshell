@@ -1,0 +1,88 @@
+/**************************************************************************
+ *
+ *  Copyright 2008, Roger Brown
+ *
+ *  This file is part of Roger Brown's Toolkit.
+ *
+ *  This program is free software: you can redistribute it and/or modify it
+ *  under the terms of the GNU Lesser General Public License as published by the
+ *  Free Software Foundation, either version 3 of the License, or (at your
+ *  option) any later version.
+ * 
+ *  This program is distributed in the hope that it will be useful, but WITHOUT
+ *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ *  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ *  more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>
+ *
+ */
+
+/*
+ * $Id$
+ */
+
+#ifndef _ODPRTREG_
+#define _ODPRTREG_
+
+#include <somobj.idl>
+#include <ODTypesM.idl>
+
+interface ODPartHandlerInfo;
+
+interface ODPartHandlerRegistry  : SOMObject
+{
+	long		RegisterPartHandlerClass(in string className, in string DLLName, in long cTemplate, in long reserved);
+	long		DeregisterPartHandler(in ISOString partHandlerName);
+	long		DeregisterPartHandlerClass(in string partHandlerClassName);
+	sequence<ISOString> GetPartHandlerList(in ISOString partKindName,in string category);
+	sequence<ISOString> GetPartKindList(in ISOString partHandlerName,in string category);
+	ODPartHandlerInfo GetPartHandlerInfo(in ISOString partHandlerName);
+	ISOString	GetPreferredPartHandler(in ISOString partKindName);
+	long		SetPreferredPartHandler(in ISOString partKindName,in ISOString partHandlerName);
+	void		UpdateODPartHandlerInfo(in ISOString partHandlerName,in sequence<PartKindInfo> newKindInfo);
+	ISOString	GetPreferredPartHandlerForFileType(in ISOString partFileTypeName);
+	long		SetPreferredPartHandlerForFileType(in ISOString partFileTypeName,in ISOString partHandlerName);
+	ISOString	GetPreferredPartHandlerForFileExt(in ISOString partFileExtensionName);
+	long		SetPreferredPartHandlerForFileExt(in ISOString partFileExtensionName,in ISOString partHandlerName);
+	sequence<string> GetFileTypeList(in ISOString partHandlerName,in ISOString partKindName);  
+	sequence<string> GetFileExtensionList(in ISOString partHandlerName,in ISOString partKindName); 
+	sequence<ISOString> GetPartHandlerListForFileTypes(in string fileType);
+	sequence<ISOString> GetPartHandlerListForFileExt(in string fileExtension);
+	ISOString	GetPreferredPartHandlerForCategory(in ISOString category);
+	long		SetPreferredPartHandlerForCategory(in ISOString category,in ISOString partHandlerName);
+	sequence<string> GetCategoryList(in ISOString partHandlerName,in ISOString partKindName); 
+
+#ifdef __SOMIDL__
+	implementation
+	{
+		dllname="odregsty.dll";
+#ifdef __PRIVATE__
+		functionprefix=ODPrtReg_;
+#endif
+		releaseorder:
+			RegisterPartHandlerClass,
+			DeregisterPartHandler,
+			DeregisterPartHandlerClass,
+			GetPartHandlerList,
+			GetPartKindList,
+			GetPartHandlerInfo,
+			GetPreferredPartHandler,
+			SetPreferredPartHandler,
+			UpdateODPartHandlerInfo,
+			GetPreferredPartHandlerForFileType,
+			SetPreferredPartHandlerForFileType,
+			GetPreferredPartHandlerForFileExt,
+			SetPreferredPartHandlerForFileExt,
+			GetFileTypeList,
+			GetFileExtensionList,
+			GetPartHandlerListForFileTypes,
+			GetPartHandlerListForFileExt,
+			GetPreferredPartHandlerForCategory,
+			SetPreferredPartHandlerForCategory,
+			GetCategoryList;
+	};
+#endif
+};
+#endif 

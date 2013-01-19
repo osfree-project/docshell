@@ -1,0 +1,11 @@
+CreateITextFromCharPtr
+CopyIText
+GetITextStringLength
+GetITextPtr
+DisposeIText
+ODSetSOMException
+THROW
+THROW_IF_ERROR
+THROW_IF_NULL
+ODExceptionFrame_push
+ODExceptionFrame_pop

@@ -1,0 +1,3 @@
+NAME odprivat
+DEPENDS odpublic
+PROVIDES odprivat

@@ -1,0 +1,102 @@
+/**************************************************************************
+ *
+ *  Copyright 2008, Roger Brown
+ *
+ *  This file is part of Roger Brown's Toolkit.
+ *
+ *  This program is free software: you can redistribute it and/or modify it
+ *  under the terms of the GNU Lesser General Public License as published by the
+ *  Free Software Foundation, either version 3 of the License, or (at your
+ *  option) any later version.
+ * 
+ *  This program is distributed in the hope that it will be useful, but WITHOUT
+ *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ *  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ *  more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>
+ *
+ */
+
+/*
+ * $Id$
+ */
+
+#ifndef _NAMSPAC_
+#define _NAMSPAC_
+
+#include <ODObject.idl>
+
+interface ODStorageUnitView;
+
+#ifdef __PRIVATE__
+interface ODNameSpaceManager;
+typedef somToken StringHashTable;
+typedef somToken NameSpaceObject;
+typedef somToken NameSpaceList;
+#endif
+
+interface ODNameSpace : ODObject
+{
+	ODISOStr GetName();
+	ODNSTypeSpec GetType();
+	ODNameSpace GetParent();
+	void SetType(in ODNSTypeSpec type);
+	void Unregister(in ODISOStr key);
+	ODBoolean Exists(in ODISOStr key);
+	void WriteToFile(in ODByteArray file);
+	void ReadFromFile(in ODByteArray file);
+	void WriteToStorage(in ODStorageUnitView view);
+	void ReadFromStorage(in ODStorageUnitView view);
+#ifdef __PRIVATE__
+	void InitNameSpace(in ODNameSpaceManager mgr,in ODNameSpace parent,in ODULong numExpectedEntries,in ODISOStr name);
+	void SetSynchedToEditors(in ODBoolean synched);
+	ODBoolean IsSynchedToEditors();
+	StringHashTable *GetHashTable();
+	ODULong GetNumEntries();
+	void NotifyDying(in ODNameSpace space);
+	ODNameSpaceManager GetNameSpaceManager();
+	NameSpaceList *GetNameSpaceList();
+#endif
+#ifdef __SOMIDL__
+	implementation
+	{
+		majorversion=1;
+		minorversion=0;
+		dllname="odcore.dll";
+#ifdef __PRIVATE__
+		functionprefix="NamSpac_";
+		override: somUninit;
+		NameSpaceObject fNameSpaceObject;
+		ODBoolean fSynchedToEditors;
+		ODNameSpaceManager fNameSpaceManager;
+		ODNameSpace fParent;
+		ODNSTypeSpec fType;
+		ODULong fNumInitialEntries;
+		NameSpaceList fNameSpaceList;
+#endif
+		releaseorder:
+			GetName,
+			GetType,
+			GetParent,
+			SetType,
+			Unregister,
+			Exists,
+			WriteToFile,
+			ReadFromFile,
+			WriteToStorage,
+			ReadFromStorage,
+			InitNameSpace,
+			GetHashTable,
+			GetNumEntries,
+			NotifyDying,
+			GetNameSpaceManager,
+			SetSynchedToEditors,
+			IsSynchedToEditors,
+			GetNameSpaceList;
+	};
+#endif
+};
+
+#endif

@@ -1,0 +1,3 @@
+NAME somtkcfg
+DEPENDS somtkpkg buildenv
+PROVIDES somtkcfg

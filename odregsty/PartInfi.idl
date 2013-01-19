@@ -1,0 +1,130 @@
+/**************************************************************************
+ *
+ *  Copyright 2008, Roger Brown
+ *
+ *  This file is part of Roger Brown's Toolkit.
+ *
+ *  This program is free software: you can redistribute it and/or modify it
+ *  under the terms of the GNU Lesser General Public License as published by the
+ *  Free Software Foundation, either version 3 of the License, or (at your
+ *  option) any later version.
+ * 
+ *  This program is distributed in the hope that it will be useful, but WITHOUT
+ *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ *  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ *  more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>
+ *
+ */
+
+/*
+ * $Id$
+ */
+
+#ifndef _PARTINFI_
+#define _PARTINFI_
+
+#include <PartInfo.idl>
+interface ODPartHandlerInfoInt;
+
+typedef somToken Node;
+typedef somToken CMObject;
+
+interface ODPartHandlerInfoInt  : ODPartHandlerInfo 
+{
+	long                   InitODPartHandlerInfo(in string partClassName, 
+									in string DLLName,
+									in OperatingSystem os);
+	long                   InitODPartHandlerInfoIntWithStorage(in CMObject obj);
+	long                   WriteODPartHandlerInfoIntToStorage(in CMObject obj);
+	long                   WriteODPartHandlerInfoIntToRegistry(in Node partHandlers);
+	void                   InitPropertiesAndTypes(in CMObject obj);
+	ODPartHandlerInfoInt   Clone();
+	boolean                SupportsKind(in ISOString partKindName);
+	boolean                SupportsCategory(in string category);
+	boolean                SupportsFileType(in string fileType);
+	boolean                SupportsFileExtension(in string extension);
+	string                 GetKey();
+
+	attribute ISOString               partHandlerName;
+	attribute string                  partHandlerDisplayName;
+	attribute string                  partHandlerClassName;
+	attribute string                  DLLName;
+	attribute sequence <PartKindInfo> partKindInfo;
+	attribute string                  ole2ClassId;
+	attribute string                  windowsIconFilename;
+	attribute OperatingSystem         os;
+
+	long                   WriteODPartHandlerKindInfo( in CMObject obj, 
+				 in sequence<PartKindInfo> newKindInfo );
+
+	#ifdef __SOMIDL__
+
+	implementation
+	{
+		dllname="odregsty.dll";
+#ifdef __PRIVATE__
+		partHandlerName: noset,noget;
+		partKindInfo: noset,noget;
+		windowsIconFilename: noset,noget;
+		partHandlerDisplayName: noset,noget;
+		DLLName: noset,noget;
+		os: noset,noget;
+		partHandlerClassName: noset,noget;
+		ole2ClassId: noset,noget;
+
+		functionprefix=ODPartHandlerInfoInt;
+		override: somInit,
+					somUninit,
+					somDumpSelfInt,
+					GetPartHandlerClassName,
+					GetPartHandlerName,            
+					GetPartHandlerDisplayName,
+					GetPartKindInfo,
+					GetOperatingSystem,          
+					SetOperatingSystem,
+					GetOLE2ClassId,
+					GetWindowsIconFileName,
+					GetDLLName;
+#endif
+
+		releaseorder:	
+					InitODPartHandlerInfo,
+					InitODPartHandlerInfoIntWithStorage,
+					WriteODPartHandlerInfoIntToStorage,
+					WriteODPartHandlerInfoIntToRegistry,
+					InitPropertiesAndTypes,
+					Clone,
+					SupportsKind,
+					SupportsCategory,
+					GetKey,
+					_set_partHandlerName,
+					_get_partHandlerName,
+					_set_partHandlerDisplayName,
+					_get_partHandlerDisplayName,
+					_set_partHandlerClassName,
+					_get_partHandlerClassName,
+					_set_DLLName,
+					_get_DLLName,
+					_set_partKindInfo,
+					_get_partKindInfo,
+					_set_ole2ClassId,
+					_get_ole2ClassId,
+					_set_windowsIconFilename,
+					_get_windowsIconFilename,
+					_set_os,
+					_get_os,
+					WriteODPartHandlerKindInfo,
+					SupportsFileType,
+					SupportsFileExtension;
+	};
+
+#endif
+
+};
+
+#endif // _ODOBJECT_
+
+

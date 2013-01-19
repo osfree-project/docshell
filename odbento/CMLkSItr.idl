@@ -1,0 +1,78 @@
+/**************************************************************************
+ *
+ *  Copyright 2008, Roger Brown
+ *
+ *  This file is part of Roger Brown's Toolkit.
+ *
+ *  This program is free software: you can redistribute it and/or modify it
+ *  under the terms of the GNU Lesser General Public License as published by the
+ *  Free Software Foundation, either version 3 of the License, or (at your
+ *  option) any later version.
+ * 
+ *  This program is distributed in the hope that it will be useful, but WITHOUT
+ *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ *  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ *  more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>
+ *
+ */
+
+/*
+ * $Id$
+ */
+
+#ifdef __PRIVATE__
+
+#ifndef _CMLKSITR_
+#define _CMLKSITR_
+
+#include <LkSrcItr.idl>
+
+interface  CMLinkSourceIterator;
+
+#ifdef __PRIVATE__
+interface   CMDraft;
+interface   ODLinkSource;
+typedef somToken CMObject;
+typedef somToken CMContainer;
+typedef somToken CMProperty;
+typedef somToken CMType;
+#endif //# __PRIVATE__
+
+interface CMLinkSourceIterator : ODLinkSourceIterator
+{
+#ifdef __PRIVATE__
+        void InitCMLinkSourceIterator(in CMDraft draft);
+#endif
+#ifdef __SOMIDL__
+        implementation
+        {
+			dllname="odbento.dll";
+            majorversion=1; minorversion=0;
+            releaseorder:
+                InitCMLinkSourceIterator;
+
+#ifdef __PRIVATE__
+			functionprefix = CMLkSItr_;
+			override:
+				somUninit,
+				IsNotComplete,
+				First,
+				Next;
+			CMDraft fDraft;
+			ODLinkSource fLinkSource;
+			CMObject fCurrent;
+			CMContainer fContainer;
+			CMProperty fProperty;
+			CMType fType;
+			ODULong fSize;
+			ODPtr fBuffer;
+#endif 
+        };
+#endif
+};
+#endif
+
+#endif

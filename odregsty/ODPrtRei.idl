@@ -1,0 +1,138 @@
+/**************************************************************************
+ *
+ *  Copyright 2008, Roger Brown
+ *
+ *  This file is part of Roger Brown's Toolkit.
+ *
+ *  This program is free software: you can redistribute it and/or modify it
+ *  under the terms of the GNU Lesser General Public License as published by the
+ *  Free Software Foundation, either version 3 of the License, or (at your
+ *  option) any later version.
+ * 
+ *  This program is distributed in the hope that it will be useful, but WITHOUT
+ *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ *  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ *  more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>
+ *
+ */
+
+/*
+ * $Id$
+ */
+
+#ifndef _ODPRTREI_
+#define _ODPRTREI_
+
+#include <ODPrtReg.idl>
+interface  ODPartHandlerRegistryInt;
+
+interface ODPartHandlerInfoInt;
+interface PartSet;
+interface KindSet;
+interface FileTypeSet;
+interface FileExtensionSet;
+interface ODFSBentoHandlers;
+typedef somToken PlatformFile;
+interface WindowsRegistry;
+
+typedef somToken CMContainer;
+typedef somToken CMSession;
+
+interface ODPartHandlerRegistryInt  : ODPartHandlerRegistry
+{
+	void InitODPartHandlerRegistryIntWithStorage();
+	void RemoveODPartHandlerInfoFromStorage(in ODPartHandlerInfoInt partInfo,in CMContainer container);
+	CMContainer OpenContainer(in long flags);
+	void        CloseContainer();
+	void        ReadPreferences();
+	void        WritePreferences();
+	long        SetPreferredPartHandlerInList(in ISOString partKindName,in ISOString partHandlerName);
+	long        SetPreferredPartHandlerInTypeList(in ISOString partFileTypeName,in ISOString partHandlerName);
+	long        SetPreferredPartHandlerInExtList(in ISOString partFileExtName,in ISOString partHandlerName);
+	long        SetPreferredPartHandlerInCategoryList(in ISOString category,in ISOString partHandlerName);
+	ISOString   GetKindDisplayNameFromKind(in ISOString partKindName);
+	ISOString   GetHandlerDisplayNameFromHandler(in ISOString HandlerName);
+	void        CheckAndRefresh();
+
+	attribute ODFSBentoHandlers	fHandlers;
+	attribute PlatformFile *fPlatformFile;
+
+	attribute CMSession session;
+	attribute CMContainer container;
+	attribute long flastRegUpdate;
+
+	#ifdef __SOMIDL__
+	implementation
+	{
+		dllname="odregsty.dll";
+	#ifdef __PRIVATE__
+		functionprefix=ODPartHandlerRegistryInt;
+		fHandlers: noset,noget;
+		session: noset,noget;
+		container: noset,noget;
+		flastRegUpdate: noset,noget;
+		fPlatformFile: noset,noget;
+
+		override:	somInit,somUninit,
+					RegisterPartHandlerClass,
+					DeregisterPartHandler,
+					DeregisterPartHandlerClass,
+					GetPartHandlerList,
+					GetPartKindList,
+					GetPartHandlerInfo,
+					GetPreferredPartHandler,
+					SetPreferredPartHandler,
+					somDumpSelfInt,
+					UpdateODPartHandlerInfo,
+					GetPreferredPartHandlerForFileType,
+					SetPreferredPartHandlerForFileType,
+					GetPreferredPartHandlerForFileExt,
+					SetPreferredPartHandlerForFileExt,
+					GetFileTypeList,
+					GetFileExtensionList,
+					GetPartHandlerListForFileTypes,
+					GetPartHandlerListForFileExt,
+					GetPreferredPartHandlerForCategory,
+					SetPreferredPartHandlerForCategory,
+					GetCategoryList;
+
+		PartSet parts;
+		KindSet kinds;
+		FileTypeSet types;
+		FileExtensionSet extensions;
+		KindSet categories;
+		char *completeFileName;
+	#endif
+		releaseorder: 
+			InitODPartHandlerRegistryIntWithStorage,
+			RemoveODPartHandlerInfoFromStorage,
+			OpenContainer,
+			CloseContainer,
+			ReadPreferences,
+			WritePreferences,
+			SetPreferredPartHandlerInList,
+			_set_session,
+			_get_session,
+			_set_container,
+			_get_container,
+			SetPreferredPartHandlerInTypeList,
+			SetPreferredPartHandlerInExtList,
+			SetPreferredPartHandlerInCategoryList,
+			_set_fHandlers,
+			_get_fHandlers,
+			_set_fPlatformFile,
+			_get_fPlatformFile,
+			GetKindDisplayNameFromKind,
+			GetHandlerDisplayNameFromHandler,
+			CheckAndRefresh,
+			_set_flastRegUpdate,
+			_get_flastRegUpdate;
+	};
+	#endif
+};
+
+#endif 
+

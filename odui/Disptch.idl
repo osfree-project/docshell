@@ -1,0 +1,102 @@
+/**************************************************************************
+ *
+ *  Copyright 2008, Roger Brown
+ *
+ *  This file is part of Roger Brown's Toolkit.
+ *
+ *  This program is free software: you can redistribute it and/or modify it
+ *  under the terms of the GNU Lesser General Public License as published by the
+ *  Free Software Foundation, either version 3 of the License, or (at your
+ *  option) any later version.
+ * 
+ *  This program is distributed in the hope that it will be useful, but WITHOUT
+ *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ *  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ *  more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>
+ *
+ */
+
+/*
+ * $Id$
+ */
+
+#ifndef _DISPTCH_
+#define _DISPTCH_
+
+#include <ODObject.idl>
+
+interface  ODDispatchModule;
+interface  ODFrame;
+interface  ODPart;
+
+#ifdef __PRIVATE__
+interface ODSession;
+interface ODFacet;
+typedef somToken DispatchTable;
+#endif
+
+interface ODDispatcher : ODObject
+{
+	void AddDispatchModule(in ODEventType eventType,in ODDispatchModule dispatchModule); 
+	ODDispatchModule GetDispatchModule(in ODEventType eventType); 
+	void RemoveDispatchModule(in ODEventType eventType); 
+	void AddMonitor(in ODEventType eventType,in ODDispatchModule dispatchModule);
+	void RemoveMonitor(in ODEventType eventType,in ODDispatchModule dispatchModule); 
+	ODBoolean Dispatch(inout ODEventData eventData); 
+	ODBoolean Redispatch(inout ODEventData eventData, inout ODEventInfo eventInfo); 
+	void Exit(); 
+	ODBoolean ShouldExit(); 
+
+#ifdef _PLATFORM_X11_
+	void SetXtDispatchMode(in ODBoolean mode);
+	ODBoolean GetXtDispatchMode();
+	void SetEManObject(in SOMObject eman);
+	SOMObject GetEManObject();
+#endif 
+
+#ifdef __PRIVATE__
+	void InitDispatcher(in ODSession session);
+#endif
+
+#ifdef __SOMIDL__
+	implementation
+	{
+ 		majorversion = 1; 
+		minorversion = 0;
+		dllname="odui.dll";
+#ifdef __PRIVATE__
+		ODSession fSession;
+		ODBoolean fExit;
+		DispatchTable fDispatchTable;
+	#ifdef _PLATFORM_X11_
+		XtAppContext fXtAppContext;
+		ODBoolean fXtDispatchMode;
+		Display *fXtDisplay;
+		SOMObject fEManObject;
+	#endif 
+ 		functionprefix = Disptch_;
+		override: somUninit,Purge;
+#endif		
+		releaseorder:
+			AddDispatchModule,
+			GetDispatchModule,
+			RemoveDispatchModule,
+			AddMonitor,
+			RemoveMonitor,
+			Dispatch,
+			Redispatch,
+			Exit,
+			ShouldExit,
+#ifdef _PLATFORM_X11_		
+			SetXtDispatchMode,
+			GetXtDispatchMode,
+#endif 
+			InitDispatcher;
+	  };
+#endif 
+};
+
+#endif 

@@ -1,0 +1,206 @@
+/**************************************************************************
+ *
+ *  Copyright 2008, Roger Brown
+ *
+ *  This file is part of Roger Brown's Toolkit.
+ *
+ *  This program is free software: you can redistribute it and/or modify it
+ *  under the terms of the GNU Lesser General Public License as published by the
+ *  Free Software Foundation, either version 3 of the License, or (at your
+ *  option) any later version.
+ * 
+ *  This program is distributed in the hope that it will be useful, but WITHOUT
+ *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ *  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ *  more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>
+ *
+ */
+
+/*
+ * $Id$
+ */
+
+#ifndef _ODSESSNB_
+#define _ODSESSNB_
+
+#include <ODObject.idl>
+
+interface ODWindowState;
+interface ODDispatcher;
+interface ODArbitrator;
+interface ODStorageSystem;
+interface ODClipboard;
+interface ODDragAndDrop;
+interface ODLinkManager;
+interface ODNameSpaceManager;
+interface ODMessageInterface;
+interface ODNameResolver;
+interface ODTranslation;
+interface ODUndo;
+interface ODSemanticInterface;
+interface ODBinding;
+interface ODInfo;
+/* interface ODPartHandlerRegistryInt; */
+#ifdef _TOOLSPACE_
+interface   ODToolSpaceManager;
+#endif
+
+#ifdef __PRIVATE__
+typedef somToken WindowSystemData;
+typedef somToken TokenTable;
+#ifdef _PLATFORM_X11_
+#else
+typedef somToken ODOLEManager;
+#endif
+#endif
+
+interface ODBaseSession : ODObject
+{
+	ODArbitrator GetArbitrator();
+	void SetArbitrator(in ODArbitrator arbitrator);
+	ODBinding GetBinding();
+	void SetBinding(in ODBinding binding);
+	ODDispatcher GetDispatcher();
+	void SetDispatcher(in ODDispatcher dispatcher);
+	ODClipboard GetClipboard();
+	void SetClipboard(in ODClipboard clipboard);
+	ODDragAndDrop GetDragAndDrop();
+	void SetDragAndDrop(in ODDragAndDrop dragAndDrop);
+	ODInfo GetInfo();
+	void SetInfo(in ODInfo info);
+	ODLinkManager GetLinkManager();
+	void SetLinkManager(in ODLinkManager linkManager);
+	ODMessageInterface GetMessageInterface();
+	void SetMessageInterface(in ODMessageInterface messageInterface);
+	ODNameResolver GetNameResolver();
+	void SetNameResolver(in ODNameResolver nameResolver);
+	ODNameSpaceManager GetNameSpaceManager();
+	void SetNameSpaceManager(in ODNameSpaceManager nameSpaceManager);
+	ODStorageSystem GetStorageSystem();
+	void SetStorageSystem(in ODStorageSystem storageSystem);
+	ODTranslation GetTranslation();
+	void SetTranslation(in ODTranslation translation);
+	ODUndo GetUndo();
+	void SetUndo(in ODUndo undo);
+	ODWindowState GetWindowState();
+	void SetWindowState(in ODWindowState windowState);
+	ODTypeToken Tokenize(in ODType type);
+	void RemoveEntry(in ODType type);
+	ODBoolean GetType(in ODTypeToken token,out ODType type);
+/*	ODPartHandlerRegistryInt GetRegistry(); */
+	ODSemanticInterface AcquireShellSemtInterface();
+	void SetShellSemtInterface(in ODSemanticInterface shellSemanticInterface);
+
+#ifdef _TOOLSPACE_
+   ODToolSpaceManager GetToolSpaceManager();
+   void SetToolSpaceManager(in ODToolSpaceManager toolSpaceManager);
+#endif
+
+#ifdef __PRIVATE__
+	void InitBaseSession();
+	WindowSystemData *GetWindowSystemData();
+	void SetWindowSystemData(in WindowSystemData *windowSystemData);
+/*	void SetRegistry(in ODPartHandlerRegistryInt registry);*/
+	TokenTable *GetTokenTable();
+	void SetTokenTable(in TokenTable *table);
+#ifdef _PLATFORM_X11_
+#else
+	ODOLEManager *GetOleManager();
+	void SetOleManager(in ODOLEManager *OLEManager);
+#endif
+#endif
+
+#ifdef __SOMIDL__
+	implementation
+	{
+		majorversion=1;
+		minorversion=0;
+		dllname="odcore.dll";
+#ifdef __PRIVATE__
+		functionprefix="ODSessnB_";
+		override: somInit,somUninit;
+        ODArbitrator            fArbitrator;
+        ODBinding               fBinding;
+        ODClipboard             fClipboard;
+        ODDispatcher	        fDispatcher;
+        ODDragAndDrop           fDragAndDrop;
+        ODInfo                  fInfo;
+        ODLinkManager           fLinkManager;
+        ODMessageInterface      fMessageInterface;
+        ODNameResolver          fNameResolver;
+        ODNameSpaceManager      fNameSpaceManager;
+        ODStorageSystem         fStorage;
+        ODTranslation           fTranslation;
+        ODUndo                  fUndo;
+#ifdef _TOOLSPACE_
+        ODToolSpaceManager      fToolSpaceManager;
+#endif
+        ODSemanticInterface     fShellSemtInterface;
+        ODWindowState           fWindowState;
+        WindowSystemData 		fWindowSystemData;
+        TokenTable*				fTokenTable;
+	#ifdef _PLATFORM_X11_
+	#else
+	    ODOLEManager		*	fOLEManager;
+	#endif
+#endif
+    releaseorder:
+        GetArbitrator,
+        GetBinding,
+        GetClipboard,
+        GetDispatcher,
+        GetDragAndDrop,
+        GetInfo,
+        GetLinkManager,
+        GetMessageInterface,
+        GetNameResolver,
+        GetNameSpaceManager,
+        GetStorageSystem,
+        GetTranslation,
+        GetUndo,
+        GetWindowState,
+        SetArbitrator,
+        SetBinding,
+        SetClipboard,
+        SetDispatcher,
+        SetDragAndDrop,
+        SetInfo,
+        SetLinkManager,
+        SetMessageInterface,
+        SetNameResolver,
+        SetNameSpaceManager,
+        SetStorageSystem,
+        SetTranslation,
+        SetUndo,
+        SetWindowState,
+#ifdef _TOOLSPACE_
+        GetToolSpaceManager,
+        SetToolSpaceManager,
+#endif
+        AcquireShellSemtInterface,
+        SetShellSemtInterface,
+        Tokenize,
+        RemoveEntry,
+        GetType,
+  /*      GetRegistry,*/
+        InitBaseSession,
+        GetTokenTable,
+        SetTokenTable,
+	  	GetWindowSystemData,
+   /*     SetRegistry,*/
+	#ifdef _PLATFORM_WIN32_
+	    SetWindowSystemData,
+	    GetOleManager,
+	    SetOleManager;
+	#else
+	    SetWindowSystemData;
+	#endif
+	};
+#endif
+};
+
+#endif
+

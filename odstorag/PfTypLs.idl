@@ -1,0 +1,72 @@
+/**************************************************************************
+ *
+ *  Copyright 2008, Roger Brown
+ *
+ *  This file is part of Roger Brown's Toolkit.
+ *
+ *  This program is free software: you can redistribute it and/or modify it
+ *  under the terms of the GNU Lesser General Public License as published by the
+ *  Free Software Foundation, either version 3 of the License, or (at your
+ *  option) any later version.
+ * 
+ *  This program is distributed in the hope that it will be useful, but WITHOUT
+ *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ *  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ *  more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>
+ *
+ */
+
+/*
+ * $Id$
+ */
+
+#ifndef _PFTYPLS_
+#define _PFTYPLS_
+#include <ODObject.idl>
+
+interface ODPlatformTypeListIterator;
+
+#ifdef __PRIVATE__
+typedef somToken PlatformTypeList;
+#endif
+
+interface ODPlatformTypeList : ODObject
+{
+	void AddLast(in ODPlatformType type);
+	void Remove(in ODPlatformType type);
+	ODBoolean Contains(in ODPlatformType type);
+	ODULong Count();
+	ODPlatformTypeListIterator CreatePlatformTypeListIterator();
+
+#ifdef __PRIVATE__
+	void InitPlatformTypeList(in ODPlatformTypeList typeList);
+	PlatformTypeList *GetImplementation();
+#endif
+
+#ifdef __SOMIDL__
+	implementation
+	{
+		majorversion=1; 
+		minorversion=0;
+		dllname="odstorag.dll";
+#ifdef __PRIVATE__
+		functionprefix=PfTypLs_;
+		override: somInit,somUninit;
+		PlatformTypeList fPlatformTypeList;
+#endif
+		releaseorder:
+			AddLast,
+			Remove,
+			Contains,
+			Count,
+			CreatePlatformTypeListIterator,
+			InitPlatformTypeList,
+			GetImplementation;
+	};
+#endif
+};
+
+#endif

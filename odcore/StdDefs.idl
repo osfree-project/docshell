@@ -1,0 +1,305 @@
+/**************************************************************************
+ *
+ *  Copyright 2008, Roger Brown
+ *
+ *  This file is part of Roger Brown's Toolkit.
+ *
+ *  This program is free software: you can redistribute it and/or modify it
+ *  under the terms of the GNU Lesser General Public License as published by the
+ *  Free Software Foundation, either version 3 of the License, or (at your
+ *  option) any later version.
+ * 
+ *  This program is distributed in the hope that it will be useful, but WITHOUT
+ *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ *  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ *  more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>
+ *
+ */
+
+/*
+ * $Id$
+ */
+
+#ifndef _STDDEFS_
+#define _STDDEFS_
+
+#include <ODTypesB.idl>
+#include <ODTypesM.idl>
+
+#if defined(__SOMIDL__) && defined(EMIT_GLOBAL_CONSTANTS)
+#pragma somemittypes on
+#endif
+
+const ODISOStr kODISOPrefix="+//ISO 9070/ANSI::113722::US::CI LABS::";
+const long kODNULL=0;
+const ODBoolean kODFalse=0;
+const ODBoolean kODTrue=1;
+const ODULong kODNoWait=0;
+
+const ODTypeToken kODNullTypeToken=0;
+
+const ODID kODNULLID=0;
+const ODID kODIDAll=0;
+const ODID kODIndexAll=0;
+const ODID kODIDWild=0;
+
+const ODObjectType kODPartObject="+//ISO 9070/ANSI::113722::US::CI LABS::OpenDoc:ObjectType:Part";
+const ODObjectType kODFrameObject="+//ISO 9070/ANSI::113722::US::CI LABS::OpenDoc:ObjectType:Frame";
+const ODObjectType kODNonPersistentFrameObject="+//ISO 9070/ANSI::113722::US::CI LABS::OpenDoc:ObjectType:NonPersistentFrame";
+
+const ODISOStr kODContainerSuite="+//ISO 9070/ANSI::113722::US::CI LABS::OpenDoc:NameSpace:ContainerSuite";
+const ODISOStr kODKind="+//ISO 9070/ANSI::113722::US::CI LABS::OpenDoc:NameSpace:KindCategories";
+const ODISOStr kODEditorKinds="+//ISO 9070/ANSI::113722::US::CI LABS::OpenDoc:NameSpace:EditorKinds";
+const ODISOStr kODViewer="+//ISO 9070/ANSI::113722::US::CI LABS::OpenDoc:NameSpace:Viewers";
+const ODISOStr kODKindOldMacOSType="+//ISO 9070/ANSI::113722::US::CI LABS::OpenDoc:NameSpace:KindOldMacOSType";
+const ODISOStr kODEditorPlatformKind="+//ISO 9070/ANSI::113722::US::CI LABS::OpenDoc:NameSpace:EditorPlatformKind";
+const ODISOStr kODEditorHelpFile="+//ISO 9070/ANSI::113722::US::CI LABS::OpenDoc:NameSpace:EditorHelpFile";
+
+const ODISOStr kODSysPrefContainerSuites="+//ISO 9070/ANSI::113722::US::CI LABS::OpenDoc:NameSpace:SysPrefContainerSuites";
+const ODISOStr kODSysPrefEditorKinds="+//ISO 9070/ANSI::113722::US::CI LABS::OpenDoc:NameSpace:SysPrefEditorKinds";
+const ODISOStr kODSysPrefEditorCategories="+//ISO 9070/ANSI::113722::US::CI LABS::OpenDoc:NameSpace:SysPrefEditorCategories";
+
+const ODISOStr kODEditorUserString="+//ISO 9070/ANSI::113722::US::CI LABS::OpenDoc:NameSpace:EditorUserString";
+const ODISOStr kODKindUserString="+//ISO 9070/ANSI::113722::US::CI LABS::OpenDoc:NameSpace:KindUserString";
+const ODISOStr kODCategoryUserString="+//ISO 9070/ANSI::113722::US::CI LABS::OpenDoc:NameSpace:CategoryUserString";
+
+const ODOSType kODNameMappings='nmap';
+const ODISOStr kODSimpleViewer="";
+
+const ODUByte kODPlatformKindFileChar1='#';
+
+const ODEditor kODNoEditor=kODNULL;
+
+const ODISOStr kODCategoryPlainText="+//ISO 9070/ANSI::113722::US::CI LABS::OpenDoc:Category:Text:Plain";
+const ODISOStr kODCategoryStyledText="+//ISO 9070/ANSI::113722::US::CI LABS::OpenDoc:Category:Text:Styled";
+const ODISOStr kODCategoryDrawing="+//ISO 9070/ANSI::113722::US::CI LABS::OpenDoc:Category:Drawing";
+const ODISOStr kODCategory3DGraphic="+//ISO 9070/ANSI::113722::US::CI LABS::OpenDoc:Category:3DGraphic";
+const ODISOStr kODCategoryPainting="+//ISO 9070/ANSI::113722::US::CI LABS::OpenDoc:Category:Painting";
+const ODISOStr kODCategoryMovie="+//ISO 9070/ANSI::113722::US::CI LABS::OpenDoc:Category:Movie";
+const ODISOStr kODCategorySampledSound="+//ISO 9070/ANSI::113722::US::CI LABS::OpenDoc:Category:SampledSound";
+const ODISOStr kODCategoryStructuredSound="+//ISO 9070/ANSI::113722::US::CI LABS::OpenDoc:Category:StructuredSound";
+const ODISOStr kODCategoryChart="+//ISO 9070/ANSI::113722::US::CI LABS::OpenDoc:Category:Chart";
+const ODISOStr kODCategoryFormula="+//ISO 9070/ANSI::113722::US::CI LABS::OpenDoc:Category:Formula";
+const ODISOStr kODCategorySpreadsheet="+//ISO 9070/ANSI::113722::US::CI LABS::OpenDoc:Category:Spreadsheet";
+const ODISOStr kODCategoryTable="+//ISO 9070/ANSI::113722::US::CI LABS::OpenDoc:Category:Table";
+const ODISOStr kODCategoryDatabase="+//ISO 9070/ANSI::113722::US::CI LABS::OpenDoc:Category:Database";
+const ODISOStr kODCategoryQuery="+//ISO 9070/ANSI::113722::US::CI LABS::OpenDoc:Category:Query";
+const ODISOStr kODCategoryConnection="+//ISO 9070/ANSI::113722::US::CI LABS::OpenDoc:Category:Connection";
+const ODISOStr kODCategoryScript="+//ISO 9070/ANSI::113722::US::CI LABS::OpenDoc:Category:Script";
+const ODISOStr kODCategoryOutline="+//ISO 9070/ANSI::113722::US::CI LABS::OpenDoc:Category:Outline";
+const ODISOStr kODCategoryPageLayout="+//ISO 9070/ANSI::113722::US::CI LABS::OpenDoc:Category:PageLayout";
+const ODISOStr kODCategoryPresentation="+//ISO 9070/ANSI::113722::US::CI LABS::OpenDoc:Category:Presentation";
+const ODISOStr kODCategoryCalendar="+//ISO 9070/ANSI::113722::US::CI LABS::OpenDoc:Category:Calendar";
+const ODISOStr kODCategoryForm="+//ISO 9070/ANSI::113722::US::CI LABS::OpenDoc:Category:Form";
+const ODISOStr kODCategoryExecutable="+//ISO 9070/ANSI::113722::US::CI LABS::OpenDoc:Category:Executable";
+const ODISOStr kODCategoryCompressed="+//ISO 9070/ANSI::113722::US::CI LABS::OpenDoc:Category:Compressed";
+const ODISOStr kODCategoryControlPanel="+//ISO 9070/ANSI::113722::US::CI LABS::OpenDoc:Category:ControlPanel";
+const ODISOStr kODCategoryControl="+//ISO 9070/ANSI::113722::US::CI LABS::OpenDoc:Category:Control";
+const ODISOStr kODCategoryPersonalInfo="+//ISO 9070/ANSI::113722::US::CI LABS::OpenDoc:Category:PersonalInfo";
+const ODISOStr kODCategorySpace="+//ISO 9070/ANSI::113722::US::CI LABS::OpenDoc:Category:Space";
+const ODISOStr kODCategoryProject="+//ISO 9070/ANSI::113722::US::CI LABS::OpenDoc:Category:Project";
+const ODISOStr kODCategorySignature="+//ISO 9070/ANSI::113722::US::CI LABS::OpenDoc:Category:Signature";
+const ODISOStr kODCategoryKey="+//ISO 9070/ANSI::113722::US::CI LABS::OpenDoc:Category:Key";
+const ODISOStr kODCategoryUtility="+//ISO 9070/ANSI::113722::US::CI LABS::OpenDoc:Category:Utility";
+const ODISOStr kODCategoryMailingLabel="+//ISO 9070/ANSI::113722::US::CI LABS::OpenDoc:Category:MailingLabel";
+const ODISOStr kODCategoryLocator="+//ISO 9070/ANSI::113722::US::CI LABS::OpenDoc:Category:Locator";
+const ODISOStr kODCategoryPrinter="+//ISO 9070/ANSI::113722::US::CI LABS::OpenDoc:Category:Printer";
+
+const ODISOStr kODCategoryTime="+//ISO 9070/ANSI::113722::US::CI LABS::OpenDoc:Category:Time";
+
+const short kODIsMacOSTypeID=1;							/* Mac OSType */
+const short kODIsINTLTextID=2;							/* International text */
+const short kODIsAnISOStringID=3;						/* ISOString */
+const short kODIsAnISOStringListID=4;                   /* ISOString List*/
+const short kODIsPltfmTypeSpacID=5;                     /* PlatformTypeSpace */
+const short kODIsHelpFileNameID=6;                      /* AppleGuide file on the Mac */
+const short kODPaletteWDEFID=128;						/* Windoid WDEF */
+
+const ODULong kODPlatformFileType=1;
+const ODULong kODPlatformDataType=2;
+
+const short kODISO10646_1993BaseEncoding=0;              // UCS
+const ODITextFormat kODTraditionalMacText=0;
+
+interface ODPart;
+
+const ODPart kODAppShell=0;
+
+const short kODTinyIconSize=12;							// 12x12 pixels
+const short kODSmallIconSize=16;					    // 16x16 pixels
+const short kODLargeIconSize=32;						// 32x32 pixels
+const short kODThumbnailSize=64;						// 64x64 pixels
+const ODGraphicsSystem kODNoGraphicsSystem=0;
+const ODGraphicsSystem kODQuickDraw=1;					// Macintosh QuickDraw graphics system
+const ODGraphicsSystem kODQuickDrawGX=2;				// Macintosh QuickDraw GX graphics system
+const ODTransformType kODIdentityXform=0;				// Identity (no-op) transform
+const ODTransformType kODTranslateXform=1;				// Pure translation/offset
+const ODTransformType kODScaleXform=2;					// Pure scale, no offset
+const ODTransformType kODScaleTranslateXform=3;			// Scale and offset
+const ODTransformType kODLinearXform=4;					// Scale/rotate/skew, but no offset
+const ODTransformType kODLinearTranslateXform=5;        // Linear as above, but with offset
+const ODTransformType kODPerspectiveXform=6;			// Perspective: m[0][2]!=0 or m[1][2]!=0
+const ODTransformType kODUnknownXform=-1;				// Type not known yet [internal use only]
+const ODTransformType kODInvalidXform=7;				// Bad matrix [internal use only]
+
+const ODType kODViewAsSmallIcon="+//ISO 9070/ANSI::113722::US::CI LABS::OpenDoc:ViewType:SmallIcon";
+const ODType kODViewAsLargeIcon="+//ISO 9070/ANSI::113722::US::CI LABS::OpenDoc:ViewType:LargeIcon";
+const ODType kODViewAsThumbnail="+//ISO 9070/ANSI::113722::US::CI LABS::OpenDoc:ViewType:Thumbnail";
+const ODType kODViewAsFrame="+//ISO 9070/ANSI::113722::US::CI LABS::OpenDoc:ViewType:Frame";
+const ODType kODPresDefault="OpenDoc:Presentation:Default";
+const ODULong kODDragIsInSourceFrame=0x00000001;
+const ODULong kODDragIsInSourcePart=0x00000002;
+const ODULong kODDropIsInSourceFrame=kODDragIsInSourceFrame;
+const ODULong kODDropIsInSourcePart=kODDragIsInSourcePart;
+const ODULong kODDropIsMove=0x00000004;
+const ODULong kODDropIsCopy=0x00000008;
+const ODULong kODDropIsPasteAs=0x00000010;
+const ODType kODDragImageRegionHandle="+//ISO 9070/ANSI::113722::US::CI LABS::OpenDoc::DragImage:RegionHandle";
+const ODValueType kODHFSPromise="+//ISO 9070/ANSI::113722::US::CI LABS::OpenDoc::Type:HFSPromise";
+const ODValueType kODTypeAll=kODNULL;
+const ODUpdateID kODUnknownUpdate=0;
+const ODLinkUpdateResult kODLinkUpdateSuspend=0;
+const ODLinkUpdateResult kODLinkUpdateStop=1;
+const ODLinkUpdateResult kODLinkUpdateContinue=2;
+const ODPasteAsMergeSetting kODPasteAsMerge=1;
+const ODPasteAsMergeSetting kODPasteAsEmbed=3;
+const ODPasteAsMergeSetting kODPasteAsMergeOnly=0;
+const ODPasteAsMergeSetting kODPasteAsEmbedOnly=2;
+const ODStorageUnitKey kODNULLKey=0;
+const ODULong kODPosUndefined=0xFFFFFFFF;
+const ODULong kODPosSame=0x00;
+const ODULong kODPosAll=1;
+const ODULong kODPosFirstSib=2;
+const ODULong kODPosLastSib=3;
+const ODULong kODPosNextSib=4;
+const ODULong kODPosPrevSib=5;
+const ODULong kODPosFirstBelow=6;
+const ODULong kODPosLastBelow=7;
+const ODULong kODPosFirstAbove=8;
+const ODULong kODPosLastAbove=9;
+const ODULong kODPosReserved11=10;
+const ODULong kODPosReserved12=11;
+const ODULong kODPosReserved13=12;
+const ODULong kODPosReserved14=13;
+const ODULong kODPosReserved15=14;
+const ODULong kODPosMWrap=0x10;
+const ODULong kODPosTop=0x20;
+const ODDocumentID kODDefaultDocument=1;
+const ODContainerType kODDefaultFileContainer="+//ISO 9070/ANSI::113722::US::CI LABS::OpenDoc:ContainerType:File";
+const ODContainerType kODDefaultMemoryContainer="+//ISO 9070/ANSI::113722::US::CI LABS::OpenDoc:ContainerType:Memory";
+const ODContainerType kODBentoFileContainer="+//ISO 9070/ANSI::113722::US::CI LABS::OpenDoc:Bento Container Suite:ContainerType:File";
+const ODContainerType kODBentoMemoryContainer="+//ISO 9070/ANSI::113722::US::CI LABS::OpenDoc:Bento Container Suite:ContainerType:Memory";
+
+const ODSShort kODMDInDesk=0;
+const ODSShort kODMDInMenuBar=1;
+const ODSShort kODMDInSysWindow=2;
+const ODSShort kODMDInContent=3;
+const ODSShort kODMDInDrag=4;
+const ODSShort kODMDInGrow=5;
+const ODSShort kODMDInGoAway=6;
+const ODSShort kODMDInZoomIn=7;
+const ODSShort kODMDInZoomOut=8;
+
+const ODOSType kODShellSignature='odtm';
+
+const ODISOStr kODBlackBoxHandlerOfLastResort="NoPart";
+const ODITextFormat kODIBMCodePageText=1;
+const ODGraphicsSystem kODX11=40;   // Used for Standard OS/2 AIX X11R5+Motif1.2 imaging
+const ODGraphicsSystem kODWin32=20;   // Used for Standard Windows 32 (NT+95) imaging
+const ODGraphicsSystem kODWin95=21;   // Used for implementations that only support Win95 and not Win32
+const ODGraphicsSystem kODWinNT=22;   // Used for implementations that only support WinNT and not Win32
+const ODGraphicsSystem kODOpenClass=50;   // Used for Standard Portable OS2,Win,AIX OpenClass imaging
+const ODULong kODDropIsLink=0x00000020;
+const ODULong kODDragHasLeftSourceFrame=0x00000004;
+#ifdef __PRIVATE__
+const ODContainerType kODBentoEmbeddedContainer="+//ISO 9070/ANSI::113722::US::CI LABS::OpenDoc:Bento Container Suite:ContainerType:Embedded";
+#endif
+
+#ifdef _PLATFORM_WIN32_
+const ODContainerType kODBentoIStreamContainer="+//ISO 9070/ANSI::113722::US::CI LABS::OpenDoc:Bento Container Suite:ContainerType:IStream";
+const ODSShort kODEvtNull=0x0000;				// WM_NULL
+const ODSShort kODEvtMouseDown=0x0201;			// WM_LBUTTONDOWN
+const ODSShort kODEvtMouseUp=0x0202;			// WM_LBUTTONUP
+const ODSShort kODEvtKeyDown=0x0100;			// WM_KEYDOWN
+const ODSShort kODEvtKeyUp=0x0101;				// WM_KEYUP
+#ifdef _PLATFORM_X11_
+const ODSShort kODEvtActivate=0x6666;			// WM_ACTIVATE
+#else
+const ODSShort kODEvtActivate=0x0006;			// WM_ACTIVATE
+#endif
+const ODSShort kODEvtUpdate=0x000f;				// WM_PAINT
+const ODSShort kODEvtLButtonDown=0x0201;		// WM_LBUTTONDOWN
+const ODSShort kODEvtRButtonDown=0x0204;		// WM_RBUTTONDOWN
+const ODSShort kODEvtMButtonDown=0x0207;		// WM_MBUTTONDOWN
+const ODSShort kODEvtInitMenu=0x0116;			// WM_INITMENU
+const ODSShort kODEvtMenu=0x0111;				// WM_COMMAND
+const ODSShort kODEvtCommand=0x0111;			// WM_COMMAND
+const ODSShort kODEvtHelp=0x0053;				// WM_HELP
+const ODSShort kODEvtClose=0x0010;				// WM_CLOSE
+const ODSShort kODEvtUser=0x0400;				// WM_USER
+const ODSShort kODEvtNCMouseMove=0x00a0;		// WM_NCMOUSEMOVE
+const ODSShort kODEvtSetFocus=0x0007;			// WM_SETFOCUS
+const ODSShort kODEvtSize=0x0005;				// WM_SIZE
+const ODSShort kODEvtEraseBkgnd=0x0014;			// WM_ERASEBKGND
+const ODSShort kODEvtNCCreate=0x0081;			// WM_NCCREATE
+const ODSShort kODEvtDestroy=0x0002;			// WM_DESTROY
+const ODSShort kODEvtInactive=0x0000;			// WM_NULL
+const ODSShort kODEvtExit=0x0012;				// WM_QUIT
+const ODSShort kODEvtMouseDownEmbedded=0x0401;	// WM_USER + 1
+const ODSShort kODEvtMouseUpEmbedded=0x0402;	// WM_USER + 2
+const ODSShort kODEvtMouseDownBorder=0x0403;	// WM_USER + 3
+const ODSShort kODEvtMouseUpBorder=0x0404;		// WM_USER + 4
+const ODSShort OD_HELP=0x0405;					// WM_USER + 5
+const ODULong kODKindName=2;
+const ODULong kODFileName=3;
+const ODULong kODNoRootPart=4;
+const ODUShort kODEditStationery=1;
+const ODUShort kODCreateStationery=2;
+const ODISOStr ODRegistryFileName="/PartReg.bto";
+const ODISOStr ODRegistryPathEnvVar="ODCFG";
+#else
+const ODSShort kODEvtNull=0;
+const ODSShort kODEvtMouseDown=4;		// (X11 ButtonPress)
+const ODSShort kODEvtMouseUp=5;			// (X11 ButtonRelease)
+const ODSShort kODEvtMouseMotion=6;		// (X11 MotionNotify)
+const ODSShort kODEvtKeyDown=2;			// (X11 KeyPress)
+const ODSShort kODEvtKeyUp=3;			// (X11 KeyRelease)
+const ODSShort kODEvtUpdate=12;			// (X11 Expose)
+const ODSShort kODEvtAutoKey=36;		// (> X11 LASTEvent)
+const ODSShort kODEvtDisk=37;			// (> X11 LASTEvent)
+const ODSShort kODEvtActivate=38;		// (> X11 LASTEvent)
+const ODSShort kODEvtOS=39;				// (> X11 LASTEvent)
+const ODSShort kODEvtInitMenu=40;
+const ODSShort kODEvtCommand=42;
+const ODSShort kODEvtInactive=41;
+const ODSShort kODEvtClose=43;
+const ODSShort kODEvtHelp=44;
+const ODSShort kODEvtMenu=kODEvtCommand;
+const ODSShort OD_HELP=80;
+const ODSShort kODEvtMouseDownEmbedded=99;
+const ODSShort kODEvtMouseUpEmbedded=100;
+const ODSShort kODEvtMouseDownBorder=101;
+const ODSShort kODEvtMouseUpBorder=102;
+const ODSShort kODEvtWindow=103;
+const ODSShort kODEvtMouseEnter=104;
+const ODSShort kODEvtMouseWithin=105;
+const ODSShort kODEvtMouseLeave=106;
+const ODSShort kODEvtBGMouseDownEmbedded=107;
+const ODSShort kODEvtExit=108;
+const ODULong kODKindName=2;
+const ODULong kODFileName=3;
+const ODULong kODNoRootPart=4;
+const ODUShort kODEditStationery=1;
+const ODUShort kODCreateStationery=2;
+const ODISOStr ODRegistryFileName="/PartReg.bto";
+const ODISOStr ODRegistryPathEnvVar="ODCFG";
+#endif
+
+#if defined(__SOMIDL__) && defined(EMIT_GLOBAL_CONSTANTS)
+#pragma somemittypes off
+#endif
+
+#endif

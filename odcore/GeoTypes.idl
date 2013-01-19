@@ -1,0 +1,45 @@
+/**************************************************************************
+ *
+ *  Copyright 2008, Roger Brown
+ *
+ *  This file is part of Roger Brown's Toolkit.
+ *
+ *  This program is free software: you can redistribute it and/or modify it
+ *  under the terms of the GNU Lesser General Public License as published by the
+ *  Free Software Foundation, either version 3 of the License, or (at your
+ *  option) any later version.
+ * 
+ *  This program is distributed in the hope that it will be useful, but WITHOUT
+ *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ *  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ *  more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>
+ *
+ */
+
+/*
+ * $Id$
+ */
+
+#ifndef _GEOTYPES_
+#define _GEOTYPES_
+
+#ifdef __SOMIDL__
+#ifdef EMIT_GLOBAL_TYPES
+#pragma somemittypes on
+#endif
+#endif
+
+typedef long ODCoordinate;
+struct ODPoint { ODCoordinate x,y; };
+struct ODRect { ODCoordinate left,top,right,bottom; };
+
+#ifdef __SOMIDL__
+#ifdef EMIT_GLOBAL_TYPES
+#pragma somemittypes off
+#endif
+#endif
+
+#endif

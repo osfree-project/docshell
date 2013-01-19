@@ -1,0 +1,68 @@
+/**************************************************************************
+ *
+ *  Copyright 2008, Roger Brown
+ *
+ *  This file is part of Roger Brown's Toolkit.
+ *
+ *  This program is free software: you can redistribute it and/or modify it
+ *  under the terms of the GNU Lesser General Public License as published by the
+ *  Free Software Foundation, either version 3 of the License, or (at your
+ *  option) any later version.
+ * 
+ *  This program is distributed in the hope that it will be useful, but WITHOUT
+ *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ *  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ *  more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>
+ *
+ */
+
+/*
+ * $Id$
+ */
+
+#ifndef TPLLItr_idl
+#define TPLLItr_idl
+
+#include <somobj.idl>
+
+interface somf_TPrimitiveLinkedList;
+interface somf_MLinkable;
+
+#ifdef __PRIVATE__
+typedef somToken somf_TPrimitiveLinkedListIteratorState;
+typedef somToken somf_TPrimitiveLinkedListIteratorList;
+#endif
+
+interface somf_TPrimitiveLinkedListIterator : SOMObject
+{
+	somf_TPrimitiveLinkedListIterator somfTPrimitiveLinkedListIteratorInit(in somf_TPrimitiveLinkedList list);
+	somf_MLinkable somfFirst();
+	somf_MLinkable somfNext();
+	somf_MLinkable somfLast();
+	somf_MLinkable somfPrevious();
+#ifdef __SOMIDL__
+	implementation 
+	{
+	    releaseorder: somfFirst,somfNext,somfLast,somfPrevious,somfTPrimitiveLinkedListIteratorInit;
+
+		majorversion=2;
+		minorversion=1;
+		filestem=tpllitr;
+		dllname="somuc.dll";
+
+	#ifdef __PRIVATE__
+	    somf_TPrimitiveLinkedList fList;
+/*	    somf_MLinkable fCurrent;*/
+	    somf_MLinkable fSentinel;
+		somf_TPrimitiveLinkedListIteratorState fState;
+		somf_TPrimitiveLinkedListIteratorList *fIteratorList;
+		override: somUninit;
+		functionprefix=tpllitr_;
+	#endif
+	};
+#endif
+};
+#endif

@@ -1,0 +1,109 @@
+/**************************************************************************
+ *
+ *  Copyright 2008, Roger Brown
+ *
+ *  This file is part of Roger Brown's Toolkit.
+ *
+ *  This program is free software: you can redistribute it and/or modify it
+ *  under the terms of the GNU Lesser General Public License as published by the
+ *  Free Software Foundation, either version 3 of the License, or (at your
+ *  option) any later version.
+ * 
+ *  This program is distributed in the hope that it will be useful, but WITHOUT
+ *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ *  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ *  more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>
+ *
+ */
+
+/*
+ * $Id$
+ */
+
+#ifdef __PRIVATE__
+#ifndef _CMCTR_
+#define _CMCTR_
+
+#include <ODCtr.idl>
+
+interface ODBentoContainer;
+
+#ifdef __PRIVATE__
+typedef somToken CMContainer;
+typedef somToken ODBentoHandlers;
+typedef somToken ODMemoryHeapID;
+typedef somToken CMSession;
+typedef somToken ODSessionRefCon;
+interface CMDocument;
+interface ODStorageSystem; 
+interface ODDocument;
+interface ODFileContainer;
+#endif
+
+interface ODBentoContainer : ODContainer 
+{
+#ifdef __PRIVATE__
+	CMContainer			GetCMContainer();
+	ODBentoHandlers*	GetHandlers();
+	ODBoolean			GetDirtyFlag();
+	void				SetDirtyFlag(in ODBoolean flag);
+	ODMemoryHeapID		GetHeap();
+	CMSession			GetCMSession();
+	ODBentoContainer	GetTargetContainer();
+	CMDocument			GetTargetDocument();
+	ODTime				GetModDate();
+	void				SetModDate(in ODTime timer);
+#endif
+  
+#ifdef __SOMIDL__
+	implementation
+	{
+		majorversion = 1; minorversion = 0;
+		dllname="odbento.dll";
+#ifdef __PRIVATE__
+  		functionprefix = CMCtr_;
+		override:
+			somUninit,
+			Acquire,
+			Release,
+			Purge,
+			GetStorageSystem,
+			GetID,
+			GetName,
+			SetName,
+			AcquireDocument,
+			InitContainer,
+			Create,
+			Open,
+			Close,
+			ReleaseDocument;
+		ODStorageSystem	fStorageSystem;
+		ODContainerID fID;		
+		ODDocument fDocument;		
+		ODBoolean fDirty;		
+		CMSession fCMSession;
+		ODTime fModDate;
+		ODSessionRefCon *fODSessionRefCon;
+#endif
+		releaseorder:
+			GetCMContainer,
+			GetHandlers,
+			GetDirtyFlag,
+			SetDirtyFlag,
+			GetHeap,
+			GetCMSession,
+			GetTargetContainer,
+			GetTargetDocument,
+			GetModDate,
+			SetModDate;
+	};
+#endif
+};
+
+
+#endif 
+
+#endif

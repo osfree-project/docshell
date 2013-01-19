@@ -1,0 +1,111 @@
+/**************************************************************************
+ *
+ *  Copyright 2008, Roger Brown
+ *
+ *  This file is part of Roger Brown's Toolkit.
+ *
+ *  This program is free software: you can redistribute it and/or modify it
+ *  under the terms of the GNU Lesser General Public License as published by the
+ *  Free Software Foundation, either version 3 of the License, or (at your
+ *  option) any later version.
+ * 
+ *  This program is distributed in the hope that it will be useful, but WITHOUT
+ *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ *  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ *  more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>
+ *
+ */
+
+/*
+ * $Id$
+ */
+
+#ifndef _TRNSFRMB_
+#define _TRNSFRMB_
+
+#include <RefCtObj.idl>
+
+interface ODBaseTransform : ODRefCntObject
+{
+	ODTransform Copy();
+	ODTransformType GetType();
+	void GetOffset(out ODPoint offset);
+	void GetPreScaleOffset(out ODPoint offset);
+	void GetScale(out ODPoint scale);
+	void GetMatrix(out ODMatrix matrix);
+	ODBoolean HasMatrix();
+	ODBoolean IsSameAs(in ODTransform compareTransform);
+	ODTransform Reset();
+	ODTransform SetMatrix(in ODMatrix matrix);
+	ODTransform CopyFrom(in ODTransform sourceTransform);
+	ODTransform SetOffset(in ODPoint point);
+	ODTransform MoveBy(in ODPoint point);
+	ODTransform ScaleBy(in ODPoint scale);
+	ODTransform ScaleDownBy(in ODPoint scale);
+	ODTransform Invert();
+	ODTransform PreCompose(in ODTransform transform);
+	ODTransform PostCompose(in ODTransform transform);
+	void TransformPoint(inout ODPoint point);
+	void InvertPoint(inout ODPoint point);
+	void TransformShape(in ODShape shape);
+	void InvertShape(in ODShape shape);
+	void WriteTo(in ODStorageUnit storageUnit);
+	void ReadFrom(in ODStorageUnit storageUnit);
+	ODTransform NewTransform();
+#ifdef __PRIVATE__
+	void InitBaseTransform();
+	void BuildInverse();
+#endif
+
+#ifdef __SOMIDL__
+	implementation
+	{
+		majorversion=1;
+		minorversion=0;
+		dllname="odimagng.dll";
+	#ifdef __PRIVATE__
+		override: somUninit,Release,somDumpSelfInt;
+		functionprefix="TrnsfrmB_";
+		ODTransformType	fType;
+		ODBoolean fInverseMatrixValid;
+      	ODMatrix fMatrix;
+      	ODMatrix fInverseMatrix;
+		ODBaseTransform	fPreTransform;
+		ODBaseTransform	fPostTransform;
+	#endif
+		releaseorder:
+			GetType,
+			GetOffset,
+			GetPreScaleOffset,
+			GetScale,
+			GetMatrix,
+			HasMatrix,
+			IsSameAs,
+			Reset,
+			SetMatrix,
+			Copy,
+			CopyFrom,
+			SetOffset,
+			MoveBy,
+			ScaleBy,
+			ScaleDownBy,
+			Invert,
+			PreCompose,
+			PostCompose,
+			TransformPoint,
+			InvertPoint,
+			TransformShape,
+			InvertShape,
+			WriteTo,
+			ReadFrom,
+			NewTransform,
+			InitBaseTransform,
+			BuildInverse;
+	};
+#endif
+};
+
+#endif

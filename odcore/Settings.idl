@@ -1,0 +1,63 @@
+/**************************************************************************
+ *
+ *  Copyright 2008, Roger Brown
+ *
+ *  This file is part of Roger Brown's Toolkit.
+ *
+ *  This program is free software: you can redistribute it and/or modify it
+ *  under the terms of the GNU Lesser General Public License as published by the
+ *  Free Software Foundation, either version 3 of the License, or (at your
+ *  option) any later version.
+ * 
+ *  This program is distributed in the hope that it will be useful, but WITHOUT
+ *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ *  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ *  more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>
+ *
+ */
+
+/*
+ * $Id$
+ */
+
+#ifndef _SETTINGS_
+#define _SETTINGS_
+
+#include <Extensn.idl>
+
+#ifdef _PLATFORM_X11_
+interface   ODNotebook;
+#endif
+
+interface ODSettingsExtension : ODExtension
+{
+	void InitSettingsExtension(in ODPart owner);
+	void ShowSettings(in ODFacet facet);
+#ifdef _PLATFORM_X11_
+	void ShowSettingsPages(in ODFacet facet, in ODNotebook notebook);
+#else
+	void ShowSettingsPages(in ODFacet facet, in HWND hPropSheetDlg);
+#endif
+
+#ifdef __SOMIDL__
+	implementation
+	{
+		majorversion=1;
+		minorversion=0;
+		dllname="odcore.dll";
+#ifdef __PRIVATE__
+		functionprefix="Settings_";
+		override: somUninit,Release;
+#endif
+		releaseorder:
+			InitSettingsExtension,
+			ShowSettings,
+			ShowSettingsPages;
+	};
+#endif
+
+};
+#endif

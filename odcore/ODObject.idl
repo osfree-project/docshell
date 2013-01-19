@@ -1,0 +1,90 @@
+/**************************************************************************
+ *
+ *  Copyright 2008, Roger Brown
+ *
+ *  This file is part of Roger Brown's Toolkit.
+ *
+ *  This program is free software: you can redistribute it and/or modify it
+ *  under the terms of the GNU Lesser General Public License as published by the
+ *  Free Software Foundation, either version 3 of the License, or (at your
+ *  option) any later version.
+ * 
+ *  This program is distributed in the hope that it will be useful, but WITHOUT
+ *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ *  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ *  more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>
+ *
+ */
+
+/*
+ * $Id$
+ */
+
+#ifndef _ODOBJECT_
+#define _ODOBJECT_
+
+#include <somobj.idl>
+
+#ifndef _ODTYPESM_
+#	include <ODTypesM.idl>
+#endif
+
+#ifndef _GEOTYPES_
+#	include <GeoTypes.idl>
+#endif
+
+#ifndef _POLYGON_
+#	include <Polygon.idl>
+#endif
+
+interface ODExtension;
+
+#ifdef __PRIVATE__
+typedef somToken ChainLink;
+#endif
+
+interface ODObject : SOMObject
+{
+	void InitObject();
+	ODBoolean HasExtension(in ODType extensionName);
+	ODExtension AcquireExtension(in ODType extensionName);
+	void ReleaseExtension(in ODExtension extension);
+	ODSize Purge(in ODSize size);
+	ODBoolean IsEqualTo(in ODObject object);
+	void SubClassResponsibility();
+
+	ODULong debugDumpAll();
+
+#ifdef __SOMIDL__
+	implementation
+	{
+		majorversion=1;
+		minorversion=0;
+		dllname="odcore.dll";
+#ifdef __PRIVATE__
+		ChainLink fChainLink;
+		functionprefix="odobj_";
+		override: somInit,somUninit;
+#endif
+		releaseorder: 					InitObject,
+			HasExtension,
+			AcquireExtension,
+			ReleaseExtension,
+			Purge,
+			IsEqualTo,
+			SubClassResponsibility,
+			debugDumpAll;
+
+		debugDumpAll: procedure,noself;
+
+		passthru C_h="#include <ODTypes.h>";
+		passthru C_xh="#include <ODTypes.h>";
+	};
+#endif
+};
+
+#endif
+

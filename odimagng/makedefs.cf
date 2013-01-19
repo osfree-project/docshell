@@ -1,0 +1,3 @@
+NAME odimagng
+DEPENDS odutils
+PROVIDES odimagng

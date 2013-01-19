@@ -1,0 +1,106 @@
+/**************************************************************************
+ *
+ *  Copyright 2008, Roger Brown
+ *
+ *  This file is part of Roger Brown's Toolkit.
+ *
+ *  This program is free software: you can redistribute it and/or modify it
+ *  under the terms of the GNU Lesser General Public License as published by the
+ *  Free Software Foundation, either version 3 of the License, or (at your
+ *  option) any later version.
+ * 
+ *  This program is distributed in the hope that it will be useful, but WITHOUT
+ *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ *  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ *  more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>
+ *
+ */
+
+/*
+ * $Id$
+ */
+
+#if defined(_PLATFORM_X11_) && !defined(_NOTEBOOK_)
+#define _NOTEBOOK_
+
+#include <ODObject.idl>
+
+interface  ODPropertyPage;
+interface  ODFacet;
+
+#ifdef __PRIVATE__
+typedef somToken PageStruct;
+#endif
+
+interface ODNotebook : SOMObject
+{
+	void AddPage(in ODPropertyPage page);
+	void RemovePage(in ODPropertyPage page);
+	ODBoolean AllowEditing();
+	void Complete();
+#ifdef __PRIVATE__
+	void Initialize(in ODFacet facet, in ODBoolean allowEditing);
+	void Ok();
+	void Cancel();
+	void ChangePage(in ODPropertyPage page);
+#endif
+
+#ifdef __SOMIDL__
+	implementation
+	{
+		majorversion=1;
+		minorversion=0;
+		dllname="odcore.dll";
+	releaseorder:
+#ifdef __PRIVATE__
+		Initialize,
+		Ok,
+		Cancel,
+		ChangePage,
+#else
+		reserved1,
+		reserved2,
+		reserved3,
+		reserved4,
+#endif
+		AddPage,
+		RemovePage,
+		AllowEditing,
+		Complete;
+
+#ifdef __PRIVATE__
+		passthru C_xih = "struct PageStruct"
+			"    {                        "
+			"    ODPropertyPage *page;    "
+			"    Widget         menuItem; "
+			"    PageStruct     *prevPage;"
+			"    PageStruct     *nextPage;"
+			"    };                       "
+			"";
+
+		functionprefix = Notebook_;
+		override:
+		    somInit,
+		    somUninit;
+
+		ODFacet fFacet;
+
+		Widget  fShell;
+		Widget  fDialog;
+		Widget  fOptionMenu;
+		Widget  fPulldownMenu;
+		Widget  fFrame;
+
+		PageStruct     *fHeadPage;
+		PageStruct     *fTailPage;
+		ODPropertyPage fCurrentPage;
+
+		ODBoolean fAllowEditing;
+#endif /* __PRIVATE__ */
+	};
+#endif /* __SOMIDL__ */
+};
+#endif /* _NOTEBOOK_ */

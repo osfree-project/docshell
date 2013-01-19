@@ -1,0 +1,68 @@
+/**************************************************************************
+ *
+ *  Copyright 2008, Roger Brown
+ *
+ *  This file is part of Roger Brown's Toolkit.
+ *
+ *  This program is free software: you can redistribute it and/or modify it
+ *  under the terms of the GNU Lesser General Public License as published by the
+ *  Free Software Foundation, either version 3 of the License, or (at your
+ *  option) any later version.
+ * 
+ *  This program is distributed in the hope that it will be useful, but WITHOUT
+ *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ *  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ *  more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>
+ *
+ */
+
+/*
+ * $Id$
+ */
+
+#ifndef _SUCURSOR_
+#define _SUCURSOR_
+
+#include <ODObject.idl>
+
+interface ODStorageUnitCursor : ODObject
+{
+	void GetProperty(out ODPropertyName propertyName);
+	void GetValueType(out ODValueType valueType);
+	void GetValueIndex(out ODValueIndex valueIndex);
+ 	void SetProperty(in ODPropertyName propertyName);
+	void SetValueType(in ODValueType valueType);
+	void SetValueIndex(in ODValueIndex valueIndex);
+
+#ifdef __PRIVATE__
+	void InitStorageUnitCursor(in ODPropertyName propertyName,in ODValueType valueType,in ODValueIndex valueIndex);
+#endif
+
+#ifdef __SOMIDL__
+	implementation
+	{
+		majorversion=1;
+		minorversion=0;
+		dllname="odstorag.dll";
+#ifdef __PRIVATE__
+	  	functionprefix = SUCursor_;
+		override: somUninit;
+		ODPropertyName fCurProperty;
+		ODValueType fCurValueType;
+		ODValueIndex fCurValue;
+#endif
+		releaseorder:
+			InitStorageUnitCursor,
+			GetProperty,
+			GetValueType,
+			GetValueIndex,
+			SetProperty,
+			SetValueType,
+			SetValueIndex;
+	};
+#endif
+};
+#endif

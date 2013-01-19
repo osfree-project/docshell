@@ -1,0 +1,124 @@
+/**************************************************************************
+ *
+ *  Copyright 2008, Roger Brown
+ *
+ *  This file is part of Roger Brown's Toolkit.
+ *
+ *  This program is free software: you can redistribute it and/or modify it
+ *  under the terms of the GNU Lesser General Public License as published by the
+ *  Free Software Foundation, either version 3 of the License, or (at your
+ *  option) any later version.
+ * 
+ *  This program is distributed in the hope that it will be useful, but WITHOUT
+ *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ *  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ *  more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>
+ *
+ */
+
+/*
+ * $Id$
+ */
+
+#ifndef _STDDISPX11_
+#define _STDDISPX11_
+
+#include <DispMod.idl>
+
+interface ODSession;
+interface ODWindow;
+interface ODWindowState;
+interface ODArbitrator;
+interface ODDispatcher;
+interface ODFrame;
+interface ODFacet;
+
+interface ODStdX11DispatchModule : ODDispatchModule
+{
+	void InitStdX11DispatchModule(in ODSession session,in ODDispatcher dispatcher);
+#ifdef __PRIVATE__
+	ODBoolean IsContained(in ODFrame frame,in ODFrame containerToTest);
+	ODFacet GetActiveFacet(in ODFrame frame,in ODWindow  window,in ODPoint windowPoint);
+	ODFacet GetFirstFacetUnderPoint(in ODWindow  window,in ODFacet root,in ODPoint windowPoint);
+	ODWindow AcquireODWindow(in ODEventData theEvent);
+	ODBoolean DispatchMouseDownEvent(in ODEventData theEvent,in ODEventInfo eventInfo);
+	ODBoolean DispatchMouseUpEvent(in ODEventData theEvent,in ODEventInfo  eventInfo);
+	ODBoolean DispatchMouseDownEmbedded(in ODEventData theEvent,in ODEventInfo  eventInfo);
+	ODBoolean DispatchMouseUpEmbedded(in ODEventData theEvent,in ODEventInfo eventInfo);
+	ODBoolean DispatchMouseDownInContent(in ODWindow theWindow,in ODEventData theEvent,in ODEventInfo  eventInfo);
+	ODBoolean DispatchMouseDownInBorder(in ODEventData theEvent,in ODEventInfo eventInfo);
+	ODBoolean DispatchMouseMotionEvent(in ODEventData theEvent,in ODEventInfo eventInfo);
+	ODBoolean DispatchMenuEvent(in ODEventData theEvent,in ODEventInfo  eventInfo);
+	ODBoolean DispatchKeyEvent(in ODEventData theEvent,in ODEventInfo  eventInfo);
+	ODBoolean DispatchUpdateEvent(in ODEventData theEvent);
+	ODBoolean DispatchResizeEvent(in ODEventData theEvent);
+	ODBoolean DispatchActivateEvent(in ODEventData theEvent,in ODEventInfo eventInfo);
+	ODBoolean DispatchWindowEvent(in ODWindow theWindow,in ODEventData theEvent,in ODEventInfo  eventInfo);
+	ODBoolean DispatchToFacetUnderPoint(in ODWindow theWindow,in ODPoint windowPt,in ODEventData theEvent,in ODEventInfo  eventInfo);
+	ODBoolean DispatchTheEvent(in ODEventData theEvent,in ODFrame targetFrame,in ODFacet targetFacet,in ODEventInfo  eventInfo);
+	ODBoolean PropagateTheEvent(in ODEventData theEvent,in ODFrame initialFrame,in ODFacet initialFacet,in ODEventInfo  eventInfo);
+	ODBoolean SendToFocusOwner(in ODEventData theEvent,in ODEventInfo eventInfo,in ODTypeToken focusToken,in ODFacet facet);
+#endif 
+
+#ifdef __SOMIDL__
+	implementation
+	{
+		majorversion=1; 
+		minorversion=0;
+		dllname="odui.dll";
+
+		#ifdef __PRIVATE__
+		override: somInit,somUninit,Dispatch;
+		functionprefix=StdDispX_;
+		#endif
+
+		releaseorder:
+			InitStdX11DispatchModule,
+			IsContained,
+			GetActiveFacet,
+			GetFirstFacetUnderPoint,
+			AcquireODWindow,
+			DispatchMouseDownEvent,
+			DispatchMouseUpEvent,
+			DispatchMouseDownEmbedded,
+			DispatchMouseUpEmbedded,
+			DispatchMouseDownInContent,
+			DispatchMouseDownInBorder,
+			DispatchMouseMotionEvent,
+			DispatchMenuEvent,
+			DispatchKeyEvent,
+			DispatchUpdateEvent,
+			DispatchResizeEvent,
+			DispatchActivateEvent,
+			DispatchWindowEvent,
+			DispatchToFacetUnderPoint,
+			DispatchTheEvent,
+			PropagateTheEvent,
+			SendToFocusOwner;
+		#ifdef __PRIVATE__
+		ODSession fSession;
+		ODArbitrator fArbitrator;
+		ODWindowState fWindowState;
+		ODDispatcher fDispatcher;
+		ODTypeToken fKeyFocusToken;
+		ODTypeToken fMenuFocusToken;
+		ODTypeToken fSelectionFocusToken;
+		ODTypeToken fModalFocusToken;
+		ODTypeToken fMouseFocusToken;
+		ODTypeToken fScrollingFocusToken;
+		ODTypeToken fLargeIconViewToken;
+		ODTypeToken fSmallIconViewToken;
+		ODTypeToken fThumbnailViewToken;
+		ODFacet fMouseDownFacet;
+		ODFacet fEmbeddedFacet;
+		ODBoolean fSuppressMouseUp;
+		#endif
+	};
+#endif
+};
+
+#endif
+

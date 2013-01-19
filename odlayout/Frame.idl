@@ -1,0 +1,233 @@
+/**************************************************************************
+ *
+ *  Copyright 2008, Roger Brown
+ *
+ *  This file is part of Roger Brown's Toolkit.
+ *
+ *  This program is free software: you can redistribute it and/or modify it
+ *  under the terms of the GNU Lesser General Public License as published by the
+ *  Free Software Foundation, either version 3 of the License, or (at your
+ *  option) any later version.
+ * 
+ *  This program is distributed in the hope that it will be useful, but WITHOUT
+ *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ *  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ *  more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>
+ *
+ */
+
+/*
+ * $Id$
+ */
+
+#ifndef _FRAME_
+#define _FRAME_
+
+#include <PstObj.idl>
+
+#ifdef __PRIVATE__
+typedef somToken ODFrameFacetList;
+#endif
+
+interface ODFrame : ODPersistentObject
+{
+	ODFrame AcquireContainingFrame();
+	void SetContainingFrame(in ODFrame frame);
+	ODWindow AcquireWindow();
+	void SetWindow(in ODWindow window);
+	ODULong GetFrameGroup();
+	void SetFrameGroup(in ODULong groupID);
+	ODULong GetSequenceNumber();
+	void ChangeSequenceNumber(in ODULong sequenceNumber);
+	ODBoolean IsRoot();
+	ODBoolean IsSubframe();
+	void SetSubframe(in ODBoolean isSubframe);
+	ODBoolean IsOverlaid();
+	ODBoolean IsFrozen();
+	void SetFrozen(in ODBoolean isFrozen);
+	ODBoolean DoesPropagateEvents();
+	void SetPropagateEvents(in ODBoolean doesPropagate);
+	ODBoolean IsInLimbo();
+	void SetInLimbo(in ODBoolean isInLimbo);
+	ODPart AcquirePart();
+	void ChangePart(in ODPart part);
+	ODInfoType GetPartInfo();
+	void SetPartInfo(in ODInfoType partInfo);
+	ODTypeToken GetViewType();
+	void SetViewType(in ODTypeToken viewType);
+	void ChangeViewType(in ODTypeToken viewType);
+	ODTypeToken GetPresentation();
+	void SetPresentation(in ODTypeToken presentation);
+	void ChangePresentation(in ODTypeToken presentation);
+	void FacetAdded(in ODFacet facet);
+	void FacetRemoved(in ODFacet facet);
+	ODFrameFacetIterator CreateFacetIterator();
+	ODShape CreateShape();
+	ODShape AcquireFrameShape(in ODCanvas biasCanvas);
+	void ChangeFrameShape(in ODShape shape,in ODCanvas biasCanvas);
+	ODShape RequestFrameShape(in ODShape shape,in ODCanvas biasCanvas);
+	ODShape AcquireUsedShape(in ODCanvas biasCanvas);
+	void ChangeUsedShape(in ODShape shape,in ODCanvas biasCanvas);
+	ODTransform CreateTransform();
+	ODTransform AcquireInternalTransform(in ODCanvas biasCanvas);
+	void ChangeInternalTransform(in ODTransform transform,in ODCanvas biasCanvas);
+	void GetContentExtent(out ODPoint contentExtent);
+	void ChangeContentExtent(in ODPoint contentExtent);
+	ODBoolean IsDroppable();
+	void SetDroppable(in ODBoolean isDroppable);
+	ODBoolean IsDragging();
+	void SetDragging(in ODBoolean isDragging);
+	void ContentUpdated(in ODUpdateID change);
+	void ChangeLinkStatus(in ODLinkStatus status);
+	ODLinkStatus GetLinkStatus();
+	ODBoolean EditInLink();
+	void Invalidate(in ODShape invalidShape,in ODCanvas biasCanvas);
+	void Validate(in ODShape validShape,in ODCanvas biasCanvas);
+	void InvalidateActiveBorder();
+	void DrawActiveBorder();
+	void Close();
+	void Remove();
+
+#ifdef __PRIVATE__
+	ODFrameFacetList *GetFacets();
+	void PrepareToSwap(in ODPart part);
+	void SetDirty(in ODULong dirtyProperty);
+	void CommonInitFrame();
+	void InitFrame(in ODStorageUnit storageUnit,
+				in ODFrame containingFrame,
+				in ODShape frameShape,
+				in ODCanvas biasCanvas,
+				in ODPart part,
+				in ODTypeToken viewType,
+				in ODTypeToken presentation,
+				in ODBoolean isSubFrame,
+				in ODBoolean isOverlaid);
+	void InitFrameFromStorage(in ODStorageUnit su);
+	void InitFrameNonPersistent(in ODDraft draft,
+				in ODID id,
+				in ODFrame containingFrame,
+				in ODShape frameShape,
+				in ODCanvas biasCanvas,
+				in ODPart part,
+				in ODTypeToken viewType,
+				in ODTypeToken presentation,
+				in ODBoolean isSubFrame,
+				in ODBoolean isOverlaid);
+#endif
+
+#ifdef __SOMIDL__
+	implementation
+	{
+		majorversion=1;
+		minorversion=0;
+		dllname="odlayout.idl";
+	#ifdef __PRIVATE__
+		override:
+			somUninit,
+			Purge,	
+			Release,
+			ReleaseAll,
+			Externalize,
+			GetID,
+			CloneInto;
+		functionprefix="Frame_";
+		ODDraft fDraft;
+		ODID fNPID;
+		ODULong fDirty;
+		ODFrame fContainingFrame;
+		ODFrameFacetList fFacets;
+		ODWindow fWindow;
+		ODShape fFrameShape;
+		ODShape fUsedShape;
+		ODTransform fInternalTransform;
+		ODPoint fContentExtent;
+		ODPart fPart;
+		ODInfoType fPartInfo;
+		ODTypeToken fViewType;
+		ODTypeToken fPresentation;
+		ODULong fFrameGroup;
+		ODULong fSequenceNumber;
+		ODLinkStatus fLinkStatus;
+		ODBoolean fIsRoot;
+		ODBoolean fIsSubframe;
+		ODBoolean fIsOverlaid;
+		ODBoolean fIsFrozen;
+		ODBoolean fIsDroppable;
+		ODBoolean fIsDragging;
+		ODBoolean fDoesPropagateEvents;
+		ODBoolean fIsInLimbo;
+		ODUShort fValidState;
+	#endif
+		releaseorder:
+			AcquireContainingFrame,
+			SetContainingFrame,
+			AcquireWindow,
+			SetWindow,
+			GetFrameGroup,
+			SetFrameGroup,
+			GetSequenceNumber,
+			ChangeSequenceNumber,
+			IsRoot,
+			IsSubframe,
+			SetSubframe,
+			IsOverlaid,
+			IsFrozen,
+			SetFrozen,
+			DoesPropagateEvents,
+			SetPropagateEvents,
+			IsInLimbo,
+			SetInLimbo,
+			AcquirePart,
+			ChangePart,
+			GetPartInfo,
+			SetPartInfo,
+			GetViewType,
+			SetViewType,
+			ChangeViewType,
+			GetPresentation,
+			SetPresentation,
+			ChangePresentation,
+			FacetAdded,
+			FacetRemoved,
+			CreateFacetIterator,
+			CreateShape,
+			AcquireFrameShape,
+			ChangeFrameShape,
+			RequestFrameShape,
+			AcquireUsedShape,
+			ChangeUsedShape,
+			CreateTransform,
+			AcquireInternalTransform,
+			ChangeInternalTransform,
+			GetContentExtent,
+			ChangeContentExtent,
+			IsDroppable,
+			SetDroppable,
+			IsDragging,
+			SetDragging,
+			ContentUpdated,
+			ChangeLinkStatus,
+			GetLinkStatus,
+			EditInLink,
+			Invalidate,
+			Validate,
+			InvalidateActiveBorder,
+			DrawActiveBorder,
+			Close,
+			Remove,
+			GetFacets,
+			SetDirty,
+			CommonInitFrame,
+			InitFrame,
+			InitFrameFromStorage,
+			InitFrameNonPersistent,
+			PrepareToSwap;
+	};
+#endif
+
+};	
+
+#endif

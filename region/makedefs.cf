@@ -1,0 +1,3 @@
+NAME region
+DEPENDS config
+PROVIDES region

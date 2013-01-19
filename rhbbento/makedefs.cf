@@ -1,0 +1,3 @@
+NAME rhbbento
+DEPENDS buildenv
+PROVIDES rhbbento

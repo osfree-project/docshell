@@ -1,0 +1,71 @@
+/**************************************************************************
+ *
+ *  Copyright 2008, Roger Brown
+ *
+ *  This file is part of Roger Brown's Toolkit.
+ *
+ *  This program is free software: you can redistribute it and/or modify it
+ *  under the terms of the GNU Lesser General Public License as published by the
+ *  Free Software Foundation, either version 3 of the License, or (at your
+ *  option) any later version.
+ * 
+ *  This program is distributed in the hope that it will be useful, but WITHOUT
+ *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ *  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ *  more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>
+ *
+ */
+
+/*
+ * $Id$
+ */
+
+#ifndef _LINKSPCB_
+#define _LINKSPCB_
+
+#include <ODObject.idl>
+
+interface ODBaseLinkSpec;
+interface ODStorageUnit;
+#ifdef __PRIVATE__
+interface ODPart;
+#endif
+interface ODBaseLinkSpec : ODObject
+{
+	void WriteLinkSpec(in ODStorageUnit su);
+	void ReadLinkSpec(in ODStorageUnit su);
+#ifdef __PRIVATE__
+	void InitBaseLinkSpec(in ODPart part, in ODByteArray partData);
+	ODPart GetPart();
+	ODByteArray GetPartData();
+	ODBoolean FromThisDraft();
+#endif
+#ifdef __SOMIDL__
+	implementation
+	{
+		majorversion = 1; minorversion = 0;
+		dllname="oddatax.dll";
+#ifdef __PRIVATE__
+		functionprefix = LinkSpcB_;
+		override:
+			somInit,
+			somUninit;
+		ODPart		fPart;
+		ODByteArray	fPartData;
+#endif
+		releaseorder:
+			WriteLinkSpec,
+			ReadLinkSpec,
+			InitBaseLinkSpec,
+			GetPart,
+			GetPartData,
+			FromThisDraft;
+	};
+#endif
+};
+#endif
+
+

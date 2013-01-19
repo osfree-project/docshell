@@ -1,0 +1,3 @@
+NAME somutils
+PROVIDES somutils
+DEPENDS somtkcfg

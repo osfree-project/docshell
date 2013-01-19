@@ -1,0 +1,234 @@
+/**************************************************************************
+ *
+ *  Copyright 2008, Roger Brown
+ *
+ *  This file is part of Roger Brown's Toolkit.
+ *
+ *  This program is free software: you can redistribute it and/or modify it
+ *  under the terms of the GNU Lesser General Public License as published by the
+ *  Free Software Foundation, either version 3 of the License, or (at your
+ *  option) any later version.
+ * 
+ *  This program is distributed in the hope that it will be useful, but WITHOUT
+ *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ *  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ *  more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>
+ *
+ */
+
+/*
+ * $Id$
+ */
+
+#ifndef _WINDOW_
+#define _WINDOW_
+
+#include <RefCtObj.idl>
+#include <GeoTypes.idl>
+
+interface ODStorageUnit;
+interface ODDraft;
+
+#ifdef __PRIVATE__
+interface ODPart;
+interface ODShape;
+interface ODSession;
+interface ODArbitrator;
+typedef somToken CDropTarget;
+#endif
+
+interface ODWindow : ODRefCntObject
+{
+	ODPlatformWindow GetPlatformWindow();
+	ODFrame AcquireSourceFrame();
+	void SetSourceFrame(in ODFrame frame);
+	ODFrame GetRootFrame();
+	ODFacet GetFacetUnderPoint(in ODPoint aPoint);
+	ODBoolean IsActive();
+	void Open();
+	void Close();
+	void CloseAndRemove();
+	void Show();
+	void Hide();
+	ODBoolean IsShown();
+	ODBoolean IsResizable();
+	ODBoolean IsRootWindow();
+	ODBoolean ShouldSave();
+	void SetShouldSave(in ODBoolean shouldSave);
+	ODBoolean ShouldShowLinks();
+	void SetShouldShowLinks(in ODBoolean shouldShowLinks);
+	void AdjustWindowShape();
+	ODID GetID();
+	ODBoolean IsFloating();
+	ODFacet GetRootFacet();
+	void Select();
+	void Update();
+	ODBoolean ShouldDispose();
+#ifdef __PRIVATE__
+	void InitWindow(
+			in ODPlatformWindow platformWindow,
+			in ODType frameType,
+			in ODBoolean isRootWindow,
+			in ODBoolean isResizeable,
+			in ODBoolean isFloating,
+			in ODBoolean shouldSave,
+			in ODBoolean shouldDispose,
+			in ODPart rootPart,
+			in ODTypeToken viewType,
+			in ODTypeToken presentation,
+			in ODFrame sourceFrame);
+	void InitWindowForFrame(
+			in ODPlatformWindow platformWindow,
+			in ODFrame frame,
+			in ODBoolean isRootWindow,
+			in ODBoolean isResizeable,
+			in ODBoolean isFloating,
+			in ODBoolean shouldSave,
+			in ODBoolean shouldDispose,
+			in ODFrame sourceFrame);
+	void HandleActivateEvent(inout ODEventData theEvent,in ODEventInfo eventInfo);
+	void HandleUpdateEvent(inout ODEventData theEvent);
+	void UpdateWindow(inout ODEventData theEvent);
+	void Activate();
+	void SetWindowTitle(in string title);
+	void SetWasVisible(in ODBoolean wasVisible);
+	ODBoolean GetWasVisible();
+	void Externalize();
+	void SetID(in ODID windowID);
+	ODStorageUnit GetStorageUnit();
+	void SetStorageUnit(in ODStorageUnit su);
+	ODDraft GetDraft();
+	void CommonInitWindow();
+	void CreateRootFrame(
+			in ODType frameType,
+			in ODTypeToken viewType,
+			in ODTypeToken presentation,
+			in ODPart rootPart);
+	void CreateRootFacet();
+	void DrawActiveBorder(in ODFrame frame);
+	void GetWindowBounds(out ODRect bounds);
+	ODULong GetCreateFlags();
+	void InitWindowTitle();
+#ifdef _PLATFORM_X11_
+	Widget GetTopLevelShellWidget();
+	Widget GetMainWindowWidget();
+	Widget GetDrawingAreaWidget();
+	void SetRootChildWindow(in ODPlatformWindow rootChild);
+	ODPlatformWindow GetRootChildWindow();
+#endif
+#endif
+#ifdef __SOMIDL__
+	implementation
+	{
+		majorversion=1;
+		minorversion=0;
+		dllname="odui.dll";
+#ifdef __PRIVATE__
+		functionprefix="Window_";
+		override: somUninit,Release;
+		ODSession fSession;
+		ODFrame fSourceFrame;
+		ODPlatformWindow fPlatformWindow;
+		ODFrame fRootFrame;
+		ODFacet fRootFacet;
+		ODBoolean fIsRootWindow;
+		ODBoolean fShouldSave;
+		ODBoolean fShouldShowLinks;
+		ODBoolean fIsResizable;
+		ODBoolean fIsFloating;
+		ODBoolean fWasVisible;
+		ODArbitrator fArbitrator;
+		ODStorageUnit fStorageUnit;
+        ODBoolean fIsDirty;
+		ODDraft fDraft;
+		ODID fID;
+        ODBoolean fShouldAdjustOnOpen;
+        ODTypeToken fSelectionFocus;
+        ODBoolean fInBackground;
+        ODBoolean fIsActive;
+        ODBoolean fShouldDispose;
+
+#ifdef _PLATFORM_X11_
+		// This value will hold the immediate child of the root window.  It will
+		// be used when iterating over the desktop's Z-order.  Currently, the
+		// Motif window manager adds a couple of windows between the
+		// TopLevelShell widget which we will create and the RootWindow.
+		// Note that this value is only valid after running
+		// WindowState::ResetRootChildWindows within a particular request.
+		// This isn't designed to be used outside of Window and WinStat.
+		ODPlatformWindow  fRootChild;
+		Widget fTopLevelShellWidget;
+		Widget fMainWindowWidget;
+		Widget fDrawingAreaWidget;
+		ODBoolean fFocusInReceived;
+		string fTitle;
+#else
+		CDropTarget *dropTarget;
+#endif
+
+#endif
+		releaseorder:
+			GetPlatformWindow,
+			AcquireSourceFrame,
+			SetSourceFrame,
+			GetRootFrame,
+			GetFacetUnderPoint,
+			IsActive,
+			Open,
+			Close,
+			CloseAndRemove,
+			Show,
+			Hide,
+			IsShown,
+			IsResizable,
+			IsRootWindow,
+			ShouldSave,
+			SetShouldSave,
+			ShouldShowLinks,
+			SetShouldShowLinks,
+			AdjustWindowShape,
+			GetID,
+			IsFloating,
+			GetRootFacet,
+			Select,
+			Update,
+			ShouldDispose,
+			SetShouldDispose,
+			/* private items */
+			InitWindow,
+			InitWindowForFrame,
+			HandleActivateEvent,
+			HandleUpdateEvent,
+			Activate,
+			Deactivate,
+			SetWindowTitle,
+			SetWasVisible,
+			GetWasVisible,
+			Externalize,
+			SetID,
+			GetStorageUnit,
+			SetStorageUnit,
+			GetDraft,
+			CommonInitWindow,
+			CreateRootFrame,
+			CreateRootFacet,
+			DrawActiveBorder,
+			GetWindowBounds,
+			GetCreateFlags,
+			InitWindowTitle,
+	#ifdef _PLATFORM_X11_
+			GetTopLevelShellWidget,
+			GetMainWindowWidget,
+			GetDrawingAreaWidget,
+			SetRootChildWindow,
+			GetRootChildWindow,
+	#endif
+			UpdateWindow;
+	};
+#endif
+};
+
+#endif

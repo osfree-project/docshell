@@ -1,0 +1,3 @@
+NAME odshell
+DEPENDS odbento odbindng odsomuc
+PROVIDES odshell

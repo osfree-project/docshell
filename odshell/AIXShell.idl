@@ -1,0 +1,99 @@
+/**************************************************************************
+ *
+ *  Copyright 2008, Roger Brown
+ *
+ *  This file is part of Roger Brown's Toolkit.
+ *
+ *  This program is free software: you can redistribute it and/or modify it
+ *  under the terms of the GNU Lesser General Public License as published by the
+ *  Free Software Foundation, either version 3 of the License, or (at your
+ *  option) any later version.
+ * 
+ *  This program is distributed in the hope that it will be useful, but WITHOUT
+ *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ *  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ *  more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>
+ *
+ */
+
+/*
+ * $Id$
+ */
+
+#ifndef _AIXSHELL_
+#define _AIXSHELL_
+
+#include <somobj.idl>
+#include <AppShell.idl>
+#include <ODTypesM.idl>
+
+interface ODMenuBar;
+interface ODPopup;
+interface SOMEEMan;
+
+interface AIXShell :  ApplicationShell
+{
+    void CreateDocumentMenu(in ODMenuBar menuBar);
+    void CreateEditMenu(in ODMenuBar menuBar);
+    void CreateViewMenu(in ODMenuBar menuBar);
+    void CreateHelpMenu(in ODMenuBar menuBar);
+    void CreatePopupMenu(in ODPopup popupMenu);
+    ODPlatformMenu CreateDraftsSubmenu(in ODMenuBar menuBar);
+    ODPlatformMenu CreateLinksSubmenu(in ODMenuBar menuBar);
+    ODPlatformMenu CreateShowAsSubmenu(in ODMenuBar menuBar);
+    ODPlatformMenu CreateShowAsPopupSubmenu(in ODPopup popupMenu);
+    ODPlatformMenu CreateHelpPopupSubmenu(in ODPopup popupMenu);
+    void CreateMenuItem(in ODMenuBar menuBar, in ODMenuID menuID, 
+			in ODCommandID commandID, in ODULong messageID, 
+			in char *message);
+    void CreatePopupItem(in ODPopup popupMenu, in ODMenuID menuID, 
+			in ODCommandID commandID, in ODULong messageID, 
+			in char *message);
+
+#ifdef __SOMIDL__
+    implementation
+    {
+        majorversion = 1; 
+		minorversion = 0;
+		dllname="odshell.dll";
+#ifdef __PRIVATE__
+        functionprefix = AIXShell;
+		SOMEEMan fEMan;
+
+        override:
+			somUninit,
+            CreateMenuBar,
+            InitWindowSystem,
+            Exec,
+            MainLoop,
+            GetEventType,
+            GetEventSubType,
+            GetEventWindow,
+            DocumentClose,
+            CloseCleanup,
+			ConfirmCloseDlg,
+			ConfirmExitDlg,
+		    DispatchEvent;
+#endif
+        releaseorder:
+            CreateDocumentMenu,
+            CreateEditMenu,
+            CreateHelpMenu,
+			CreateDraftsSubmenu,
+			CreateLinksSubmenu,
+			CreateMenuItem,
+			CreateViewMenu,
+			CreateShowAsSubmenu,
+			CreateShowAsPopupSubmenu,
+            CreateHelpPopupSubmenu,
+			CreatePopupItem,
+			CreatePopupMenu;
+  };
+#endif
+};
+
+#endif 
+

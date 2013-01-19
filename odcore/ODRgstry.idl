@@ -1,0 +1,74 @@
+/**************************************************************************
+ *
+ *  Copyright 2008, Roger Brown
+ *
+ *  This file is part of Roger Brown's Toolkit.
+ *
+ *  This program is free software: you can redistribute it and/or modify it
+ *  under the terms of the GNU Lesser General Public License as published by the
+ *  Free Software Foundation, either version 3 of the License, or (at your
+ *  option) any later version.
+ * 
+ *  This program is distributed in the hope that it will be useful, but WITHOUT
+ *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ *  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ *  more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>
+ *
+ */
+
+/*
+ * $Id$
+ */
+
+#ifndef _ODREGISTRY_
+#define _ODREGISTRY_
+
+#ifndef _ODTYPESM_
+#include "ODTypesM.idl"
+#endif
+
+module OpenDoc_ODRegistry
+{
+	const string OpenDoc_ODRegistry_Version = "1.0.";
+};
+
+#if defined(__SOMIDL__) && defined(EMIT_GLOBAL_CONSTANTS)
+#pragma somemittypes on
+#endif
+
+const ODDescType	kODStandardPartTokenType =	0x70617274;
+const ODDescType	cPart =						0x70617274;
+const ODDescType	cDraft =					0x64726674;
+const ODDescType	kAEOpenDocSuite =	  		0x4F447374;
+const ODDescType	pBundled =					0x626E646C;
+const ODDescType	pShowLinks =				0x736C6E6B;
+const ODDescType	pViewType =					0x76777479;
+const ODDescType	enumViewType =				0x76777479;
+const ODDescType	kAEODFrame =				0x6672616D;
+const ODDescType	kAEODLargeIcon =			0x6C69636E;
+const ODDescType	kAEODSmallIcon =			0x7369636E;
+const ODDescType	kAEODThumbnail =			0x7468756D;	
+const ODDescType	pKind =						0x6B696E64;
+const ODDescType	pEditor =					0x65647472;
+const ODDescType	pComment =					0x636F6D74;
+const ODDescType	pStationery =				0x73746174;
+const ODDescType	pCategory =					0x70636174;
+const ODDescType	pSize =						0x73697A65;
+const ODDescType	pASCreationDate =			0x61736364;
+const ODDescType	pASModificationDate =		0x61736D6F;	 
+const ODDescType	pAuthor =					0x61757468;
+const ODDescType	pIcon =						0x69696D67;
+const ODDescType	cIconFamily =				0x6966616D;
+const ODDescType	pEditorName =				0x656E616D;
+const ODDescType	pUniqueID =					0x49442020;
+const ODDescType	pContainer =				0x63746E72;
+const ODDescType	typeUserToken = 			0x746F6B6E;
+
+#if defined(__SOMIDL__) && defined(EMIT_GLOBAL_CONSTANTS)
+#pragma somemittypes off
+#endif
+
+#endif

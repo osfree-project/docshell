@@ -1,0 +1,70 @@
+/**************************************************************************
+ *
+ *  Copyright 2008, Roger Brown
+ *
+ *  This file is part of Roger Brown's Toolkit.
+ *
+ *  This program is free software: you can redistribute it and/or modify it
+ *  under the terms of the GNU Lesser General Public License as published by the
+ *  Free Software Foundation, either version 3 of the License, or (at your
+ *  option) any later version.
+ * 
+ *  This program is distributed in the hope that it will be useful, but WITHOUT
+ *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ *  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ *  more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>
+ *
+ */
+
+/*
+ * $Id$
+ */
+
+#ifndef _FOCUSMOD_
+#define _FOCUSMOD_
+
+#include <ODObject.idl>
+
+interface  ODSession;
+interface  ODFrame;
+interface  ODFocusOwnerIterator;
+
+interface ODFocusModule : ODObject
+{
+	void InitFocusModule(in ODSession session);
+	ODBoolean IsFocusExclusive(in ODTypeToken focus);
+	void SetFocusOwnership(in ODTypeToken focus,in ODFrame frame);
+	void UnsetFocusOwnership(in ODTypeToken focus,in ODFrame frame);
+	void TransferFocusOwnership(in ODTypeToken focus,in ODFrame transferringFrame,in ODFrame newOwner);
+	ODFrame AcquireFocusOwner(in ODTypeToken focus);
+	ODFocusOwnerIterator CreateOwnerIterator(in ODTypeToken focus);
+	ODBoolean BeginRelinquishFocus(in ODTypeToken focus,in ODFrame requestingFrame);
+	void CommitRelinquishFocus(in ODTypeToken focus,in ODFrame requestingFrame);
+	void AbortRelinquishFocus(in ODTypeToken focus,in ODFrame requestingFrame);
+#ifdef __SOMIDL__
+	implementation
+  	{
+		majorversion=1; 
+		minorversion=0;	
+		dllname="odui.dll";
+#ifdef __PRIVATE__
+  		functionprefix=FocusMod_;
+#endif
+		releaseorder:
+			InitFocusModule,
+			IsFocusExclusive,
+			SetFocusOwnership,
+			UnsetFocusOwnership,
+			TransferFocusOwnership,
+			AcquireFocusOwner,
+			CreateOwnerIterator,
+			BeginRelinquishFocus,
+			CommitRelinquishFocus,
+			AbortRelinquishFocus;	
+  	};
+#endif
+};
+#endif

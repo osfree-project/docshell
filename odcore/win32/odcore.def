@@ -1,0 +1,83 @@
+;
+; Copyright 2008, Roger Brown
+;
+; This file is part of Roger Brown's Toolkit.
+;
+; This program is free software: you can redistribute it and/or modify it
+; under the terms of the GNU Lesser General Public License as published by the
+; Free Software Foundation, either version 3 of the License, or (at your
+; option) any later version.
+; 
+; This program is distributed in the hope that it will be useful, but WITHOUT
+; ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+; FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+; more details.
+;
+; You should have received a copy of the GNU Lesser General Public License
+; along with this program.  If not, see <http://www.gnu.org/licenses/>
+;
+; $Id$
+;
+
+LIBRARY		ODCORE
+VERSION 1.0
+
+EXPORTS
+	ODObjectNewClass
+	ODObjectClassData
+	ODObjectCClassData
+	ODRefCntObjectNewClass
+	ODRefCntObjectClassData
+	ODRefCntObjectCClassData
+	ODPersistentObjectNewClass
+	ODPersistentObjectClassData
+	ODPersistentObjectCClassData
+	ODBaseSessionNewClass
+	ODBaseSessionClassData
+	ODBaseSessionCClassData
+	ODSessionNewClass
+	ODSessionClassData
+	ODSessionCClassData
+	ODExtensionNewClass
+	ODExtensionClassData
+	ODExtensionCClassData
+	ODEmbeddedFramesIteratorClassData
+	ODEmbeddedFramesIteratorCClassData
+	ODEmbeddedFramesIteratorNewClass
+	ODPartClassData
+	ODPartCClassData
+	ODPartNewClass
+	M_ODPartClassData
+	M_ODPartCClassData
+	M_ODPartNewClass
+	ODInfoClassData
+	ODInfoCClassData
+	ODInfoNewClass
+	ODHelpClassData
+	ODHelpCClassData
+	ODHelpNewClass
+	ODValueIteratorClassData
+	ODValueIteratorCClassData
+	ODValueIteratorNewClass
+	ODObjectIteratorClassData
+	ODObjectIteratorCClassData
+	ODObjectIteratorNewClass
+	ODValueNameSpaceClassData
+	ODValueNameSpaceCClassData
+	ODValueNameSpaceNewClass
+	ODObjectNameSpaceClassData
+	ODObjectNameSpaceCClassData
+	ODObjectNameSpaceNewClass
+	ODNameSpaceNewClass
+	ODNameSpaceClassData
+	ODNameSpaceCClassData
+	ODNameSpaceManagerNewClass
+	ODNameSpaceManagerClassData
+	ODNameSpaceManagerCClassData
+	ODSettingsExtensionNewClass
+	ODSettingsExtensionClassData
+	ODSettingsExtensionCClassData
+	SOMInitModule		PRIVATE
+	DllMain				PRIVATE
+
+

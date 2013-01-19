@@ -1,0 +1,97 @@
+/**************************************************************************
+ *
+ *  Copyright 2008, Roger Brown
+ *
+ *  This file is part of Roger Brown's Toolkit.
+ *
+ *  This program is free software: you can redistribute it and/or modify it
+ *  under the terms of the GNU Lesser General Public License as published by the
+ *  Free Software Foundation, either version 3 of the License, or (at your
+ *  option) any later version.
+ * 
+ *  This program is distributed in the hope that it will be useful, but WITHOUT
+ *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ *  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ *  more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>
+ *
+ */
+
+/*
+ * $Id$
+ */
+
+#ifndef _ODSESSN_
+#define _ODSESSN_
+
+#include <ODSessnB.idl>
+
+interface ODHelp;
+interface OpenDocShell;
+interface ODPartHandlerRegistryInt; /* odregsty */
+
+#ifdef _PLATFORM_X11_ 
+typedef somToken XLinkInfoList;
+#endif
+
+interface ODSession : ODBaseSession
+{
+#ifdef _PLATFORM_WIN32_
+	void InitSession(in OpenDocShell shell);
+#else
+	void InitSession();
+#endif
+	void GetUserName(out string name);
+	ODUpdateID UniqueUpdateID();
+	ODHelp GetHelp();
+
+#ifdef _PLATFORM_X11_
+	XLinkInfoList * GetSessionLinkSrcList();
+	XLinkInfoList * GetSessionLinkDstList();
+#endif
+
+   ODPartHandlerRegistryInt GetRegistry();
+
+#ifdef __PRIVATE__
+   void SetRegistry(in ODPartHandlerRegistryInt registry);
+#endif
+
+#ifdef __SOMIDL__
+	implementation
+	{
+		majorversion=1;
+		minorversion=0;
+		dllname="odcore.dll";
+#ifdef __PRIVATE__
+		functionprefix="ODSessn_";
+		override: somUninit;
+		ODHelp fHelp;
+	 #ifdef _PLATFORM_X11_
+		XLinkInfoList*  SessionLinkSrcList;
+   		XLinkInfoList*  SessionLinkDstList;
+     #endif
+        ODPartHandlerRegistryInt fODRegistry;
+#endif
+       releaseorder:
+            UniqueUpdateID,
+            GetUserName,
+            InitSession,
+			GetHelp,
+		#ifdef _PLATFORM_X11_
+			GetSessionLinkSrcList,
+			GetSessionLinkDstList,
+		#endif
+			GetRegistry,
+			SetRegistry;
+
+#ifdef _PLATFORM_X11_ 
+		passthru C_h="typedef struct XLinkInfoList XLinkInfoList;";
+		passthru C_xh="class XLinkInfoList;";
+#endif
+	};
+#endif
+};
+
+#endif

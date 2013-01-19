@@ -1,0 +1,117 @@
+/**************************************************************************
+ *
+ *  Copyright 2008, Roger Brown
+ *
+ *  This file is part of Roger Brown's Toolkit.
+ *
+ *  This program is free software: you can redistribute it and/or modify it
+ *  under the terms of the GNU Lesser General Public License as published by the
+ *  Free Software Foundation, either version 3 of the License, or (at your
+ *  option) any later version.
+ * 
+ *  This program is distributed in the hope that it will be useful, but WITHOUT
+ *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ *  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ *  more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>
+ *
+ */
+
+/*
+ * $Id$
+ */
+
+#ifndef _X11PLATMENU_
+#define _X11PLATMENU_
+#include <ODObject.idl>
+
+interface ODPart;
+
+#ifdef __PRIVATE__
+typedef somToken ODX11PlatformMenu_private;
+#endif
+
+#if defined(_PLATFORM_X11_)
+interface ODX11PlatformMenu : ODObject
+{
+	void InitMenu(in ODMenuID id,in string menuLabel);
+	ODMenuID MenuID();
+	ODBoolean IsMenuEnabled();
+	void DisableMenu();
+	void EnableMenu();
+	ODPlatformMenu CopyMenu();
+	ODUShort GetMenuText(out string menuString);
+	ODBoolean SetMenuText(in string menuString);
+	ODUShort GetMenuItemText(in ODMenuItemID menuItemID,out string menuItemString);
+	ODBoolean SetMenuItemText(in ODMenuItemID menuItemID,in string menuItemString);
+	ODBoolean SetHideMenuItem(in ODMenuItemID menuItemID);
+	ODBoolean SetShowMenuItem(in ODMenuItemID menuItemID);
+	ODBoolean CheckMenuItem(in ODMenuItemID menuItemID,in ODBoolean check);
+	ODBoolean EnableMenuItem(in ODMenuItemID menuItemID,in ODBoolean enable);
+	ODBoolean AddMenuItemBefore(in ODMenuItemID subMenuID,in ODPlatformMenuItem menuItem,in ODMenuItemID beforeID);
+	ODBoolean AddMenuItemLast(in ODMenuItemID subMenuID,in ODPlatformMenuItem menuItem);
+	ODBoolean InsertSubmenu(in ODMenuItemID subMenuID,in ODPlatformMenu newSubmenu);
+	ODBoolean Exists(in ODMenuItemID menuItemID);
+	ODBoolean IsItemEnabled(in ODMenuItemID menuItemID);
+	ODBoolean IsItemChecked(in ODMenuItemID menuItemID);
+	ODBoolean RemoveMenuItem(in ODMenuItemID menuItemID);
+	ODBoolean GetMenuItem(in ODMenuItemID menuItemID,out ODPlatformMenuItem menuItem);
+	void SetMenuItemStatusText(in string menuItemStatusText);
+	void GetMenuItemStatusText(out string menuItemStatusText);
+#ifdef __PRIVATE__
+	void DisplayMenu(in Widget mbar);
+	ODPart GetPart();
+	void SetPart(in ODPart part);
+	void *GetX11PlatMenuItem(in ODMenuItemID menuItemID);
+#endif /* __PRIVATE__ */
+#ifdef __SOMIDL__
+	implementation
+	{
+		majorversion=1;
+		minorversion=0;
+		dllname="odui.dll";
+#ifdef __PRIVATE__
+		ODX11PlatformMenu_private fPrivate;
+		functionprefix="PltMenuX_";
+		override: somInit,somUninit;
+#endif /* __PRIVATE__ */
+		releaseorder:
+			InitMenu,
+			MenuID,
+			IsMenuEnabled,
+			DisableMenu,
+			EnableMenu,
+			CopyMenu,
+			GetMenuText,
+			SetMenuText,
+			GetMenuItemText,
+			SetMenuItemText,
+			SetHideMenuItem,
+			SetShowMenuItem,
+			CheckMenuItem,
+			EnableMenuItem,
+			AddMenuItemBefore,
+			AddMenuItemLast,
+			InsertSubmenu,
+			Exists,
+			IsItemEnabled,
+			IsItemChecked,
+			AddToAccelTable,
+			RestoreAccelTable,
+			RemoveMenuItem,
+			GetMenuItem,
+			SetMenuItemStatusText,
+			GetMenuItemStatusText,
+			DisplayMenu,
+			GetPart,
+			SetPart,
+			GetX11PlatMenuItem;
+	};
+#endif /* __SOMIDL__ */
+};
+#endif /* _PLATFORM_X11_ */
+
+#endif /* _X11PLATMENU_ */
+

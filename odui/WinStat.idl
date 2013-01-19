@@ -1,0 +1,240 @@
+/**************************************************************************
+ *
+ *  Copyright 2008, Roger Brown
+ *
+ *  This file is part of Roger Brown's Toolkit.
+ *
+ *  This program is free software: you can redistribute it and/or modify it
+ *  under the terms of the GNU Lesser General Public License as published by the
+ *  Free Software Foundation, either version 3 of the License, or (at your
+ *  option) any later version.
+ * 
+ *  This program is distributed in the hope that it will be useful, but WITHOUT
+ *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ *  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ *  more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>
+ *
+ */
+
+/*
+ * $Id$
+ */
+
+#ifndef _WINSTAT_
+#define _WINSTAT_
+
+#include <ODObject.idl>
+
+interface ODCanvas;
+interface ODDraft;
+interface ODMenuBar;
+interface ODPart;
+interface ODShape;
+interface ODTransform;
+interface ODWindow;
+interface ODWindowIterator;
+interface ODPopup;
+
+#ifdef __PRIVATE__
+interface ODSession;
+typedef somToken ODWindowList;
+typedef somToken ODWindowIteratorList;
+typedef unsigned short Atom;
+#endif
+
+interface ODWindowState : ODObject
+{
+	ODWindow RegisterWindow(in ODPlatformWindow newWindow,in ODType frameType,in ODBoolean isRootWindow,
+			in ODBoolean isResizable,in ODBoolean isFloating,in ODBoolean shouldSave,in ODBoolean shouldDispose,
+			in ODPart rootPart,in ODTypeToken viewType,in ODTypeToken presentation,in ODFrame sourceFrame);
+	ODWindow RegisterWindowForFrame(in ODPlatformWindow newWindow,in ODFrame frame,in ODBoolean isRootWindow,
+			in ODBoolean isResizeable,in ODBoolean isFloating,in ODBoolean shouldSave,in ODBoolean shouldDispose,
+			in ODFrame sourceFrame);
+	ODWindow AcquireWindow(in ODID id);
+	void Internalize(in ODDraft draft);
+	void Externalize(in ODDraft draft);
+	void SetDefaultWindowTitles(in ODDraft draft);
+	void OpenWindows(in ODDraft draft);
+	void CloseWindows(in ODDraft draft);
+	ODUShort GetWindowCount();
+	ODUShort GetRootWindowCount(in ODDraft draft);
+	ODUShort GetTotalRootWindowCount();
+	ODBoolean IsODWindow(in ODPlatformWindow aWindow);
+	ODWindow AcquireODWindow(in ODPlatformWindow aWindow);
+	ODWindowIterator CreateWindowIterator();
+	ODWindow AcquireActiveWindow();
+	void SetBaseMenuBar(in ODMenuBar theMenuBar);
+	ODMenuBar CopyBaseMenuBar();
+	void AdjustPartMenus();
+	ODPopup CreatePopupMenu(in ODPlatformMenuBar popupMenu);
+	ODMenuBar CreateMenuBar(in ODPlatformMenuBar menuBar);
+	ODCanvas CreateCanvas(in ODGraphicsSystem graphicsSystem,in ODPlatformCanvas platformCanvas,in ODBoolean isDynamic,in ODBoolean isOffScreen);
+	ODFacet CreateFacet(in ODFrame frame,in ODShape clipShape,in ODTransform externalTransform,in ODCanvas canvas,in ODCanvas biasCanvas);
+	ODMenuBar AcquireCurrentMenuBar();
+	ODMenuBar AcquireBaseMenuBar();
+	ODWindow AcquireFrontWindow();
+	ODWindow AcquireFrontFloatingWindow();
+	ODWindow AcquireFrontRootWindow();
+	void SetBasePopup(in ODPopup thePopup);
+	ODPopup CopyBasePopup();
+	ODPopup AcquireCurrentPopupMenu();
+	ODPopup AcquireBasePopupMenu();
+	ODPlatformWindow CreatePlatformWindow(in ODBoolean isFloating);
+
+#ifdef _PLATFORM_X11_
+	Display *GetDisplay();
+	Screen *GetScreen();
+	XtAppContext GetAppContext();
+#else
+    ODPopup CreatePopupMenuEx(in ODPlatformMenuBar popupMenu,in ODUShort subMenuIDcount,in ODMenuIDInfo* subMenuIDinfo);
+    ODMenuBar CreateMenuBarEx(in ODPlatformMenuBar  menuBar,in ODUShort subMenuIDcount,in ODMenuIDInfo* subMenuIDinfo);
+#endif
+
+#ifdef __PRIVATE__
+	void InitWindowState(in ODSession session);
+	void SetCurrentMenuBar(in ODMenuBar theMenuBar);
+	ODWindow AddWindow(in ODWindow window);
+	void RemoveWindow(in ODWindow oldWindow);
+	void ReleaseWindow(in ODWindow window);
+	void SelectODWindow(in ODWindow window);
+	void ShowODWindow(in ODWindow window);
+	void HideODWindow(in ODWindow window);
+	ODULong AddIterator(in ODWindowIterator iterator);
+	ODWindow First(in ODULong iteratorID);
+	ODWindow Next(in ODULong iteratorID);
+	ODWindow Last(in ODULong iteratorID);
+	ODWindow Previous(in ODULong iteratorID);
+	ODBoolean IsNotComplete(in ODULong iteratorID);
+	void RemoveIterator(in ODULong iteratorID);
+	void ActivateWindow(in ODPlatformWindow platformWindow);
+	void DeactivateWindow(in ODPlatformWindow platformWindow);
+	void HighlightAndActivateWindow(in ODPlatformWindow platformWindow);
+	ODPlatformWindow GetLastFloatingPlatformWindow();
+	ODPlatformWindow GetFrontNonFloatingPlatformWindow();
+	void SetCurrentPopUpMenu(in ODPopup thePopup);
+	void SetLongName(in string longname);
+	string GetLongName();
+#ifdef _PLATFORM_X11_
+	void ResetRootChildren(in ODBoolean entry);
+	ODBoolean IsODWindowRootChild(in ODPlatformWindow aWindow);
+	ODWindow AcquireODWindowRootChild(in ODPlatformWindow aWindow);
+	void SaveActiveWindow(in ODWindow window);
+#endif
+#endif
+
+#ifdef __SOMIDL__
+	implementation
+	{
+		majorversion=1;
+		minorversion=0;
+		dllname="odui.dll";
+#ifdef __PRIVATE__
+		functionprefix="WinStat_";
+		override: somUninit;
+		ODSession fSession;
+		ODWindowList fWindowList;
+		ODWindowIteratorList fIteratorList;
+		ODID fNextID;
+		ODMenuBar fBaseMenuBar;
+		ODMenuBar fCurrentMenuBar;
+		ODTypeToken fMenuFocus;
+		ODULong fIteratorCount;
+		ODBoolean fActivateOnOpen;
+		ODPopup fBasePopup;
+		ODPopup fCurrentPopupMenu;
+		char *fDocLongName;
+	#ifdef _PLATFORM_X11_
+		ODULong fResetRootEntryCount;
+		Display *fDisplay;
+		Screen *fScreen;
+		XtAppContext fAppContext;
+		Widget fApplicationShell;
+		ODWindow fActiveWindow;
+		Atom fMapNotifyProperty;
+	#endif
+#endif
+          releaseorder:
+            RegisterWindow,
+            RegisterWindowForFrame,
+            AcquireWindow,
+            Internalize,
+            Externalize,
+            SetDefaultWindowTitles,
+            OpenWindows,
+            CloseWindows,
+            GetWindowCount,
+            GetRootWindowCount,
+            GetTotalRootWindowCount,
+            IsODWindow,
+            AcquireODWindow,
+            CreateWindowIterator,
+            AcquireActiveWindow,
+            SetBaseMenuBar,
+            CopyBaseMenuBar,
+            AdjustPartMenus,
+    #ifdef _PLATFORM_WIN32_
+	        CreatePopupMenuEx,
+            CreateMenuBarEx,
+    #endif 
+            CreatePopupMenu,
+            CreateMenuBar,
+            CreateCanvas,
+            CreateFacet,
+            AcquireCurrentMenuBar,
+            AcquireBaseMenuBar,
+	#ifdef _PLATFORM_MACINTOSH_
+            DeactivateFrontWindows,
+            ActivateFrontWindows,
+	#endif
+            AcquireFrontWindow,
+            AcquireFrontFloatingWindow,
+            AcquireFrontRootWindow,
+            SetBasePopup,
+            CopyBasePopup,
+            AcquireCurrentPopupMenu,
+            AcquireBasePopupMenu,
+            CreatePlatformWindow,
+#ifdef _PLATFORM_X11_
+            GetDisplay,
+            GetScreen,
+            GetAppContext,
+#endif
+            InitWindowState,
+            SetCurrentMenuBar,
+            AddWindow,
+            RemoveWindow,
+            ReleaseWindow,
+            SelectODWindow,
+            ShowODWindow,
+            HideODWindow,
+            AddIterator,
+            First,
+            Next,
+            Last,
+            Previous,
+            IsNotComplete,
+            RemoveIterator,
+            ActivateWindow,
+            DeactivateWindow,
+            HighlightAndActivateWindow,
+            GetLastFloatingPlatformWindow,
+            GetFrontNonFloatingPlatformWindow,
+            SetCurrentPopUpMenu,
+            SetLongName,
+            GetLongName
+		#ifdef _PLATFORM_X11_
+            ,ResetRootChildren,
+            IsODWindowRootChild,
+            AcquireODWindowRootChild,
+            SaveActiveWindow;
+		#else
+			;
+		#endif
+   	};
+#endif
+};
+
+#endif

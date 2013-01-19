@@ -1,0 +1,107 @@
+/**************************************************************************
+ *
+ *  Copyright 2008, Roger Brown
+ *
+ *  This file is part of Roger Brown's Toolkit.
+ *
+ *  This program is free software: you can redistribute it and/or modify it
+ *  under the terms of the GNU Lesser General Public License as published by the
+ *  Free Software Foundation, either version 3 of the License, or (at your
+ *  option) any later version.
+ * 
+ *  This program is distributed in the hope that it will be useful, but WITHOUT
+ *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ *  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ *  more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>
+ *
+ */
+
+/*
+ * $Id$
+ */
+
+#ifndef _CANVASB_
+#define _CANVASB_
+
+#include <ODObject.idl>
+
+interface ODPart;
+interface ODShape;
+interface ODTransform;
+
+interface ODBaseCanvas : ODObject
+{
+	ODBoolean			HasPlatformCanvas(in ODGraphicsSystem g);
+	ODPlatformCanvas	GetPlatformCanvas(in ODGraphicsSystem g);
+	void				SetPlatformCanvas(in ODGraphicsSystem g,in ODPlatformCanvas c);
+	ODBoolean			HasPlatformPrintJob(in ODGraphicsSystem g);
+	ODPlatformPrintJob	GetPlatformPrintJob(in ODGraphicsSystem g);
+	void				SetPlatformPrintJob(in ODGraphicsSystem g,in ODPlatformPrintJob j);
+	ODPart				AcquireOwner();
+	void				SetOwner(in ODPart owner);
+	ODFacet				GetFacet();
+	void				SetFacet(in ODFacet facet);
+	ODTransform			AcquireBiasTransform();
+	void				SetBiasTransform(in ODTransform transform);
+	ODBoolean			IsDynamic();
+	ODBoolean			IsOffscreen();
+	ODShape				AcquireUpdateShape();
+	void				ResetUpdateShape();
+	void				Invalidate(in ODShape shape);
+	void				Validate(in ODShape shape);
+
+#ifdef __PRIVATE__
+	void				ComputeBiasTransform();
+	void				InitBaseCanvas(in ODBoolean isDynamic,in ODBoolean isOffScreen);
+#endif
+
+#ifdef __SOMIDL__
+	implementation
+	{
+		majorversion=1;
+		minorversion=0;
+		dllname="odimagng.dll";
+
+#ifdef __PRIVATE__
+		functionprefix="CanvasB_";
+		ODPart				fOwner;
+		ODFacet				fFacet;
+		ODShape				fUpdateShape;
+		ODTransform			fBiasTransform;
+		ODBoolean			fIsDynamic; 	
+		ODBoolean			fIsOffscreen;
+		ODGraphicsSystem	fPrintJobGraphicsSystem;
+		ODPlatformPrintJob	fPlatformPrintJob;
+		override:
+			somUninit;
+#endif
+
+		releaseorder:
+			HasPlatformCanvas,
+			GetPlatformCanvas,
+			SetPlatformCanvas,
+			HasPlatformPrintJob,
+			GetPlatformPrintJob,
+			SetPlatformPrintJob,
+			AcquireOwner,
+			SetOwner,
+			GetFacet,
+			SetFacet,
+			IsDynamic,
+			IsOffscreen,
+			AcquireUpdateShape,
+			ResetUpdateShape,
+			AcquireBiasTransform,
+			SetBiasTransform,
+			Invalidate,
+			Validate,
+			InitBaseCanvas,
+			ComputeBiasTransform;
+	};
+#endif
+};
+
+#endif

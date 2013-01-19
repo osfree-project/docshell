@@ -1,0 +1,234 @@
+/**************************************************************************
+ *
+ *  Copyright 2008, Roger Brown
+ *
+ *  This file is part of Roger Brown's Toolkit.
+ *
+ *  This program is free software: you can redistribute it and/or modify it
+ *  under the terms of the GNU Lesser General Public License as published by the
+ *  Free Software Foundation, either version 3 of the License, or (at your
+ *  option) any later version.
+ * 
+ *  This program is distributed in the hope that it will be useful, but WITHOUT
+ *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ *  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ *  more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>
+ *
+ */
+
+/*
+ * $Id$
+ */
+
+#ifndef _PART_
+#define _PART_
+
+#include <somcls.idl>
+#include <PstObj.idl>
+
+interface M_ODPart;
+interface ODPart;
+interface ODCanvas;
+interface ODDragItemIterator;
+interface ODEmbeddedFramesIterator;
+interface ODFacet;
+interface ODFrame;
+interface ODLink;
+interface ODLinkSource;
+interface ODObjectSpec;
+interface ODShape;
+interface ODStorageUnit;
+interface ODStorageUnitView;
+interface ODTypeList;
+
+interface M_ODPart : SOMClass
+{
+	ISOString              clsGetODPartHandlerName();
+	string                 clsGetODPartHandlerDisplayName();
+	sequence<PartKindInfo> clsGetODPartKinds();
+#ifdef _PLATFORM_WIN32_
+	string                 clsGetOLE2ClassId();
+	string                 clsGetWindowsIconFileName();
+#endif
+
+	#ifdef __SOMIDL__
+        implementation
+        {
+			dllname="odcore.dll";
+		#ifdef __PRIVATE__
+			functionprefix = "M_Part_";
+		#endif
+
+			releaseorder:
+				clsGetODPartHandlerName,
+				clsGetODPartHandlerDisplayName,
+				clsGetODPartKinds,
+				clsGetOLE2ClassId,
+				clsGetWindowsIconFileName;
+        };
+     #endif
+};
+
+interface ODPart : ODPersistentObject
+{
+	void InitPart(in ODStorageUnit storageUnit,in ODPart partWrapper);
+	void InitPartFromStorage(in ODStorageUnit storageUnit,in ODPart partWrapper);
+
+	void DisplayFrameAdded(in ODFrame frame);
+	void DisplayFrameRemoved(in ODFrame frame);
+	void DisplayFrameConnected(in ODFrame frame);
+	void DisplayFrameClosed(in ODFrame frame);
+	void AttachSourceFrame(in ODFrame frame,in ODFrame sourceFrame);
+	void FrameShapeChanged(in ODFrame frame);
+	void ViewTypeChanged(in ODFrame frame);
+	void PresentationChanged(in ODFrame frame);
+	void SequenceChanged(in ODFrame frame);
+	void LinkStatusChanged(in ODFrame frame);
+	void ContainingPartPropertiesUpdated(in ODFrame frame,in ODStorageUnit propertyUnit);
+	ODInfoType ReadPartInfo(in ODFrame frame,in ODStorageUnitView storageUnitView);
+	void WritePartInfo(in ODInfoType partInfo,in ODStorageUnitView storageUnitView);
+	void ClonePartInfo(in ODDraftKey key,in ODInfoType partInfo,in ODStorageUnitView storageUnitView,in ODFrame scope);
+	ODID Open(in ODFrame frame);
+
+	void Draw(in ODFacet facet,in ODShape invalidShape);
+	void FacetAdded(in ODFacet facet);
+	void FacetRemoved(in ODFacet facet);
+	void GeometryChanged(in ODFacet facet,in ODBoolean clipShapeChanged,in ODBoolean externalTransformChanged);
+	void HighlightChanged(in ODFacet facet);
+	void CanvasChanged(in ODFacet facet);
+	void CanvasUpdated(in ODCanvas canvas);
+	ODULong GetPrintResolution(in ODFrame frame);
+
+	ODBoolean BeginRelinquishFocus(in ODTypeToken focus,in ODFrame ownerFrame,in ODFrame proposedFrame);
+	void CommitRelinquishFocus(in ODTypeToken focus,in ODFrame ownerFrame,in ODFrame proposedFrame);
+	void AbortRelinquishFocus(in ODTypeToken focus,in ODFrame ownerFrame,in ODFrame proposedFrame);
+	void FocusAcquired(in ODTypeToken focus,in ODFrame ownerFrame);
+	void FocusLost(in ODTypeToken focus,in ODFrame ownerFrame);
+                  
+	void ExternalizeKinds(in ODTypeList kindset);
+	void ChangeKind(in ODType kind);
+
+	ODBoolean HandleEvent(inout ODEventData event,in ODFrame frame,in ODFacet facet,inout ODEventInfo eventInfo);
+	void AdjustMenus(in ODFrame frame);
+    
+	void UndoAction(in ODActionData actionState);
+	void RedoAction(in ODActionData actionState);
+	void DisposeActionState(in ODActionData actionState,in ODDoneState doneState);
+
+	void WriteActionState(in ODActionData actionState,in ODStorageUnitView storageUnitView);
+	ODActionData ReadActionState(in ODStorageUnitView storageUnitView);
+
+	void FulfillPromise(in ODStorageUnitView promiseSUView);
+	void DropCompleted(in ODPart destPart,in ODDropResult dropResult);
+	ODDragResult DragEnter(in ODDragItemIterator dragInfo,in ODFacet facet,in ODPoint where);
+	ODDragResult DragWithin(in ODDragItemIterator dragInfo,in ODFacet facet,in ODPoint where);
+	void DragLeave(in ODFacet facet,in ODPoint where);
+	ODDropResult Drop(in ODDragItemIterator dropInfo,in ODFacet facet,in ODPoint where);
+
+	ODLinkSource CreateLink(in ODByteArray data);
+	void RevealLink(in ODLinkSource linkSource);
+	void LinkUpdated(in ODLink updatedLink,in ODUpdateID change);
+
+	void EmbeddedFrameUpdated(in ODFrame frame,in ODUpdateID change);
+	ODBoolean EditInLinkAttempted(in ODFrame frame);
+
+	ODFrame RequestEmbeddedFrame(in ODFrame containingFrame,in ODFrame baseFrame,in ODShape frameShape,in ODPart embedPart,
+								 in ODTypeToken viewType,in ODTypeToken presentation,in ODBoolean isOverlaid);
+	void RemoveEmbeddedFrame(in ODFrame embeddedFrame);
+	ODShape RequestFrameShape(in ODFrame embeddedFrame,in ODShape frameShape);
+	void UsedShapeChanged(in ODFrame embeddedFrame);
+	ODShape AdjustBorderShape(in ODFacet embeddedFacet,in ODShape shape);
+	ODStorageUnit AcquireContainingPartProperties(in ODFrame frame);
+	ODBoolean RevealFrame(in ODFrame embeddedFrame,in ODShape revealShape);
+	void EmbeddedFrameSpec(in ODFrame embeddedFrame,in ODObjectSpec spec);
+	ODEmbeddedFramesIterator CreateEmbeddedFramesIterator(in ODFrame frame);
+
+	ODBoolean IsRealPart();   
+	ODPart GetRealPart();
+	void ReleaseRealPart();
+
+#ifdef __SOMIDL__
+	implementation
+	{
+		majorversion=1;
+		minorversion=0;
+		dllname="odcore.dll";
+		metaclass=M_ODPart;
+	#ifdef __PRIVATE__
+		functionprefix="Part_";
+		override:
+			somUninit,
+			CloneInto,
+			Externalize;
+	#endif
+		releaseorder:
+	        InitPart,
+	        InitPartFromStorage,
+	        DisplayFrameAdded,
+	        DisplayFrameRemoved,
+	        DisplayFrameConnected,
+	        DisplayFrameClosed,
+	        AttachSourceFrame,
+	        FrameShapeChanged,
+	        ViewTypeChanged,
+	        PresentationChanged,
+			SequenceChanged,
+	        LinkStatusChanged,
+	        ContainingPartPropertiesUpdated,
+	        ReadPartInfo,
+	        WritePartInfo,
+			ClonePartInfo,
+	        Open,
+	        Draw,
+	        FacetAdded,
+	        FacetRemoved,
+	        GeometryChanged,
+	        HighlightChanged,
+	        CanvasChanged,
+	        CanvasUpdated,
+	        GetPrintResolution,
+	        BeginRelinquishFocus,
+	        CommitRelinquishFocus,
+	        AbortRelinquishFocus,
+	        FocusAcquired,
+	        FocusLost,
+	        ExternalizeKinds,
+	        ChangeKind,
+	        HandleEvent,
+	        AdjustMenus,
+	        UndoAction,
+	        RedoAction,
+	        DisposeActionState,
+	        WriteActionState,
+	        ReadActionState,
+	        FulfillPromise,
+	        DropCompleted,
+	        DragEnter,
+	        DragWithin,
+	        DragLeave,
+	        Drop,
+	        CreateLink,
+	        RevealLink,
+	        LinkUpdated,
+	        EmbeddedFrameUpdated,
+			EditInLinkAttempted,
+	        RequestEmbeddedFrame,
+	        RemoveEmbeddedFrame,
+	        RequestFrameShape,
+	        UsedShapeChanged,
+	        AdjustBorderShape,
+	        AcquireContainingPartProperties,
+	        RevealFrame,
+	        EmbeddedFrameSpec,
+	        CreateEmbeddedFramesIterator,
+			IsRealPart,
+			GetRealPart,
+			ReleaseRealPart;
+	};
+#endif
+};
+
+#endif

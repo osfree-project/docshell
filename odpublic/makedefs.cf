@@ -1,0 +1,3 @@
+NAME odpublic
+PROVIDES odpublic
+DEPENDS somtkpkg somutils

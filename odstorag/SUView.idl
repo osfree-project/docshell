@@ -1,0 +1,136 @@
+/**************************************************************************
+ *
+ *  Copyright 2008, Roger Brown
+ *
+ *  This file is part of Roger Brown's Toolkit.
+ *
+ *  This program is free software: you can redistribute it and/or modify it
+ *  under the terms of the GNU Lesser General Public License as published by the
+ *  Free Software Foundation, either version 3 of the License, or (at your
+ *  option) any later version.
+ * 
+ *  This program is distributed in the hope that it will be useful, but WITHOUT
+ *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ *  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ *  more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>
+ *
+ */
+
+/*
+ * $Id$
+ */
+
+#ifndef _SUVIEW_
+#define _SUVIEW_
+
+#include <ODObject.idl>
+
+interface ODStorageUnit;
+interface ODStorageUnitCursor;
+interface ODDraft;
+interface ODStorageUnitRefIterator;
+interface ODPart;
+
+interface ODStorageUnitView : ODObject
+{
+	ODStorageUnit GetStorageUnit();
+	ODStorageUnitCursor GetCursor();
+	ODStorageUnitView Externalize();  
+	ODStorageUnitView Internalize();  
+	ODID GetID();      
+	ODStorageUnitName GetName();    
+	void SetName(in ODStorageUnitName name);
+	ODStorageUnitView AddProperty(in ODPropertyName propertyName);      
+	ODStorageUnitView AddValue(in ODValueType type);
+	ODStorageUnitView Remove();
+	void CloneInto(in ODDraftKey key,in ODStorageUnit destStorageUnit,in ODID scopeID);
+	ODPropertyName GetProperty();
+	ODValueType GetType();
+	void SetType(in ODValueType valueType);
+	void SetOffset(in ODULong offset);
+	ODULong GetOffset();
+	ODULong GetValue(in ODULong length,out ODByteArray value);
+	void SetValue(in ODByteArray value);
+	void InsertValue(in ODByteArray value);
+	void DeleteValue(in ODULong length);
+	ODULong GetSize();
+	ODBoolean IsValidStorageUnitRef(in ODStorageUnitRef ref);
+	void GetStrongStorageUnitRef(in ODStorageUnitID embeddedSUID,out ODStorageUnitRef strongRef);
+	void GetWeakStorageUnitRef(in ODStorageUnitID embeddedSUID,out ODStorageUnitRef weakRef);
+	ODBoolean IsStrongStorageUnitRef(in ODStorageUnitRef ref);
+	ODBoolean IsWeakStorageUnitRef(in ODStorageUnitRef ref);
+	ODStorageUnitView RemoveStorageUnitRef(in ODStorageUnitRef aRef);
+	ODStorageUnitID GetIDFromStorageUnitRef(in ODStorageUnitRef aRef);
+	ODStorageUnitRefIterator CreateStorageUnitRefIterator();
+	ODULong GetGenerationNumber();
+	ODULong IncrementGenerationNumber();
+	ODBoolean IsPromiseValue();
+	void SetPromiseValue(in ODValueType valueType,in ODULong offset,in ODByteArray value,in ODPart sourcePart);
+	ODULong GetPromiseValue(in ODValueType valueType,in ODULong offset,in ODULong length,out ODByteArray value,out ODPart sourcePart);
+
+#ifdef __PRIVATE__
+	void InitStorageUnitView(in ODStorageUnit storageUnit,in ODStorageUnitCursor cursor);
+	void Lock();
+	void Unlock();
+#endif
+
+#ifdef __SOMIDL__
+	implementation
+	{
+		majorversion=1; 
+		minorversion=0;
+		dllname="odstorag.dll";
+#ifdef __PRIVATE__
+	  	functionprefix=SUView_;
+		override: somUninit,Purge;
+		ODStorageUnit fSU;
+		ODStorageUnitCursor fCursor;
+		ODULong fOffset;
+		ODStorageUnitKey fKey;
+#endif
+		releaseorder:
+			InitStorageUnitView,
+			Lock,
+			Unlock,
+			GetStorageUnit,
+			GetCursor,
+			Externalize,
+			Internalize,
+			GetID,
+			GetName,
+			SetName,
+			AddProperty,
+			AddValue,
+			Remove,
+			CloneInto,
+			GetProperty,
+			GetType,
+			SetType,
+			SetOffset,
+			GetOffset,
+			GetValue,
+			SetValue,
+			InsertValue,
+			DeleteValue,
+			GetSize,
+			IsValidStorageUnitRef,
+			GetStrongStorageUnitRef,
+			GetWeakStorageUnitRef,
+			IsStrongStorageUnitRef,
+			IsWeakStorageUnitRef,
+			RemoveStorageUnitRef,
+			GetIDFromStorageUnitRef,
+			CreateStorageUnitRefIterator,
+			GetGenerationNumber,
+			IncrementGenerationNumber,
+			IsPromiseValue,
+			SetPromiseValue,
+			GetPromiseValue;
+	};
+#endif
+};
+
+#endif

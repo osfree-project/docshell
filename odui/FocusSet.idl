@@ -1,0 +1,79 @@
+/**************************************************************************
+ *
+ *  Copyright 2008, Roger Brown
+ *
+ *  This file is part of Roger Brown's Toolkit.
+ *
+ *  This program is free software: you can redistribute it and/or modify it
+ *  under the terms of the GNU Lesser General Public License as published by the
+ *  Free Software Foundation, either version 3 of the License, or (at your
+ *  option) any later version.
+ * 
+ *  This program is distributed in the hope that it will be useful, but WITHOUT
+ *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ *  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ *  more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>
+ *
+ */
+
+/*
+ * $Id$
+ */
+
+#ifndef _FOCUSSET_
+#define _FOCUSSET_
+
+#include <ODObject.idl>
+
+interface ODFocusSetIterator;
+
+#ifdef __PRIVATE__
+typedef somToken ODFocusSetIteratorList;
+#endif
+
+interface ODFocusSet : ODObject
+{
+	void Add(in ODTypeToken focus);
+	void Remove(in ODTypeToken focus);
+	ODBoolean Contains(in ODTypeToken focus);
+	ODFocusSetIterator  CreateIterator();
+#ifdef __PRIVATE__
+	void InitFocusSet();
+	ODULong AddIterator(in ODFocusSetIterator iterator);
+	ODTypeToken First(in ODULong iteratorID);
+	ODTypeToken Next(in ODULong iteratorID);
+	ODBoolean IsNotComplete(in ODULong iteratorID);
+	void RemoveIterator(in ODULong iteratorID);
+#endif
+
+#ifdef __SOMIDL__
+	implementation
+	{
+		majorversion=1; 
+		minorversion=0;
+		dllname="odui.dll";
+#ifdef __PRIVATE__
+		functionprefix=FocusSet_;
+		override:
+			somUninit;
+		ODFocusSetIteratorList fIterators;
+		sequence<ODTypeToken> fTokens;
+#endif			
+		releaseorder:
+			Add,
+			Remove,
+			Contains,
+			CreateIterator,
+			InitFocusSet,
+			AddIterator,
+			First,
+			Next,
+			IsNotComplete,
+			RemoveIterator;
+	};
+#endif
+};
+#endif

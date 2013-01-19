@@ -1,0 +1,161 @@
+/**************************************************************************
+ *
+ *  Copyright 2008, Roger Brown
+ *
+ *  This file is part of Roger Brown's Toolkit.
+ *
+ *  This program is free software: you can redistribute it and/or modify it
+ *  under the terms of the GNU Lesser General Public License as published by the
+ *  Free Software Foundation, either version 3 of the License, or (at your
+ *  option) any later version.
+ * 
+ *  This program is distributed in the hope that it will be useful, but WITHOUT
+ *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ *  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ *  more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>
+ *
+ */
+
+/*
+ * $Id$
+ */
+
+#ifndef _DRAFT_
+#define _DRAFT_
+
+#include <RefCtObj.idl>
+
+interface ODDocument;
+interface ODLink;
+interface ODLinkSpec;
+interface ODLinkSource;
+interface ODPersistentObject;
+interface ODLinkIterator;
+interface ODLinkSourceIterator;
+interface ODPartWrapper;
+
+interface ODDraft : ODRefCntObject
+{
+	ODDocument GetDocument();
+	ODDraftID GetID();
+	ODStorageUnit AcquireDraftProperties();
+	ODDraftPermissions GetPermissions();
+	ODStorageUnit CreateStorageUnit();
+	ODStorageUnit AcquireStorageUnit(in ODStorageUnitID id);
+	void RemoveStorageUnit(in ODStorageUnit storageUnit);
+	ODBoolean IsValidID(in ODID id);
+	ODDraftKey BeginClone(in ODDraft destDraft,in ODFrame destFrame,in ODCloneKind kind);
+	void EndClone(in ODDraftKey key);
+	void AbortClone(in ODDraftKey key);
+	ODID Clone(in ODDraftKey key,in ODID fromObjectID,in ODID toObjectID,in ODID scope);
+	ODID WeakClone(in ODDraftKey key,in ODID objectID,in ODID toObjectID,in ODID scope);
+	ODBoolean ChangedFromPrev();
+	void SetChangedFromPrev();
+	void RemoveFromDocument();
+	ODDraft RemoveChanges();
+	ODDraft Externalize();
+	ODDraft SaveToAPrevious(in ODDraft to);
+	ODFrame CreateFrame(in ODObjectType frameType,
+			    in ODFrame containingFrame,
+			    in ODShape frameShape,
+			    in ODCanvas biasCanvas,
+			    in ODPart part,
+       			    in ODTypeToken viewType,
+			    in ODTypeToken presentation,	
+			    in ODBoolean isSubframe,in ODBoolean isOverlaid);
+	ODFrame AcquireFrame(in ODStorageUnitID id);
+	void RemoveFrame(in ODFrame frame);
+	ODPart CreatePart(in ODType partType,in ODEditor optionalEditor);
+	ODPart AcquirePart(in ODStorageUnitID id);
+	void ReleasePart(in ODPart part);
+	void RemovePart(in ODPart part);
+	ODLinkSpec CreateLinkSpec(in ODPart part,in ODByteArray data);
+	ODLinkSource CreateLinkSource(in ODPart part);
+	ODLinkSource AcquireLinkSource(in ODStorageUnitID id);
+	ODLink AcquireLink(in ODStorageUnitID id,in ODLinkSpec linkSpec);
+	void RemoveLink(in ODLink link);
+	void RemoveLinkSource(in ODLinkSource link);
+	ODPersistentObjectID GetPersistentObjectID(in ODPersistentObject object,in ODObjectType objectType);
+	ODPersistentObject AcquirePersistentObject(in ODPersistentObjectID objectID,out ODObjectType objectType);
+
+#ifdef __PRIVATE__
+	void InitDraft(in ODDocument document,in ODDraftID id,in ODDraftPermissions perms);
+	void  ReleaseFrame(in ODFrame frame);
+	void  ReleaseLink(in ODLink link);
+	void  ReleaseLinkSource(in ODLinkSource link);
+	ODDraft ReleaseStorageUnit(in ODStorageUnitID id);
+	ODLinkIterator CreateLinkIterator();
+	ODLinkSourceIterator CreateLinkSourceIterator();
+	ODPart ConstructRealPart(in ODStorageUnit su,in ODBoolean isInitPartFromStorage,in ODPartWrapper partWrapper,in ODType partType,in ODEditor optionalEditor);
+	void ReleaseRealPart(in ODPart part);
+	void DeleteRealPart(in ODPart part);
+	void SwapPart(in ODPart part);
+#endif
+
+#ifdef __SOMIDL__
+	implementation
+	{
+		majorversion=1;
+		minorversion=0;
+		dllname="odstorag.dll";
+#ifdef __PRIVATE__
+		functionprefix=Draft_;
+		override: somUninit,Acquire,Release;
+#endif
+		releaseorder:
+			GetDocument,
+			GetID,
+			GetName,
+			SetName,
+			AcquireDraftProperties,
+			GetPermissions,
+			CreateStorageUnit,
+			AcquireStorageUnit,
+			RemoveStorageUnit,
+			BeginClone,
+			EndClone,
+			AbortClone,
+			Clone,
+			WeakClone,
+			ChangedFromPrev,
+			SetChangedFromPrev,
+			RemoveFromDocument,
+			RemoveChanges,
+			Externalize,
+			SaveToAPrevious,
+			CreateFrame,
+			AcquireFrame,
+			RemoveFrame,
+			CreatePart,
+			AcquirePart,
+			RemovePart,
+			CreateLinkSpec,
+			CreateLinkSource,
+			AcquireLinkSource,
+			AcquireLink,
+			RemoveLink,
+			RemoveLinkSource,
+			GetPersistentObjectID,
+			AcquirePersistentObject,
+			ReleasePart,
+			IsValidID,
+			InitDraft,
+			ReleaseFrame,
+			ReleaseLink,
+			ReleaseLinkSource,
+			ReleaseStorageUnit,
+			CreateLinkIterator,
+			CreateLinkSourceIterator,
+			ConstructRealPart,
+			ReleaseRealPart,
+			DeleteRealPart,
+			SwapPart;
+	};
+#endif				
+};
+
+
+#endif

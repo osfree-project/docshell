@@ -1,0 +1,191 @@
+/**************************************************************************
+ *
+ *  Copyright 2008, Roger Brown
+ *
+ *  This file is part of Roger Brown's Toolkit.
+ *
+ *  This program is free software: you can redistribute it and/or modify it
+ *  under the terms of the GNU Lesser General Public License as published by the
+ *  Free Software Foundation, either version 3 of the License, or (at your
+ *  option) any later version.
+ * 
+ *  This program is distributed in the hope that it will be useful, but WITHOUT
+ *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ *  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ *  more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>
+ *
+ */
+
+/*
+ * $Id$
+ */
+
+#ifndef _LINKSRC_
+#define _LINKSRC_
+
+#include <LinkSrcB.idl>
+
+interface  ODLinkSource;
+
+interface ODSession;
+interface ODStorageUnit;
+interface ODPart;
+interface ODLink;
+
+#ifdef __PRIVATE__
+	#ifdef _PLATFORM_MACINTOSH_
+		typedef somToken SectionHandle;
+		typedef somToken EditionContainerSpec;
+		typedef somToken FSSpec;  // THIS IS A BOGUS DEFINITION. DO NOT USE IN A FIELD!
+	#endif
+	#ifdef _PLATFORM_WIN32_
+		typedef somToken LPVOID;
+		typedef somToken OLEPromiseKeeper;
+		typedef somToken DWORD;
+		typedef somToken BOOL;
+/*		typedef somToken time_t;*/
+	#endif
+#endif
+
+interface ODLinkSource : ODBaseLinkSource
+{
+#ifdef __PRIVATE__
+    void InitLinkSource(in ODStorageUnit storageUnit,in ODPart sourcePart);
+    void InitLinkSourceFromStorage(in ODStorageUnit storageUnit);
+#ifdef _PLATFORM_MACINTOSH_
+    void UseLinkEdition(in EditionContainerSpec editionContainer,in FSSpec *documentSpec,in ODULong sectionID,in ODLinkKey key);
+    void ReadLinkEdition(in ODLinkKey key);
+#endif
+#ifdef _PLATFORM_WIN32_
+	#ifdef _PLATFORM_X11_
+	#else
+		void SetLocked( in ODBoolean locked );
+		ODBoolean GetLocked( );
+		ODLinkKey GetCurrentKey( );
+		void SetCurrentKey( in ODLinkKey key );
+		void UseMoniker( in void *pmkFull,in ODLinkKey   key);
+		void ReadMoniker(in ODLinkKey key);
+		BOOL StoreMoniker( in ODStorageUnit su,in ODPropertyName property,in LPVOID pmk );
+		void RestoreMoniker( in  ODStorageUnit  storageUnit,in ODPropertyName property,out LPVOID                     ppmk );
+		void OnClose( );
+		void OnDataChange( );
+		void OnRename(in LPVOID ppmk );
+	#endif
+#endif
+#if defined(_PLATFORM_MACINTOSH_)
+    void SetStatus(in ODError error);
+    ODError GetStatus();
+#endif
+	void CloneFromMemoryContainer(in ODStorageUnit contentSU,in ODHandle containerHandle);
+#if defined(_PLATFORM_MACINTOSH_) || defined(_PLATFORM_WIN32_)
+     void SetLinkSourceDirty();
+#endif
+#endif
+#ifdef __SOMIDL__
+	implementation
+	{
+		majorversion=1; minorversion=0;
+		dllname="oddatax.dll";
+        releaseorder:
+			InitLinkSource,
+			InitLinkSourceFromStorage,
+	#ifdef _PLATFORM_MACINTOSH_
+			UseLinkEdition,
+			ReadLinkEdition,
+			reservedC,
+			reservedD,
+			reservedE,
+			reservedF,
+			reservedG,
+			reservedH,
+			reservedI,
+			reservedJ,
+			reservedK,
+			reservedL,
+			reservedM,
+			SetStatus,
+			GetStatus,
+			SetLinkSourceDirty,
+	#else
+		#ifdef _PLATFORM_X11_
+			reservedA,
+			reservedB,
+			reservedC,
+			reservedD,
+			reservedE,
+			reservedF,
+			reservedG,
+			reservedH,
+			reservedI,
+			reservedJ,
+			reservedK,
+			reservedL,
+			reservedM,
+			reservedN,
+			reservedO,
+			reservedP,
+		#else
+			reservedA,
+			reservedB,
+			SetLinkSourceDirty,
+			SetLocked,
+			GetLocked,
+			GetCurrentKey,
+			SetCurrentKey,
+			UseMoniker,
+			ReadMoniker,
+			StoreMoniker,
+			RestoreMoniker,
+			OnClose,
+			OnDataChange,
+			OnRename,
+		#endif
+	#endif
+			CloneFromMemoryContainer;
+
+#ifdef __PRIVATE__
+		functionprefix = LinkSrc_;
+		override:
+			somUninit,
+			Release,
+			Externalize,
+			ReleaseAll,
+			CloneInto,
+			SetAutoUpdate,
+            ShowSourceContent,
+            SetSourcePart;
+	#ifdef _PLATFORM_MACINTOSH_
+		SectionHandle   fSection;
+	#endif
+		ODError                 fStatus;
+		ODBoolean               fDirty;
+	#ifdef _PLATFORM_X11_
+	#else
+		ODStorageUnit    fContentSU;     // storage unit containing link's content
+		ODTime           fChangeTime;    // date and time link was last updated
+		ODBoolean        fAutoUpdate;    // true if link should be exported on save
+		ODLink           fLink;          // associated link object
+		ODStorageUnit    fSourcePartSU;  // storage unit of source part
+		ODBoolean        fLocked;        // TRUE if we are locked
+		ODLinkKey        fCurrentKey;    // The current link key
+		LPVOID           fpmkFull;       // Full moniker of this link spec
+		LPVOID           fpmkRelative;   // Relative moniker of the link spec
+		LPVOID           fpDataObj;      // IDataObject for the link source
+		LPVOID           fpAdviseSink;   // Advise sink
+		DWORD            fdwConn;        // Advise holder connection id
+		ODBoolean        fSourceNeedsClosing; // we opened the source document and need to close
+		LPVOID           fSourceDocumentIPersistFile;   // interface pointer to source document
+		OLEPromiseKeeper *fPromiseKeeper;// Promise keeper object
+		ODSession        fSession;
+		ODULong                  fChangeCount;   // Anti-recursion measures...
+		ODULong                  fChangeLimit;
+		ODBoolean                fContentChanged;
+	#endif 
+#endif
+        };
+#endif
+};
+#endif

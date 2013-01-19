@@ -1,0 +1,111 @@
+/**************************************************************************
+ *
+ *  Copyright 2008, Roger Brown
+ *
+ *  This file is part of Roger Brown's Toolkit.
+ *
+ *  This program is free software: you can redistribute it and/or modify it
+ *  under the terms of the GNU Lesser General Public License as published by the
+ *  Free Software Foundation, either version 3 of the License, or (at your
+ *  option) any later version.
+ * 
+ *  This program is distributed in the hope that it will be useful, but WITHOUT
+ *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ *  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ *  more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>
+ *
+ */
+
+/*
+ * $Id$
+ */
+
+#ifndef _OPENDOCSHELL_
+#define _OPENDOCSHELL_
+
+#include <somobj.idl>
+
+#include <ODTypesM.idl>
+
+interface ODSession;
+interface ODWindowState;
+interface ODWindow;
+interface ODDispatcher;
+interface DocumentManager;
+interface ODDraft;
+interface somf_TPrimitiveLinkedListIterator;
+interface somf_TPrimitiveLinkedList;
+
+typedef somToken WindowSystemData;
+
+interface OpenDocShell :  SOMObject
+{
+    void InitOpenDocShell();
+    ODBoolean DispatchEvent(in ODEventData* event);
+    void Terminate();
+    DocumentManager CreateDocumentManager();
+    void DeleteDocumentManager(in DocumentManager docMgr);
+    DocumentManager UpdateActiveDocumentManager(in ODWindow odWindow);
+    DocumentManager GetActiveDocumentManager();
+    void SetActiveDocumentManager(in DocumentManager docMgr);
+    DocumentManager GetDocumentManagerOfDraft(in ODDraft draft);
+    somf_TPrimitiveLinkedListIterator  CreateDocumentManagerIterator();
+    void DeleteDocumentManagerIterator(in somf_TPrimitiveLinkedListIterator docMgrIter);
+    ODSession GetSession();
+    ODDispatcher GetDispatcher();
+    ODWindowState GetWindowState();
+    void SubClassResponsibility(in char *methodName);
+    WindowSystemData* GetWindowSystemData();
+    void SetWindowSystemData(in WindowSystemData* windowSystemData);
+    long GetArgc();
+    void SetArgc(in long argc);
+    char** GetArgv();
+    void SetArgv(in char** argv);
+
+#ifdef __SOMIDL__
+    implementation
+    {
+        majorversion=1; 
+		minorversion=0;
+		dllname="odshell.dll";
+#ifdef __PRIVATE__
+        functionprefix=ODShell_;
+        override: somUninit;
+        ODSession			fSession;
+        ODWindowState		fWindowState;
+		ODDispatcher		fDispatcher;
+        somf_TPrimitiveLinkedList	fDocumentManagerList;
+ /*       DocumentManager             fActiveDocumentManager; */
+        WindowSystemData            fWindowSystemData;
+        long			fArgc;
+        char**			fArgv;
+#endif
+        releaseorder:
+            InitOpenDocShell,
+            DispatchEvent,
+            Terminate,
+            CreateDocumentManager,
+            DeleteDocumentManager,
+            UpdateActiveDocumentManager,
+            GetActiveDocumentManager,
+            SetActiveDocumentManager,
+            CreateDocumentManagerIterator,
+            DeleteDocumentManagerIterator,
+            GetSession,
+            GetDispatcher,
+            GetWindowState,
+            SubClassResponsibility,
+            GetWindowSystemData,
+            SetWindowSystemData,
+            GetArgc,
+            SetArgc,
+            GetArgv,
+            SetArgv,
+            GetDocumentManagerOfDraft;
+	};
+#endif
+};
+#endif 

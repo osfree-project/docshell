@@ -1,0 +1,110 @@
+/**************************************************************************
+ *
+ *  Copyright 2008, Roger Brown
+ *
+ *  This file is part of Roger Brown's Toolkit.
+ *
+ *  This program is free software: you can redistribute it and/or modify it
+ *  under the terms of the GNU Lesser General Public License as published by the
+ *  Free Software Foundation, either version 3 of the License, or (at your
+ *  option) any later version.
+ * 
+ *  This program is distributed in the hope that it will be useful, but WITHOUT
+ *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ *  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ *  more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>
+ *
+ */
+
+/*
+ * $Id$
+ */
+
+#ifndef _ODTYPESB_
+#define _ODTYPESB_
+
+#include <somobj.idl>
+
+#ifdef __SOMIDL__
+	#ifdef EMIT_GLOBAL_TYPES
+		#pragma somemittypes on
+	#endif
+#endif
+
+typedef octet			ODUByte;
+typedef boolean			ODBoolean;
+typedef unsigned long	ODSize;
+typedef string			ODISOStr;
+typedef ODISOStr		ODType;
+typedef unsigned long	ODULong;
+typedef long			ODSLong;
+typedef short			ODSShort;
+typedef unsigned short  ODUShort;
+typedef ODULong			ODTypeToken;
+typedef ODULong			ODUpdateID;
+typedef ODULong			ODID;
+typedef ODULong			ODDraftKey;
+typedef ODULong			ODStorageUnitKey;
+typedef ODSShort		ODGraphicsSystem;
+typedef ODSShort		ODTransformType;
+typedef sequence<octet>	ODByteArray;
+typedef ODSLong			ODFixed;  /* 16:16 */
+typedef ODSLong			ODFract;  /* 2:30 */
+typedef ODSLong			ODError;
+typedef ODULong			ODLinkKey;
+typedef ODByteArray		ODActionData;
+typedef void *			ODPtr;
+typedef float			ODFloat;
+typedef ODULong			ODPositionCode;
+typedef ODID			ODDocumentID;
+typedef	ODID			ODDraftID;
+typedef	ODID			ODLinkID;
+typedef ODID			ODStorageUnitID;
+typedef ODID			ODValueIndex;
+typedef ODID			ODPersistentObjectID;
+typedef ODType			ODObjectType;
+typedef ODType			ODValueType;
+typedef ODBoolean		ODDragResult;
+typedef ODByteArray		ODContainerID;
+typedef ODISOStr		ODContainerType;
+typedef ODISOStr		ODPropertyName;
+typedef ODISOStr		ODStorageUnitName;
+typedef ODULong			ODPlatformTypeSpace;
+typedef ODType			ODFocusType;
+
+struct ODMatrix			{ ODFixed m[3][3]; };
+const	ODULong			kODStorageUnitRefSize=4;
+typedef ODUByte			ODStorageUnitRef[kODStorageUnitRefSize];
+
+/* various enums */
+
+enum ODFramePosition			{ kODFrameBehind, kODFrameInFront };
+enum ODDropResult				{ kODDropFail,kODDropCopy,kODDropMove,kODDropUnfinished } ;
+enum ODTraversalType			{ kODTopDown, kODBottomUp, kODChildrenOnly };
+enum ODSiblingOrder				{ kODFrontToBack, kODBackToFront };
+enum ODHighlight				{ kODNoHighlight, kODFullHighlight, kODDimHighlight };
+enum ODLinkStatus				{ kODInLinkDestination, kODInLinkSource, kODNotInLink };
+enum ODGeometryMode				{ kODLoseGeometry, kODPreserveGeometry,	kODNeedsGeometry };
+enum ODDoneState				{ kODDone, kODUndone, kODRedone };
+enum ODNSTypeSpec				{ kODNSDataTypeODObject, kODNSDataTypeODValue };
+/*enum ODDraftPermissionsConsts	{ kDPNone,kDPTransient,kDPReadOnly,kDPSharedWrite,kDPExclusiveWrite};
+enum ODCloneKindConsts			{ kODCloneCopy,kODCloneCut,kODClonePaste,kODCloneDuplicate,kODCloneDropCopy,kODCloneDropMove,kODCloneToLink,kODCloneFromLink,kODCloneAll};*/
+enum ODRespectMarksChoices		{ kODDontRespectMarks,kODRespectMarks };
+enum ODActionType				{ kODSingleAction,kODBeginAction,kODEndAction };
+enum ODTranslateResult			{ kODCannotTranslate,kODCanTranslate };
+enum ODPlatformCanvasType		{ kODNoPlatformCanvas,kODPlatformStandardCanvas,kODPlatformWindowCanvas };
+enum ODCloneKind				{ kODCloneCopy,kODCloneCut,kODClonePaste,kODCloneDropCopy,kODCloneDropMove,kODCloneToLink,kODCloneFromLink };
+enum ODDraftPermissions			{ kODDPNone,kODDPTransient,kODDPReadOnly,kODDPSharedWrite,kODDPExclusiveWrite };
+
+exception ODException {	ODError	error; char message[256]; };
+
+#ifdef __SOMIDL__
+	#ifdef EMIT_GLOBAL_TYPES
+		#pragma somemittypes off
+	#endif
+#endif
+
+#endif

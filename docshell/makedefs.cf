@@ -1,0 +1,3 @@
+NAME docshell
+DEPENDS odshell odlib
+PROVIDES docshell

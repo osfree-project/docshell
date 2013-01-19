@@ -1,0 +1,193 @@
+/**************************************************************************
+ *
+ *  Copyright 2008, Roger Brown
+ *
+ *  This file is part of Roger Brown's Toolkit.
+ *
+ *  This program is free software: you can redistribute it and/or modify it
+ *  under the terms of the GNU Lesser General Public License as published by the
+ *  Free Software Foundation, either version 3 of the License, or (at your
+ *  option) any later version.
+ * 
+ *  This program is distributed in the hope that it will be useful, but WITHOUT
+ *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ *  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ *  more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>
+ *
+ */
+
+/*
+ * $Id$
+ */
+
+#ifndef _DRAGDROP_
+#define _DRAGDROP_
+
+#include <ODObject.idl>
+#include <GeoTypes.idl>
+
+interface ODDragAndDrop;
+interface ODSession;
+interface ODPart;
+interface ODStorageUnit;
+interface ODFacet;
+interface ODFrame;
+interface ODDraft;
+interface ODStorageSystem;
+interface ODWindowState;
+interface ODPlatformDragReference;
+interface ODDragItemIterator;
+/*interface ODPoint;
+interface ODULong;
+interface ODRgnHandle;
+interface ODPlatformWindow;
+interface ODBoolean;
+*/
+
+#ifdef __PRIVATE__
+typedef somToken LinkedList;
+typedef somToken OpenHashTable;
+typedef somToken DWORD;
+typedef somToken LPVOID;
+typedef somToken POINTL;
+typedef somToken HGLOBAL;
+typedef somToken OLEPromiseKeeper;
+typedef somToken LPWRAPIDROPTARGET;		// temporary until OLE wrapper
+#endif
+
+interface ODDragAndDrop : ODObject
+{
+	void Clear();
+	ODStorageUnit GetContentStorageUnit();
+	ODDropResult StartDrag(in ODFrame srcFrame,in ODType imageType,in ODByteArray image,out ODPart destPart,in ODByteArray refCon);
+	ODBoolean ShowPasteAsDialog(in ODBoolean canPasteLink,in ODPasteAsMergeSetting	mergeSetting,in ODFacet facet,in ODTypeToken viewType,in ODStorageUnit contentSU,out ODPasteAsResult theResult);
+	ODULong GetDragAttributes();
+	ODPlatformDragReference GetDragReference();
+#ifdef __PRIVATE__
+	void InitDragAndDrop(in ODSession session);    
+	ODFacet FindTargetFacet(in ODPlatformWindow theWindow,in ODPoint mouse,out  ODPoint local);
+	LinkedList* GetDragItemList();
+	void SetDragItemList(in LinkedList* list);
+	ODBoolean GetListFromHandler();
+	void SetListFromHandler(in ODBoolean listFromHandler);
+	ODFrame	GetSourceFrame();
+	void SetSourceFrame(in ODFrame sourceFrame);
+	ODULong	GetAttributes();
+	void SetAttributes(in ODULong attr);
+	ODPart GetSourcePart();
+	void SetSourcePart(in ODPart sourcePart);
+	ODDragItemIterator GetDragItemIterator();
+	void SetDragItemIterator(in ODDragItemIterator iter);
+	ODSession GetSession();
+	ODStorageSystem GetStorageSystem();
+	void SetDragReference(in ODPlatformDragReference odPlatformDragReference);
+	ODFacet GetPrevFacet();
+	void SetPrevFacet(in ODFacet prevFacet);
+	ODFacet GetDestFacet();
+	void SetDestFacet(in ODFacet destFacet);
+	ODDropResult GetDropResult();
+	void SetDropResult(in ODDropResult dropResult);
+	void CanvasRequested(in ODBoolean bRequest);
+	void Locked(in ODBoolean bLock);
+	void DrawDrag(in ODULong EraseDraw);
+
+#ifdef _PLATFORM_X11_
+#else
+	#ifdef _PLATFORM_WIN32_
+		void ProcessDragOver(in  DWORD  grfKeyState,
+							 in  POINTL pt,
+							 out DWORD  pdwEffect,
+							 in  LPVOID pDataObj);
+		void ProcessDragLeave();
+		void ProcessDrop(in DWORD   grfKeyState,
+						 in POINTL  pt,
+						 out DWORD  pdwEffect);
+		void SetupDropTarget(in HWND hwnd);
+		HGLOBAL AllocDragItemList();
+		void FreeDragItemList(in HGLOBAL hGlobList);
+	#endif
+#endif
+
+	ODPoint GetDragOrigin();
+	ODULong GetDropKeyState();
+	void CloseAllDragItems();
+	void DraftClosing(in ODDraft draft);
+#endif
+#ifdef __SOMIDL__
+	implementation
+	{
+		majorversion=1; minorversion=0;
+		dllname="oddatax.dll";
+#ifdef __PRIVATE__
+		functionprefix = DragDrop_;
+		override:
+			somUninit;
+
+		ODSession					fSession;
+		ODWindowState				fWindowState;
+		ODStorageSystem				fStorageSystem;
+		LinkedList*					fDragItemList;
+		ODBoolean					fListFromHandler;
+		ODDragItemIterator			fDragItemIterator;
+		ODULong						fAttributes;
+		ODPlatformDragReference		fDragReference;
+		ODFacet						fPrevFacet;
+		ODFrame						fSourceFrame;
+		ODPart						fSourcePart;
+		ODFacet						fDestFacet;
+
+		ODBoolean					fHasLeftSourceFrame;
+		ODBoolean					fHasLeftSourcePart;
+
+		ODULong						fDropResult;
+#endif
+		releaseorder:
+			Clear,
+			GetContentStorageUnit,
+			StartDrag,
+			ShowPasteAsDialog,
+			GetDragAttributes,
+			GetDragReference,
+			InitDragAndDrop,
+			FindTargetFacet,
+			GetDragItemList,
+			SetDragItemList,
+			GetListFromHandler,
+			SetListFromHandler,
+			GetSourceFrame,
+			SetSourceFrame,
+			GetAttributes,
+			SetAttributes,
+			GetSourcePart,
+			SetSourcePart,
+			GetDragItemIterator,
+			SetDragItemIterator,
+			GetSession,
+			GetStorageSystem,
+			SetDragReference,
+			GetPrevFacet,
+			SetPrevFacet,
+			GetDestFacet,
+			SetDestFacet,
+			GetDropResult,
+			SetDropResult,
+			CanvasRequested,
+			Locked,
+			DrawDrag,
+			ProcessDragOver,
+			ProcessDragLeave,
+			ProcessDrop,
+			GetDragOrigin,
+			GetDropKeyState,
+			AllocDragItemList,
+			FreeDragItemList,
+			CloseAllDragItems,
+			SetupDropTarget,		// temporary until OLE wrapper
+			DraftClosing;
+	};
+#endif
+};
+#endif

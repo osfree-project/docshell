@@ -1,0 +1,3 @@
+NAME odlayout
+DEPENDS odimagng
+PROVIDES odlayout

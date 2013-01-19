@@ -1,0 +1,4 @@
+NAME odlib
+DEPENDS odshell odui odregsty odcore odbindng odstorag odlayout odimagng
+PROVIDES odlib
+ 

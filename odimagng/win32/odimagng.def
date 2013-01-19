@@ -1,0 +1,34 @@
+LIBRARY	ODIMAGNG
+VERSION 1.0
+
+EXPORTS
+	ODCanvasNewClass
+	ODCanvasClassData
+	ODCanvasCClassData
+	ODBaseCanvasNewClass
+	ODBaseCanvasClassData
+	ODBaseCanvasCClassData
+	ODWin32CanvasNewClass
+	ODWin32CanvasClassData
+	ODWin32CanvasCClassData
+	ODWin32WindowCanvasNewClass
+	ODWin32WindowCanvasClassData
+	ODWin32WindowCanvasCClassData
+	ODWin32StandardCanvasNewClass
+	ODWin32StandardCanvasClassData
+	ODWin32StandardCanvasCClassData
+	ODShapeNewClass
+	ODShapeClassData
+	ODShapeCClassData
+	ODBaseShapeNewClass
+	ODBaseShapeClassData
+	ODBaseShapeCClassData
+	ODTransformNewClass
+	ODTransformClassData
+	ODTransformCClassData
+	ODBaseTransformNewClass
+	ODBaseTransformClassData
+	ODBaseTransformCClassData
+	ODPlatformCanvasNewClass
+	ODPlatformCanvasClassData
+	ODPlatformCanvasCClassData

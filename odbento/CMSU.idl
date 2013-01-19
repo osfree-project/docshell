@@ -1,0 +1,167 @@
+/**************************************************************************
+ *
+ *  Copyright 2008, Roger Brown
+ *
+ *  This file is part of Roger Brown's Toolkit.
+ *
+ *  This program is free software: you can redistribute it and/or modify it
+ *  under the terms of the GNU Lesser General Public License as published by the
+ *  Free Software Foundation, either version 3 of the License, or (at your
+ *  option) any later version.
+ * 
+ *  This program is distributed in the hope that it will be useful, but WITHOUT
+ *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ *  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ *  more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>
+ *
+ */
+
+/*
+ * $Id$
+ */
+
+#ifdef __PRIVATE__
+
+#ifndef _CMSU_
+#define _CMSU_
+
+#include <StorageU.idl>
+
+interface	CMDraft;
+
+#ifdef __PRIVATE__
+typedef somToken CMContainer;
+typedef somToken CMValue;
+typedef somToken CMProperty;
+typedef somToken CMObject;
+typedef somToken CMObjectID;
+typedef somToken CMType;
+typedef somToken ODMemoryHeapID;
+typedef somToken PromiseResolver;
+typedef somToken SURefKeeper;
+typedef somToken SUCloneHelper;
+#endif
+
+interface CMStorageUnit :  ODStorageUnit 
+{
+#ifdef __PRIVATE__
+	void SetChangedFromPrevFlag(in ODBoolean changed);	
+	CMContainer	GetCMContainer();
+	void CleanupAndFail(in ODError	err);
+	void GetStorageUnitRef(in ODStorageUnitID embeddedSUID,in ODBoolean strong,out ODStorageUnitRef ref);																					
+	ODMemoryHeapID GetHeap();
+	ODID GetObjectID();
+	CMValue GetCurValue();
+	CMProperty GetCurProperty();
+	CMType GetCurType();
+	void SetCurType(in CMType curType);
+	CMObject GetObject();
+#endif
+
+#ifdef __SOMIDL__
+	implementation
+	{
+		majorversion=1; minorversion=0;
+		dllname="odbento.dll";
+		releaseorder:
+			SetChangedFromPrevFlag,
+			GetCMContainer,
+			CleanupAndFail,
+			GetStorageUnitRef,
+			GetHeap,
+			GetObjectID,
+			GetCurValue,
+			GetCurProperty,
+			GetCurType,
+			SetCurType,
+			GetObject;
+#ifdef __PRIVATE__
+	  	functionprefix = CMSU_;
+		override:
+			somUninit,
+			Acquire,
+			Release,
+			Purge,
+			InitStorageUnit,
+			GetDraft,
+			GetSession,
+			Exists,
+			ExistsWithCursor,
+			CountProperties,
+			CountValues,
+			Focus,
+			FocusWithCursor,
+			Externalize,
+			Internalize,
+			GetID,
+			GetName,
+			SetName,
+			AddProperty,
+			AddValue,
+			Remove,
+			CloneInto,
+			CreateView,
+			CreateCursor,
+			CreateCursorWithFocus,
+			GetProperty,
+			GetType,
+			SetType,
+			SetOffset,
+			GetOffset,
+			GetValue,
+			SetValue,
+			InsertValue,
+			DeleteValue,
+			GetSize,
+			IsValidStorageUnitRef,
+			GetStrongStorageUnitRef,
+			GetWeakStorageUnitRef,
+			IsStrongStorageUnitRef,
+			IsWeakStorageUnitRef,
+			RemoveStorageUnitRef,
+			GetIDFromStorageUnitRef,
+			CreateStorageUnitRefIterator,
+			SetStorageUnitRef,
+			GetGenerationNumber,
+			IncrementGenerationNumber,
+			IsPromiseValue,
+			SetPromiseValue,
+			GetPromiseValue,
+			ClearAllPromises,
+			ResolveAllPromises,
+			Lock,
+			Unlock;
+
+		CMContainer			fCMContainer;
+		CMObject			fObject;
+		CMDraft				fDraft;
+		ODStorageUnitID		fID;	
+		CMObjectID			fObjectID;
+		CMProperty			fCurProperty;
+		ODBoolean			fHasPropertyLooped;
+		ODValueIndex		fCurValueIndex;
+		CMValue				fCurValue;
+		ODValueType			fCurValueType;
+		ODULong				fOffset;
+		CMType				fCurType;
+		ODBoolean			fHasValueLooped;		
+		ODULong				fCurrentKey;
+		ODULong				fLockCount;	
+		ODULong				fCurrentSURef;
+		ODMemoryHeapID		fHeap;
+		PromiseResolver*	fPromiseResolver;
+		SURefKeeper 		fSURefKeeper;
+		SUCloneHelper*		fSUCloneHelper;
+		ODTime				fModificationDate;		
+		ODBoolean			fDirty;
+#endif
+	};
+#endif
+};
+
+#endif 
+
+#endif

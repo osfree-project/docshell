@@ -1,0 +1,79 @@
+/**************************************************************************
+ *
+ *  Copyright 2008, Roger Brown
+ *
+ *  This file is part of Roger Brown's Toolkit.
+ *
+ *  This program is free software: you can redistribute it and/or modify it
+ *  under the terms of the GNU Lesser General Public License as published by the
+ *  Free Software Foundation, either version 3 of the License, or (at your
+ *  option) any later version.
+ * 
+ *  This program is distributed in the hope that it will be useful, but WITHOUT
+ *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ *  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ *  more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>
+ *
+ */
+
+/*
+ * $Id$
+ */
+
+#ifndef _DOCUMENT_
+#define _DOCUMENT_
+
+#include <RefCtObj.idl>
+
+interface ODContainer;
+
+interface ODDocument : ODRefCntObject
+{
+	ODContainer GetContainer();
+	ODDocumentID GetID();
+	ODDocumentName GetName();
+	void SetName(in ODDocumentName name);
+	ODDocument CollapseDrafts(in ODDraft form,in ODDraft to);
+	ODDraft AcquireDraft(in ODDraftPermissions perms,in ODDraftID id,in ODDraft draft, in ODPositionCode posCode,in ODBoolean release);
+	ODBoolean Exists(in ODDraftID id,in ODDraft draft,in ODPositionCode posCode);
+	ODDraft AcquireBaseDraft(in ODDraftPermissions perms);
+	ODDraft CreateDraft(in ODDraft below,in ODBoolean releaseBelow);
+	void SaveToAPrevDraft(in ODDraft from,in ODDraft to);
+	void SetBaseDraftFromForeignDraft(in ODDraft draft);
+#ifdef __PRIVATE__
+	void InitDocument(in ODContainer container,in ODDocumentID id);
+	ODDocument ReleaseDraft( in ODDraft draft);
+#endif
+
+#ifdef __SOMIDL__
+	implementation
+	{
+		majorversion=1; 
+		minorversion=0;
+		dllname="odstorag.dll";
+#ifdef __PRIVATE__
+		override: somUninit,Acquire,Release;
+		functionprefix=Document_;
+#endif
+		releaseorder:
+			GetContainer,
+			GetID,
+			GetName,
+			SetName,
+			CollapseDrafts,
+			AcquireDraft,
+			Exists,
+			AcquireBaseDraft,
+			CreateDraft,
+			SaveToAPrevDraft,
+			SetBaseDraftFromForeignDraft,
+			InitDocument,
+			ReleaseDraft;
+	};
+#endif
+};
+
+#endif

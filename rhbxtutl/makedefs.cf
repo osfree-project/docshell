@@ -1,0 +1,3 @@
+NAME rhbxtutl
+DEPENDS buildenv region rhbxtw32 rhbmenus
+PROVIDES rhbxtutl

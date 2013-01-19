@@ -1,0 +1,248 @@
+/**************************************************************************
+ *
+ *  Copyright 2008, Roger Brown
+ *
+ *  This file is part of Roger Brown's Toolkit.
+ *
+ *  This program is free software: you can redistribute it and/or modify it
+ *  under the terms of the GNU Lesser General Public License as published by the
+ *  Free Software Foundation, either version 3 of the License, or (at your
+ *  option) any later version.
+ * 
+ *  This program is distributed in the hope that it will be useful, but WITHOUT
+ *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ *  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ *  more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>
+ *
+ */
+
+/*
+ * $Id$
+ */
+
+#ifdef __PRIVATE__
+
+#ifndef _CMDRAFT_
+#define _CMDRAFT_
+
+#include <Draft.idl>
+
+interface ODPersistentObject;
+interface ODLink;
+interface ODLinkSource;
+interface CMDocument;
+interface ODEmbeddedContainer;
+interface CMLinkIterator;
+interface CMLinkSourceIterator;
+interface ODStorageUnit;
+
+#ifdef __PRIVATE__
+typedef somToken OpenHashTable;
+typedef somToken IDList;
+typedef somToken CMContainer;
+typedef somToken VersionList;
+typedef somToken ODMemoryHeapID;
+typedef somToken ODVersionID;
+#endif
+
+interface CMDraft :  ODDraft
+{
+#ifdef __PRIVATE__
+	ODStorageUnit CreateSU(in ODStorageUnitID id,in ODType suType);
+	void CreateVersion();
+	void OpenVersion();
+	void CloseVersion();
+	void DestroyVersion();
+	void FlushVersion();
+	ODPersistentObject RetrievePersistentObject(in ODStorageUnitID id);
+	void ReleasePersistentObject(in ODPersistentObject object);
+	void RemovePersistentObject(in ODPersistentObject object);
+	void CreateCollections();
+	void DeleteCollections();
+	void ExternalizeCollections();
+	void CloseCollections();
+	void OpenCollections();
+	ODBoolean AreEmptyCollections();
+	void FailIfNotExclusiveWrite();
+	ODLink CreateLink();
+	ODID StrongClone(in ODDraftKey key, in ODID fromObjectID, in ODID toObjectID, in ODID scope);
+	ODBoolean ValidWeakReferenceProperty(in ODID objectID, in ODPropertyName propertyName);
+	void SetOriginalID(in ODStorageUnitID destID, in ODStorageUnitID originalID);
+	ODStorageUnitID GetOriginalID(in ODStorageUnitID fromID);
+	ODID CloneCompanionObject(in ODDraftKey key, in ODID fromID);
+	ODBoolean CompanionWasCloned(in ODStorageUnitID fromID, in ODPropertyName prop);
+	ODCloneKind	GetCloneKind();
+	ODBoolean CopiedLinkSubstitution(in ODDraftKey key, in ODID fromObjectID, in ODID toObjectID, out ODID toID);
+	ODBoolean ContainingPartInClone(in ODFrame targetFrame);
+	void CheckClonedObject(in ODID fromID, in ODID toID, in ODID originalID);
+	void PartInstantiated(in ODPart part);
+	void PartDeleted(in ODPart part);
+	void SetChangedFromPrevFlag(in ODBoolean changed);
+	IDList*	GetIDList();
+	void Reinitialize(in ODDraftPermissions perms);
+	void Open();
+	void Close();
+	void Abort();
+	void Flush();
+	ODBoolean IsNewDraft();
+	ODEmbeddedContainer	GetEmbeddedContainer();
+	CMContainer	GetCMContainer();
+	ODBoolean NeedExternalizing();
+	ODBoolean IsChangedFromPrev(in VersionList* versionList);
+	OpenHashTable* GetClonedSUIDs(in ODDraft destDraft);
+	ODBoolean IsValidDraftKey(in ODDraftKey key);
+	ODMemoryHeapID GetHeap();
+#endif
+
+#ifdef __SOMIDL__
+  implementation
+  {
+	majorversion = 1; minorversion = 0;
+		dllname="odbento.dll";
+#ifdef __PRIVATE__
+  	functionprefix = CMDraft;
+    override:
+		somUninit,
+        Acquire,
+        Release,
+		Purge,
+        GetDocument,
+        GetID,
+        AcquireDraftProperties,
+        GetPermissions,
+        CreateStorageUnit,
+        AcquireStorageUnit,
+        RemoveStorageUnit,
+        BeginClone,
+        EndClone,
+        AbortClone,
+        Clone,
+        WeakClone,
+        ChangedFromPrev,
+        SetChangedFromPrev,
+        RemoveFromDocument,
+        RemoveChanges,
+        Externalize,
+        SaveToAPrevious,
+        CreateFrame,
+        AcquireFrame,
+        RemoveFrame,
+        CreatePart,
+        AcquirePart,
+        RemovePart,
+        CreateLinkSpec,
+        CreateLinkSource,
+        AcquireLinkSource,
+        AcquireLink,
+        RemoveLink,
+        RemoveLinkSource,
+        GetPersistentObjectID,
+		AcquirePersistentObject,
+        ReleasePart,
+        IsValidID,
+		InitDraft,
+		ReleaseFrame,
+		ReleaseLink,
+		ReleaseLinkSource,
+		ReleaseStorageUnit,
+		CreateLinkIterator,
+		CreateLinkSourceIterator,
+		ConstructRealPart,
+		ReleaseRealPart,
+		DeleteRealPart,
+		SwapPart;
+#endif		
+	releaseorder:
+			CreateSU,
+			CreateVersion,
+			OpenVersion,
+			CloseVersion,
+			DestroyVersion,
+			FlushVersion,
+			RetrievePersistentObject,
+			ReleasePersistentObject,
+			RemovePersistentObject,
+			CreateCollections,
+			DeleteCollections,
+			ExternalizeCollections,
+			CloseCollections,
+			OpenCollections,
+			AreEmptyCollections,
+			FailIfNotExclusiveWrite,
+			CreateLink,
+			SetChangedFromPrevFlag,
+			GetIDList,
+			Reinitialize,
+			Open,
+			Close,
+			Abort,
+			Flush,
+			IsNewDraft,
+			GetEmbeddedContainer,
+			GetCMContainer,
+			NeedExternalizing,
+			IsChangedFromPrev,
+			GetClonedSUIDs,
+			IsValidDraftKey,
+			GetHeap,
+			StrongClone,
+			ValidWeakReferenceProperty,
+			SetOriginalID,
+			GetOriginalID,
+			CloneCompanionObject,
+			CompanionWasCloned,
+			GetCloneKind,
+			CopiedLinkSubstitution,
+			ContainingPartInClone,
+			CheckClonedObject,
+			PartInstantiated,
+            PartDeleted;
+
+	#ifdef __PRIVATE__
+		CMDocument				fDocument;
+		ODDraftID				fID;
+		ODVersionID				fVersionID;
+		ODVersionID				fPrevVersionID;
+			
+		ODDraftPermissions		fPermissions;
+		ODEmbeddedContainer		fEmbeddedContainer;
+		ODBoolean				fChangedFromPrev;
+		ODBoolean				fIsNewDraft;
+		ODBoolean				fExternalized;
+		ODBoolean				fRemoveChangeOnAbort;
+	
+		OpenHashTable*			fPersistentObjects;
+		OpenHashTable*			fReleasedPersistentObjects;
+		OpenHashTable*			fStorageUnits;
+		OpenHashTable*			fReleasedStorageUnits;
+		
+		IDList*					fIDList;
+		ODStorageUnit			fDraftProperties;
+		
+		OpenHashTable*			fClonedSUIDs;
+		OpenHashTable*			fWeakClonedSUIDs;
+		OpenHashTable*			fSavedWeakClonedSUIDs;
+		ODDraft					fDestDraft;
+		ODFrame					fDestFrame;
+		ODDraftKey				fCurrentKey;
+		ODULong					fLockCount;
+		ODCloneKind				fCloneKind;
+		ODBoolean				fAnyFrameCloned;
+		ODBoolean				fRootPartReused;
+	
+		ODDraftID				fOrigTopVersionDraftID;
+	
+		ODMemoryHeapID			fHeap;
+		
+		OpenHashTable*			fPartClasses;
+	#endif
+  };
+#endif
+};
+
+#endif
+
+#endif

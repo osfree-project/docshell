@@ -1,0 +1,248 @@
+/**************************************************************************
+ *
+ *  Copyright 2008, Roger Brown
+ *
+ *  This file is part of Roger Brown's Toolkit.
+ *
+ *  This program is free software: you can redistribute it and/or modify it
+ *  under the terms of the GNU Lesser General Public License as published by the
+ *  Free Software Foundation, either version 3 of the License, or (at your
+ *  option) any later version.
+ * 
+ *  This program is distributed in the hope that it will be useful, but WITHOUT
+ *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ *  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ *  more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>
+ *
+ */
+
+/*
+ * $Id$
+ */
+
+#ifndef _ODTYPESM_
+#define _ODTYPESM_
+
+#include <somobj.idl>
+#include <ODTypesB.idl>
+#include <GeoTypes.idl>
+
+/* forward declarations */
+
+interface ODFrame;
+interface ODFacet;
+interface ODPlatformCanvas;
+interface ODTransform;
+interface ODShape;
+interface ODCanvas;
+interface ODDragItemIterator;
+interface ODFacetIterator;
+interface ODFrameFacetIterator;
+interface ODWindow;
+interface ODPart;
+interface ODDraft;
+interface ODStorageUnit;
+
+/* not actually emitted */
+
+#ifdef _PLATFORM_X11_
+	/* these are for X11/Xlib.h and X11/Intrinsics.h */
+	typedef somToken	Widget;
+	typedef somToken	Display;
+	typedef somToken	Screen;
+	typedef somToken	XtAppContext;
+	typedef somToken	GC;
+	typedef long		Pixmap;
+	typedef long		ODPlatformWindow;	/* X11=Window */
+	typedef int			Bool;
+	/* maps to XPoint in X11/Xlib.h */
+	struct Point		{ short x,y; };
+	/* maps to XRectangle in X11/Xlib.h */
+	struct Rect			{ short x,y; unsigned short width,height; };
+	struct XEvent		{ unsigned short type; };
+#else
+	#if defined(_PLATFORM_WIN32_) || defined(_PLATFORM_OS2_)
+		struct MSG { unsigned long message; };
+		typedef somToken HMENU;
+		typedef somToken HWND;
+		typedef somToken HDC;
+	#endif
+	typedef somToken ODPlatformWindow;	/* WIN/OS2=HWND,Mac=WindowRef */
+	struct Point		{ long x,y; };
+	struct Rect			{ long left,top,right,bottom; };
+#endif
+
+typedef somToken		ODPlatformMenu;		/* HMENU,HWND, MenuHandle, ODX11PlatformMenu */
+typedef somToken		ODPlatformMenuBar;	/* HMENU,HWND, Handle,     ODX11PlatformMenu */
+typedef somToken		ODPlatformPrintJob;
+typedef somToken		ODPlatformShape;
+typedef somToken		ODRgnHandle;
+typedef somToken		ODHandle;
+typedef somToken		ODInfoType;
+typedef somToken		ODPlatformAccelTable;
+
+#ifdef _PLATFORM_WIN32_
+struct ACCEL { unsigned short fVirt; unsigned short key; unsigned short cmd; };
+typedef struct tagSIZE { long cx; long cy; } SIZE;
+#endif
+
+/* typedef ODSLong time_t;		removed: _WIN32 now has a 64bit time_t even with 32bit longs */
+typedef unsigned long ODDescType;
+
+/* emit from here */
+
+#ifdef __SOMIDL__
+	#ifdef EMIT_GLOBAL_TYPES
+		#pragma somemittypes on
+	#endif
+#endif
+
+#ifdef _PLATFORM_MACINTOSH_
+			typedef short ODEventType;
+			typedef EventRecord ODEventData;
+#else
+	#if defined(_PLATFORM_WIN32_) || defined(_PLATFORM_OS2_)
+			typedef unsigned long ODEventType;		/* UINT */
+	#else
+		#ifdef _PLATFORM_X11_
+			typedef short ODEventType;				/* X11 */
+		#endif
+	#endif
+	#ifdef _PLATFORM_X11_
+			typedef XEvent ODEventData;
+	#else
+		#if defined(_PLATFORM_WIN32_) || defined(_PLATFORM_OS2_)
+			typedef MSG ODEventData;
+		#endif
+	#endif
+#endif
+
+typedef ODSLong ODTime;
+typedef ODSShort ODMenuID;
+typedef ODSShort ODMenuItemID;
+typedef ODSLong ODCommandID;
+typedef ODULong ODPasteAsMergeSetting;
+typedef string ISOString;
+typedef unsigned long ODOSType;
+
+#ifdef _PLATFORM_WIN32_
+struct ODMenuIDInfo { ODPlatformMenu hMenu; ODMenuID id; ODUShort reserved; };
+#else
+struct ACCEL { unsigned short fs; unsigned short key; unsigned short cmd; };
+#endif
+
+#if defined(_PLATFORM_OS2_) || defined(_PLATFORM_WIN32_) || defined(_PLATFORM_X11_)
+#define ACCELMAX 20
+struct ODACCEL { ACCEL aAccel[ACCELMAX]; };
+struct ODACCELTABLE { unsigned short cAccel; unsigned short codepage; ACCEL  aaccel[1]; };
+#endif
+
+const ODSLong HLPM_ODMENU=1;
+const ODSLong HLPM_ODWINDOW=2;
+
+struct ODEventInfo
+{
+	ODFrame embeddedFrame;
+	ODFacet embeddedFacet;
+	ODPoint where;
+	ODBoolean propagated;
+	ODEventType originalType;
+};
+
+#ifdef _PLATFORM_X11_
+struct ODPlatformMenuItem 
+{ 
+	ODMenuItemID id; 
+	string text; 
+};
+struct ODMenuEventData
+{
+	ODEventType type;
+	unsigned long serial;
+	Bool send_event;
+	Display *display;
+	ODPlatformWindow window;
+	ODMenuID menu;
+	ODMenuItemID item;
+	Bool toggle_state;
+};
+#else
+struct ODPlatformMenuItem {
+	short iPosition;
+	unsigned short afStyle;
+	unsigned short afAttribute;
+	unsigned short id;
+	ODPlatformMenu hwndSubMenu;
+	somToken hItem;
+};
+#endif
+
+struct PartKindInfo
+{
+	ISOString partKindName;
+	string partKindDisplayName;
+	string filenameFilters;
+	string filenameTypes;
+	string categories;
+	string categoryDisplayName;
+	string objectID;
+};
+
+typedef long ODITextFormat;
+struct ODIText { ODITextFormat format; ODByteArray text; };
+
+typedef ODIText ODName;
+typedef ODName  ODContainerName;
+typedef ODName  ODDocumentName;
+typedef unsigned long ODPlatformType;
+typedef ODULong ODLinkUpdateResult;
+typedef string ODEditor;
+typedef ODISOStr ODContainerSuite;
+
+enum ODLinkInfoAction { kODLinkInfoCancel, kODLinkInfoOk, kODLinkInfoBreakLink, kODLinkInfoUpdateNow, kODLinkInfoFindSource };
+
+struct ODLinkInfo
+{
+	ODType kind;
+	ODTime creationTime;
+	ODTime changeTime;
+	ODUpdateID change;
+	ODBoolean autoUpdate;
+};
+
+struct ODLinkInfoResult
+{
+	ODLinkInfoAction action;
+	ODBoolean autoUpdate;
+};
+
+struct ODPasteAsResult
+{
+        ODBoolean               pasteLinkSetting;
+        ODBoolean               autoUpdateSetting;
+        ODBoolean               mergeSetting;
+        ODTypeToken             selectedView;
+        ODType                  selectedKind;
+        ODType                  translateKind;
+        ODEditor                editor;
+};
+
+/* tweaking this because #define MAC screws up window headers
+enum OperatingSystem {OS2,POSIX,MAC,WINDOWS}; */
+
+enum OperatingSystem {kODOS2,kODPOSIX,kODMAC,kODWINDOWS};
+
+#ifdef __SOMIDL__
+	#ifdef EMIT_GLOBAL_TYPES
+		#pragma somemittypes off
+	#endif
+#endif
+
+module OpenDoc_Global_Types
+{
+	const string OpenDoc_Types_Version = "1.0.";
+};
+#endif

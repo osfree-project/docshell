@@ -1,0 +1,218 @@
+/**************************************************************************
+ *
+ *  Copyright 2008, Roger Brown
+ *
+ *  This file is part of Roger Brown's Toolkit.
+ *
+ *  This program is free software: you can redistribute it and/or modify it
+ *  under the terms of the GNU Lesser General Public License as published by the
+ *  Free Software Foundation, either version 3 of the License, or (at your
+ *  option) any later version.
+ * 
+ *  This program is distributed in the hope that it will be useful, but WITHOUT
+ *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ *  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ *  more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>
+ *
+ */
+
+/*
+ * $Id$
+ */
+
+#ifndef _MENUBAR_
+#define _MENUBAR_
+
+#include <RefCtObj.idl>
+#include <ODTypesM.idl>
+
+interface  ODPart;
+
+#ifdef __PRIVATE__
+interface  ODSession;
+#if defined(_PLATFORM_WIN32_)
+typedef somToken HMODULE;
+#endif
+	#ifdef _PLATFORM_X11_
+		interface ODX11MenuAdapter;
+	#else
+		interface ODWinMenuAdapter;
+	#endif
+typedef somToken ODMenuList;
+#endif 
+
+interface ODMenuBar : ODRefCntObject
+{
+/* obsolete methods ...*/
+
+	ODBoolean InsertSubmenu(in ODMenuID menuID,in ODMenuItemID subMenuID,in ODPlatformMenu newSubmenu);
+	ODBoolean Exists(in ODMenuID menuID,in ODMenuItemID menuItemID);
+
+	void Display();
+	ODMenuBar Copy();
+	void AddMenuLast(in ODMenuID menuID,in ODPlatformMenu menu,in ODPart part);
+	void AddMenuBefore(in ODMenuID menuID,in ODPlatformMenu menu,in ODPart part,in ODMenuID beforeID);
+	void RemoveMenu(in ODMenuID menu);
+	ODPlatformMenu GetMenu(in ODMenuID menu);
+	ODBoolean IsValid();
+
+#if defined(_PLATFORM_WIN32_) || defined(_PLATFORM_X11_)
+	ODUShort  GetMenuText(in ODMenuID menuID,out string menuString);
+	ODBoolean SetMenuText(in ODMenuID menuID,in string menuString);
+	ODUShort GetMenuItemText(in ODMenuID menuID,in ODMenuItemID menuItemID,out string menuItemString);
+	ODBoolean SetMenuItemText(in ODMenuID menuID,in ODMenuItemID menuItemID,in string menuItemString);
+	ODBoolean SetHideMenuItem(in ODMenuID menuID,in ODMenuItemID menuItemID);
+	ODBoolean SetShowMenuItem(in ODMenuID menuID,in ODMenuItemID menuItemID);
+	ODBoolean CheckMenuItem(in ODMenuID menuID,in ODMenuItemID menuItemID,in ODBoolean check);
+	ODBoolean EnableMenu(in ODMenuID menuID,in ODBoolean enable);
+	ODBoolean EnableMenuItem(in ODMenuID menuID,in ODMenuItemID menuItemID,in ODBoolean enable);
+	ODBoolean AddMenuItemBefore	(in ODMenuID menuID,in ODMenuItemID itemID,in ODPlatformMenuItem menuItem,in ODMenuItemID beforeID);
+	ODBoolean AddMenuItemLast(in ODMenuID menuID,in ODMenuItemID itemID,in ODPlatformMenuItem menuItem);
+	ODBoolean AddSubMenuBefore(in ODMenuID menuID,in ODMenuItemID subMenuItemID,in ODPlatformMenu newSubMenu,in ODMenuItemID beforeID);
+	ODBoolean AddSubMenuLast(in ODMenuID menuID,in ODMenuItemID subMenuItemID,in ODPlatformMenu newSubMenu);
+	ODBoolean MenuExists(in ODMenuID menuID);
+	ODBoolean IsMenuEnabled(in ODMenuID menuID);
+	ODBoolean MenuItemExists(in ODMenuID menuID,in ODMenuItemID menuItemID);
+	ODBoolean IsItemEnabled(in ODMenuID menuID,in ODMenuItemID menuItemID);
+	ODBoolean IsItemChecked(in ODMenuID menuID,in ODMenuItemID menuItemID);
+	ODBoolean IsItemHidden(in ODMenuID menuID,in ODMenuItemID menuItemID);
+	ODBoolean RemoveMenuItem(in ODMenuID menuID,in ODMenuItemID menuItemID);
+	ODBoolean GetMenuItem(in ODMenuID menuID,in ODMenuItemID menuItemID,out ODPlatformMenuItem menuItem);
+	ODBoolean AddToAccelTable(in ODULong ulNumberofAccels,in ODACCEL NewAccels);
+	void RestoreAccelTable();
+	void GetMenuAndItem(in ODCommandID command,out ODMenuID menu,out ODMenuItemID menuItem);
+
+	#ifdef __PRIVATE__
+	void ChangeAccelTable();
+	void SetAccelTableToWindow();
+    ODPlatformAccelTable GetAccelTable();
+	void SetAccelTable(in ODPlatformAccelTable accelTable);
+	ODPlatformMenuBar GetSystemMenus();
+	#endif
+#endif
+
+#ifdef _PLATFORM_X11_
+	ODPlatformMenu CreateX11PlatformMenu(in ODMenuID menuID);
+	void DestroyX11PlatformMenu(in ODPlatformMenu menu);
+#else
+	void AddMenuLastEx(in ODMenuID menuID,in ODPlatformMenu menu,in ODPart part,in ODUShort subMenuIDcount,in ODMenuIDInfo *subMenuIDinfo);
+	void AddMenuBeforeEx(in ODMenuID menuID,in ODPlatformMenu menu,in ODPart part,in ODMenuID beforeID,in ODUShort subMenuIDcount,in ODMenuIDInfo *subMenuIDinfo);
+	ODBoolean AddSubMenuBeforeEx(in ODMenuID menuID,in ODMenuItemID subMenuItemID,in ODPlatformMenu newSubMenu,in ODMenuID beforeID,in ODUShort subMenuIDcount,in ODMenuIDInfo *subMenuIDinfo);
+	ODBoolean AddSubMenuLastEx	(in ODMenuID menuID,
+					 in ODMenuItemID subMenuItemID,
+					 in ODPlatformMenu newSubMenu,
+					 in ODUShort      subMenuIDcount,
+					 in ODMenuIDInfo *subMenuIDinfo);
+
+    #ifdef __PRIVATE__
+	void InitMenuBarEx(in ODSession session,in ODPlatformMenuBar menuBar,in ODUShort subMenuIDcount,in ODMenuIDInfo *subMenuIDinfo);
+	ODPlatformMenu CreateMenu();
+    #endif
+#endif
+
+#ifdef __PRIVATE__
+	void InitMenuBar(in ODSession session,in ODPlatformMenuBar menuBar);
+	void SetGeneration(in ODULong generation);
+	ODULong GetGeneration();
+	ODPlatformMenu GetRootMenu();
+	ODSession GetSession();
+#endif
+
+#ifdef __SOMIDL__
+	implementation
+	{
+		majorversion=1; 
+		minorversion=0;
+		dllname="odui.dll";
+#ifdef __PRIVATE__
+		functionprefix=MenuBar_;
+        override:
+			somInit,
+			somUninit,
+			Purge,
+			Release;
+		ODSession fSession;
+		ODULong fGeneration;
+	#ifdef _PLATFORM_X11_
+		ODX11MenuAdapter fBaseMenuBar;
+	#else
+		ODWinMenuAdapter fBaseMenuBar;
+		HMODULE fMOD;
+		ODBoolean fAccelsToAdd;
+		ODACCEL fNewAccels;
+		ODULong fNumberofAccels;
+	#endif
+		ODBoolean fHelpMenuExists;
+		ODPlatformAccelTable fDefaultAccelTable;
+		ODPlatformAccelTable fNewAccelTable;
+#endif
+		releaseorder:
+			Display,
+			Copy,
+			AddMenuLast,
+			AddMenuBefore,
+			RemoveMenu,
+			GetMenu,
+			IsValid,
+    #if defined(_PLATFORM_WIN32_) || defined(_PLATFORM_X11_)
+			GetMenuText,
+			SetMenuText,
+			GetMenuItemText,
+			SetMenuItemText,
+			SetHideMenuItem,
+			SetShowMenuItem,
+			CheckMenuItem,
+			EnableMenu,
+			EnableMenuItem,
+			AddMenuItemBefore,
+			AddMenuItemLast,
+			InsertSubmenu,
+			AddSubMenuBefore,
+			AddSubMenuLast,
+			MenuExists,
+			IsMenuEnabled,
+			MenuItemExists,
+			Exists,
+			IsItemEnabled,
+			IsItemChecked,
+			IsItemHidden,
+			RemoveMenuItem,
+			GetMenuItem,
+			AddToAccelTable,
+			RestoreAccelTable,
+			ChangeAccelTable,
+			SetAccelTableToWindow,
+			GetAccelTable,
+			SetAccelTable,
+			GetSystemMenus,
+	#endif
+	#ifdef _PLATFORM_X11_
+			CreateX11PlatformMenu,
+			DestroyX11PlatformMenu,
+	#else
+			AddMenuLastEx,
+			AddMenuBeforeEx,
+			AddSubMenuBeforeEx,
+			AddSubMenuLastEx,
+			InitMenuBarEx,
+	#endif
+			SetGeneration,
+			GetGeneration,
+			InitMenuBar,
+			GetMenuAndItem,
+			GetRootMenu,
+	#ifdef _PLATFORM_X11_
+			GetSession;
+	#else
+			GetSession,
+			CreateMenu;
+	#endif
+	};
+#endif
+};
+
+#endif
+

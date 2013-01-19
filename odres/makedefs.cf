@@ -1,0 +1,3 @@
+NAME odres
+PROVIDES odres
+DEPENDS odpublic rhbxtutl

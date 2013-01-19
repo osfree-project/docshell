@@ -1,0 +1,3 @@
+NAME odcore
+DEPENDS odstubs
+PROVIDES odcore

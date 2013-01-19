@@ -1,0 +1,155 @@
+/**************************************************************************
+ *
+ *  Copyright 2008, Roger Brown
+ *
+ *  This file is part of Roger Brown's Toolkit.
+ *
+ *  This program is free software: you can redistribute it and/or modify it
+ *  under the terms of the GNU Lesser General Public License as published by the
+ *  Free Software Foundation, either version 3 of the License, or (at your
+ *  option) any later version.
+ * 
+ *  This program is distributed in the hope that it will be useful, but WITHOUT
+ *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ *  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ *  more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>
+ *
+ */
+
+/*
+ * $Id$
+ */
+
+#ifndef _X11MENUADAPTER_
+#define _X11MENUADAPTER_
+
+#include <Part.idl>
+#include <ODSessn.idl>
+
+interface  ODX11MenuAdapter;
+
+#ifdef __PRIVATE__
+typedef somToken ODMenuItemList;
+typedef somToken RHBMENU;
+#endif /* __PRIVATE__ */
+
+#if defined(_PLATFORM_X11_)
+interface ODX11MenuAdapter : ODObject
+{
+	struct ODX11MenuItemAdapter 
+	{
+		ODMenuItemID id;
+		ODX11MenuAdapter parentAdapter;
+		ODX11MenuAdapter subMenuAdapter;
+		ODBoolean enabled;
+		ODBoolean hidden;
+		ODBoolean checked;
+		ODBoolean separator;
+		string text;
+		Widget widget;
+		ODSession session;
+		Environment *ev;
+	};
+
+    void Init(in ODMenuID id,in ODSession session);
+    ODX11MenuAdapter Copy();
+    ODMenuID MenuID();
+    ODBoolean IsMenuEnabled();
+    void DisableMenu();
+    void EnableMenu();
+    ODUShort GetMenuText(out string menuString);
+    ODBoolean SetMenuText(in string menuString);
+    ODUShort GetMenuItemText(in ODMenuItemID menuItemID,out string menuItemString);
+    ODBoolean SetMenuItemText(in ODMenuItemID menuItemID,in string menuItemString);
+    ODBoolean SetHideMenuItem(in ODMenuItemID menuItemID);
+    ODBoolean SetShowMenuItem(in ODMenuItemID menuItemID);
+    ODBoolean CheckMenuItem(in ODMenuItemID menuItemID,in ODBoolean check);
+    ODBoolean EnableMenuItem(in ODMenuItemID menuItemID,in ODBoolean enable);
+    ODBoolean AddMenuItemBefore	(in ODMenuItemID itemID,in ODPlatformMenuItem item,in ODMenuItemID beforeID);
+    ODBoolean AddMenuItemLast(in ODMenuItemID itemID,in ODPlatformMenuItem item);
+    ODBoolean AddSubMenuBefore(in ODMenuID subMenuID,in ODPlatformMenu subMenu,in ODMenuItemID  beforeID);
+    ODBoolean AddSubMenuLast(in ODMenuID subMenuID,in ODPlatformMenu subMenu);
+    ODPlatformMenu GetSubMenu(in ODMenuID subMenuID);
+    ODBoolean ItemExists(in ODMenuItemID menuItemID);
+    ODBoolean IsItemEnabled(in ODMenuItemID menuItemID);
+    ODBoolean IsItemChecked(in ODMenuItemID menuItemID);
+    ODBoolean IsItemHidden(in ODMenuItemID menuItemID);
+    ODBoolean RemoveMenuItem(in ODMenuItemID menuItemID);
+    ODBoolean GetMenuItem(in ODMenuItemID menuItemID,out ODPlatformMenuItem item);
+    void GetParentAdapter(out ODX11MenuAdapter parentAd);
+    void SetParentAdapter(in ODX11MenuAdapter parentAd);
+#ifdef __PRIVATE__
+    void DisplayMenu(in Widget mbar);
+    void DisplayAsPopup(in Widget parent,in short x,in short y);
+    ODPart GetPart();
+    void SetPart(in ODPart part);
+    ODBoolean GetMenuItemAdapter(in ODMenuItemID id,out ODX11MenuItemAdapter* itemAd);
+#endif /* __PRIVATE__ */
+
+#ifdef __SOMIDL__
+    implementation
+    {
+		majorversion=1;
+		minorversion=0;
+		dllname="odui.dll";
+	#ifdef __PRIVATE__
+		functionprefix="MenuAdX_";
+		override: somInit, somUninit;
+	#endif
+
+	releaseorder:
+	    Init,
+	    Copy,
+	    MenuID,
+	    IsMenuEnabled,
+	    DisableMenu,
+	    EnableMenu,
+	    GetMenuText,
+	    SetMenuText,
+	    GetMenuItemText,
+	    SetMenuItemText,
+	    SetHideMenuItem,
+	    SetShowMenuItem,
+	    CheckMenuItem,
+	    EnableMenuItem,
+	    AddMenuItemBefore,
+	    AddMenuItemLast,
+	    AddSubMenuBefore,
+	    AddSubMenuLast,
+	    GetSubMenu,
+	    ItemExists,
+	    IsItemEnabled,
+	    IsItemChecked,
+	    IsItemHidden,
+	    RemoveMenuItem,
+	    GetMenuItem,
+	    GetParentAdapter,
+	    SetParentAdapter,
+	    DisplayMenu,
+	    DisplayAsPopup,
+	    GetPart,
+	    SetPart,
+	    GetMenuItemAdapter;
+
+	#ifdef __PRIVATE__
+	    ODSession fSession;
+	    ODBoolean fMenuIsEnabled;
+	    ODMenuItemList fMenuItems;
+	    ODPart fPart;
+	    string fMenuLabel;
+		ODMenuID fMenuID;
+	    RHBMENU *fMenu;
+	    ODX11MenuAdapter	fParentAdapter;
+	#endif /* __PRIVATE__ */
+
+    };
+#endif /* __SOMIDL__ */
+
+}; 
+#endif /* _PLATFORM_X11_ */
+
+#endif /* _X11MENUADAPTER_ */
+

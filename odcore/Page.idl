@@ -1,0 +1,84 @@
+/**************************************************************************
+ *
+ *  Copyright 2008, Roger Brown
+ *
+ *  This file is part of Roger Brown's Toolkit.
+ *
+ *  This program is free software: you can redistribute it and/or modify it
+ *  under the terms of the GNU Lesser General Public License as published by the
+ *  Free Software Foundation, either version 3 of the License, or (at your
+ *  option) any later version.
+ * 
+ *  This program is distributed in the hope that it will be useful, but WITHOUT
+ *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ *  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ *  more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>
+ *
+ */
+
+/*
+ * $Id$
+ */
+
+#if defined(_PLATFORM_X11_) && !defined(_PROPERTY_PAGE_)
+#define _PROPERTY_PAGE_
+
+#include <ODObject.idl>
+
+interface  ODFacet;
+interface  ODNotebook;
+
+interface ODPropertyPage : SOMObject
+{
+	char* GetName();
+	Widget CreateWidget(in Widget parentWidget);
+	void Ok();
+	void Cancel();
+	void Help();
+	void DisplayHelp(in string helpFile, in ODULong ID);
+	ODFacet GetFacet();
+	ODNotebook GetNotebook ();
+
+#ifdef __PRIVATE__
+	Widget GetWidget();
+	void Initialize (in ODNotebook notebook, in ODFacet facet, 
+				in Widget parentWidget);
+#endif /* __PRIVATE__ */
+
+#ifdef __SOMIDL__
+	implementation
+	{
+		majorversion=1;
+		minorversion=0;
+		dllname="odcore.dll";
+	releaseorder:
+#ifdef __PRIVATE__
+		GetWidget,
+		Initialize,
+#else
+		reserved1,
+		reserved2,
+#endif
+		GetFacet,
+		SetFacet,
+		CreateWidget,
+		GetName,
+		Ok,
+		Cancel,
+		Help,
+		DisplayHelp,
+                GetNotebook;
+
+#ifdef __PRIVATE__
+		functionprefix=Page_;
+		Widget  fWidget;
+		ODFacet fFacet;
+		ODNotebook fNotebook;
+#endif /* __PRIVATE__ */
+	};
+#endif /* __SOMIDL__ */
+};
+#endif /* _PROPERTY_PAGE_ */

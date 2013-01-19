@@ -1,0 +1,70 @@
+/**************************************************************************
+ *
+ *  Copyright 2008, Roger Brown
+ *
+ *  This file is part of Roger Brown's Toolkit.
+ *
+ *  This program is free software: you can redistribute it and/or modify it
+ *  under the terms of the GNU Lesser General Public License as published by the
+ *  Free Software Foundation, either version 3 of the License, or (at your
+ *  option) any later version.
+ * 
+ *  This program is distributed in the hope that it will be useful, but WITHOUT
+ *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ *  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ *  more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>
+ *
+ */
+
+/*
+ * $Id$
+ */
+
+#ifndef _PARTINFO_
+#define _PARTINFO_
+
+#include <somobj.idl>
+
+#include <ODTypesM.idl>
+
+interface ODPartHandlerInfo  : SOMObject
+{
+	string                 GetPartHandlerClassName();
+	ISOString              GetPartHandlerName();
+	string                 GetPartHandlerDisplayName();
+	sequence<PartKindInfo> GetPartKindInfo( in string category);
+	OperatingSystem        GetOperatingSystem();
+	void                   SetOperatingSystem( in OperatingSystem os);
+	string                 GetOLE2ClassId();
+	string                 GetWindowsIconFileName();
+	string                 GetDLLName();
+
+#ifdef __SOMIDL__
+
+	implementation
+	{
+		dllname="odregsty.dll";
+	#ifdef __PRIVATE__
+		functionprefix=ODPartHandlerInfo;
+	#endif
+
+	releaseorder: GetPartHandlerClassName,
+				  GetPartHandlerName,
+				  GetPartHandlerDisplayName,
+				  GetPartKindInfo,
+				  GetOperatingSystem,
+				  SetOperatingSystem,
+				  GetOLE2ClassId,
+				  GetWindowsIconFileName,
+				  GetDLLName;
+
+  };
+#endif
+};
+#endif
+
+
+

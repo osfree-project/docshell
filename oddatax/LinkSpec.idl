@@ -1,0 +1,123 @@
+/**************************************************************************
+ *
+ *  Copyright 2008, Roger Brown
+ *
+ *  This file is part of Roger Brown's Toolkit.
+ *
+ *  This program is free software: you can redistribute it and/or modify it
+ *  under the terms of the GNU Lesser General Public License as published by the
+ *  Free Software Foundation, either version 3 of the License, or (at your
+ *  option) any later version.
+ * 
+ *  This program is distributed in the hope that it will be useful, but WITHOUT
+ *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ *  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ *  more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>
+ *
+ */
+
+/*
+ * $Id$
+ */
+
+#ifndef _LINKSPEC_
+#define _LINKSPEC_
+
+#include <LinkSpcB.idl>
+
+interface  ODLinkSpec;
+interface  ODStorageUnit;
+interface  ODDraft;
+interface  ODPart;
+
+#ifdef __PRIVATE__
+struct ProcessSerialNumber {
+        ODULong hi;
+        ODULong lo;
+};
+typedef somToken AppleEvent;
+#ifdef _PLATFORM_WIN32_
+typedef somToken LPVOID;
+typedef somToken FILETIME;
+#endif
+#endif
+
+interface ODLinkSpec : ODBaseLinkSpec
+{
+#ifdef __PRIVATE__
+        void InitLinkSpec(in ODPart part, in ODByteArray partData);
+        void GetOriginatingProcessID(out ProcessSerialNumber psn);
+
+	#ifdef _PLATFORM_MACINTOSH_
+        void WriteToAppleEvent(in AppleEvent* theAppleEvent);
+        void ReadFromAppleEvent(in AppleEvent* theAppleEvent);
+	#endif
+
+	#ifdef _PLATFORM_WIN32_
+        void UseItemName( in char *pszItemName );
+        char *WriteLinkSpecString();
+        void ReadLinkSpecString( in char *pHexDigit );
+        void *GetMoniker();
+        void VoidLinkSpec();
+	#endif
+
+#endif
+
+#ifdef __SOMIDL__
+	implementation
+	{
+        majorversion = 1; minorversion = 0;
+		dllname="oddatax.dll";
+#ifdef __PRIVATE__
+        functionprefix=LinkSpec_;
+        override:
+            somUninit,
+            somInit,
+            GetPart,
+            GetPartData,
+            FromThisDraft,
+            ReadLinkSpec,
+            WriteLinkSpec;
+
+		ProcessSerialNumber fProcessID;
+
+		#ifdef _PLATFORM_X11_
+			ODULong fProcessLaunchDate;
+		#else
+			FILETIME fProcessLaunchDate;
+			ODPart                          fPart;
+			ODByteArray                     fPartData;
+			somToken                        fpmkFull;
+		#endif
+#endif
+        releaseorder:
+            InitLinkSpec,
+            GetOriginatingProcessID,
+    #ifdef _PLATFORM_MACINTOSH_
+            WriteToAppleEvent,
+            ReadFromAppleEvent,
+            reservedA,
+            reservedB,
+            reservedC;
+    #endif
+    #ifdef _PLATFORM_WIN32_
+            UseItemName,
+            WriteLinkSpecString,
+            ReadLinkSpecString,
+            GetMoniker,
+            VoidLinkSpec;
+    #else
+            reservedA,
+            reservedB,
+            reservedC,
+            reservedD,
+            reservedE;
+	#endif
+};
+#endif
+};
+#endif
+

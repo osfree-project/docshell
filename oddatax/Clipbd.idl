@@ -1,0 +1,177 @@
+/**************************************************************************
+ *
+ *  Copyright 2008, Roger Brown
+ *
+ *  This file is part of Roger Brown's Toolkit.
+ *
+ *  This program is free software: you can redistribute it and/or modify it
+ *  under the terms of the GNU Lesser General Public License as published by the
+ *  Free Software Foundation, either version 3 of the License, or (at your
+ *  option) any later version.
+ * 
+ *  This program is distributed in the hope that it will be useful, but WITHOUT
+ *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ *  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ *  more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>
+ *
+ */
+
+/*
+ * $Id$
+ */
+
+#ifndef _CLIPBD_
+#define _CLIPBD_
+
+#include <ODObject.idl>
+
+interface  ODClipboard;
+
+interface  ODStorageUnit;
+interface  ODDraft;
+interface  ODPlatformTypeList;
+interface  ODFacet;
+interface  ODTypeList;
+#ifdef __PRIVATE__
+interface  ODSession;
+interface  ODDocument;
+interface  ODContainer;
+#endif
+
+#define PROMISEKEEPER
+#ifdef _PLATFORM_WIN32_
+#ifdef PROMISEKEEPER
+typedef somToken OLEPromiseKeeper;
+#endif
+typedef somToken DWORD;
+//typedef somToken HWND;
+typedef somToken LPVOID;
+typedef somToken POINTL;
+typedef somToken Handle;
+typedef somToken ODOLEManager;
+#endif
+
+interface ODClipboard :  ODObject
+{
+	ODUpdateID GetUpdateID();						  
+	void Clear();
+	ODStorageUnit GetContentStorageUnit();
+	ODUpdateID ActionDone(in ODCloneKind cloneKind);
+	void ActionUndone(in ODUpdateID update, in ODCloneKind originalCloneKind);
+	void ActionRedone(in ODUpdateID update, in ODCloneKind originalCloneKind);
+	void SetPlatformClipboard(in ODPlatformTypeList typeList);
+	void ExportClipboard();
+	void DraftSaved(in ODDraft draft);
+	void DraftClosing(in ODDraft draft);
+	ODBoolean CanEmbed();
+	ODBoolean ShowPasteAsDialog(
+					in		ODBoolean				canPasteLink,
+					in		ODPasteAsMergeSetting	mergeSetting,
+					in		ODFacet					facet,
+					in		ODTypeToken				viewType,
+					out		ODPasteAsResult			theResult);
+#ifdef __PRIVATE__
+	void InitClipboard(in ODSession session);
+	void NewClipboard();	
+	void DiscardClipboard();
+#if defined(_PLATFORM_MACINTOSH_) || defined(_PLATFORM_X11_)
+	void ImportContent();
+    void PutContentOnPlatformClipboard();
+	void ExportPlatformTypes(in ODPlatformTypeList typeList);
+	void PutClipboardOnPlatformClipboard();
+	ODBoolean ImportClipboard();
+#else
+	void ImportContent(in void *pDataObject);
+	void ExportPlatformTypes(in ODPlatformTypeList typeList, in ODBoolean bExportClipboard);
+	void PutClipboardOnPlatformClipboard(in void *pDataObject);	
+	ODBoolean ImportClipboard(in void *pDataObject);
+	ODBoolean PlatformClipboardHasType( in void *pDataObject , in ODPlatformType type);
+	void ClipboardChanged();
+#endif
+	
+	void QueryContent(in ODTypeList typeList);
+#endif 
+
+#ifdef __SOMIDL__
+	implementation
+	{
+		majorversion=1; minorversion=0;
+		dllname="oddatax.dll";
+		releaseorder:
+			GetUpdateID,
+			Clear,
+			GetContentStorageUnit,
+			ActionDone,
+			ActionUndone,         
+			ActionRedone,
+			SetPlatformClipboard,
+			ExportClipboard,
+			DraftSaved,
+			DraftClosing,
+			ShowPasteAsDialog,
+        #ifdef _PLATFORM_WIN32_
+            PlatformClipboardHasType,
+            ClipboardChanged,
+			CanEmbed,
+            ReservedA,
+            ReservedB,
+        #else
+            PutContentOnPlatformClipboard,
+            CanEmbed,
+            ReservedA,
+            ReservedB,
+            ReservedC,
+        #endif
+			QueryContent,
+            reserved1,
+            reserved2,
+			InitClipboard,
+			NewClipboard,
+			DiscardClipboard,
+			ImportContent,
+			ExportPlatformTypes,
+			PutClipboardOnPlatformClipboard,
+			ImportClipboard;
+			
+#ifdef __PRIVATE__
+		functionprefix=Clipbd_;
+		override:
+			somUninit,
+			Purge;
+		
+		ODSession		fSession;
+		ODHandle		fContainerHandle;
+		ODContainer		fContainer;
+		ODDocument		fDocument;
+		ODDraft			fDraft;
+		ODStorageUnit	fSU;
+		ODDraft			fOriginalDraft;
+		ODUpdateID		fUpdateID;
+		ODUpdateID		fNextUpdateID;
+		ODSShort		fScrapCount;
+		ODSShort		fScrapCountLastChange;
+		ODBoolean		fExportedLinkSpec;
+		ODCloneKind		fOriginalCloneKind;
+		ODUShort		fClonePasteCount;
+	#ifdef _PLATFORM_X11_
+	#else
+		#ifdef _PLATFORM_WIN32_
+			ODBoolean		fbClear;	/* Clear was the last operation */
+			void			*fpIDataObjectLast;
+			ODUpdateID              fUpdateIDAtLastPlatformClipboardSet;
+		#ifdef PROMISEKEEPER
+			OLEPromiseKeeper	*fPromiseKeeper;	
+		#endif
+			HWND			fhwndClipboardMonitor;
+			ODOLEManager            *fOleManager;
+		#endif
+	#endif
+
+#endif
+	};
+#endif
+};
+#endif

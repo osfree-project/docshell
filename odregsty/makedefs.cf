@@ -1,0 +1,3 @@
+NAME odregsty
+DEPENDS odcm odprivat registry
+PROVIDES odregsty

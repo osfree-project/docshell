@@ -1,0 +1,109 @@
+/**************************************************************************
+ *
+ *  Copyright 2008, Roger Brown
+ *
+ *  This file is part of Roger Brown's Toolkit.
+ *
+ *  This program is free software: you can redistribute it and/or modify it
+ *  under the terms of the GNU Lesser General Public License as published by the
+ *  Free Software Foundation, either version 3 of the License, or (at your
+ *  option) any later version.
+ * 
+ *  This program is distributed in the hope that it will be useful, but WITHOUT
+ *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ *  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ *  more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>
+ *
+ */
+
+/*
+ * $Id$
+ */
+
+#ifndef _LINKB_
+#define _LINKB_
+
+#include <PstObj.idl>
+
+interface       ODLinkSource;
+interface       ODStorageUnit;
+interface       ODPart;
+interface       ODDraft;
+interface       ODFacet;
+
+#ifdef __PRIVATE__
+interface       ODPartList;
+#endif
+
+interface ODBaseLink :  ODPersistentObject
+{
+	ODBoolean Lock(in ODULong wait, out ODLinkKey key);
+	void Unlock(in ODLinkKey key);
+	ODStorageUnit GetContentStorageUnit(in ODLinkKey key);
+	void RegisterDependent(in ODPart clientPart, in ODUpdateID id);
+	void UnregisterDependent(in ODPart clientPart);
+	ODUpdateID GetUpdateID();
+	ODTime GetChangeTime();
+	void ShowSourceContent();
+#if defined(_PLATFORM_MACINTOSH_) || defined(_PLATFORM_WIN32_) || defined(_PLATFORM_X11_)
+	ODBoolean ShowLinkDestinationInfo(in ODFacet facet,in ODLinkInfo info,in ODBoolean changesAllowed,out ODLinkInfoResult infoResult);
+#endif
+
+#ifdef __PRIVATE__
+	void InitBaseLink(in ODStorageUnit storageUnit);
+	void InitBaseLinkFromStorage(in ODStorageUnit storageUnit);
+	void SetLinkSource(in ODLinkSource linkSource);
+#if defined(_PLATFORM_MACINTOSH_) || defined(_PLATFORM_WIN32_) || defined(_PLATFORM_X11_)
+	ODLinkSource GetLinkSource();
+#endif
+	void UpdateDependents();
+	void KeyValid(in ODLinkKey key);
+	void SetBaseLinkDirty();
+#endif
+#ifdef __SOMIDL__
+    implementation
+    {
+        majorversion = 1; minorversion = 0;
+		dllname="oddatax.dll";
+#ifdef __PRIVATE__
+        functionprefix = LinkB_;
+        override:
+			somUninit,
+			Externalize,
+			ReleaseAll,
+			CloneInto;
+        ODPartList fPartList;
+        ODLinkSource fLinkSource;
+        ODBoolean fDirty;
+        ODBoolean fIterationInProgress;
+        ODBoolean fRestartIteration;
+#endif
+        releaseorder:
+            Lock,
+            Unlock,
+            GetContentStorageUnit,
+            RegisterDependent,
+            UnregisterDependent,
+            GetUpdateID,
+            GetChangeTime,
+            ShowSourceContent,
+    #if defined(_PLATFORM_MACINTOSH_) || defined(_PLATFORM_WIN32_) || defined(_PLATFORM_X11_)
+            ShowLinkDestinationInfo,
+    #endif
+            InitBaseLink,
+            InitBaseLinkFromStorage,
+            SetLinkSource,
+    #if defined(_PLATFORM_MACINTOSH_) || defined(_PLATFORM_WIN32_) || defined(_PLATFORM_AIX_)
+            GetLinkSource,
+    #endif
+            UpdateDependents,
+            KeyValid,
+            SetBaseLinkDirty;
+    };
+#endif
+};
+#endif
+

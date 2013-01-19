@@ -1,0 +1,91 @@
+/**************************************************************************
+ *
+ *  Copyright 2008, Roger Brown
+ *
+ *  This file is part of Roger Brown's Toolkit.
+ *
+ *  This program is free software: you can redistribute it and/or modify it
+ *  under the terms of the GNU Lesser General Public License as published by the
+ *  Free Software Foundation, either version 3 of the License, or (at your
+ *  option) any later version.
+ * 
+ *  This program is distributed in the hope that it will be useful, but WITHOUT
+ *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ *  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ *  more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>
+ *
+ */
+
+/*
+ * $Id$
+ */
+
+/***************************************************************
+ *
+ * This canvas is intended to be used with Xprint and 
+ * the Xp library
+ *
+ * management of the printing session is managed outside of this
+ * canvas which is really just a holder
+ *
+ */
+
+#ifndef _AIXPCANV_
+#define _AIXPCANV_
+
+#include <PlatCanv.idl>
+
+#if defined(_PLATFORM_X11_)
+
+interface ODAIXCanvas : ODPlatformCanvas
+{
+	void InitPlatformCanvas(
+		in Display *display,
+		in Pixmap pixmap,
+		in GC gc);
+
+	void InitPlatformWindowCanvas(
+		in Display *display,
+		in ODPlatformWindow window,
+		in Widget widget,
+		in GC gc);
+
+	GC GetGC();
+	ODPlatformWindow GetWindow();
+	Widget GetWidget();
+	Pixmap GetPixmap();
+	Display *GetDisplay();
+
+#ifdef __SOMIDL__
+	implementation
+	{
+		majorversion=1;
+		minorversion=0;
+		dllname="odimagng.dll";
+#ifdef __PRIVATE__
+		override:
+			CreateConcreteCanvas,
+			GetSystemType,
+			HasWindow,
+			IsInitialized,
+			GetPlatformCanvasType;
+		functionprefix="AIXPCanv_";
+#endif /* __PRIVATE__ */
+		releaseorder:
+			InitPlatformCanvas,
+			InitPlatformWindowCanvas,
+			GetGC,
+			GetWindow,
+			GetWidget,
+			GetPixmap,
+			GetDisplay;
+	};
+#endif /* __SOMIDL__ */
+};
+
+#endif /* _PLATFORM_X11_ */
+
+#endif /* _AIXPCANV_ */

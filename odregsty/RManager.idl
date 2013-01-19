@@ -1,0 +1,65 @@
+/**************************************************************************
+ *
+ *  Copyright 2008, Roger Brown
+ *
+ *  This file is part of Roger Brown's Toolkit.
+ *
+ *  This program is free software: you can redistribute it and/or modify it
+ *  under the terms of the GNU Lesser General Public License as published by the
+ *  Free Software Foundation, either version 3 of the License, or (at your
+ *  option) any later version.
+ * 
+ *  This program is distributed in the hope that it will be useful, but WITHOUT
+ *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ *  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ *  more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>
+ *
+ */
+
+/*
+ * $Id$
+ */
+
+#ifndef _RMANAGER_
+#define _RMANAGER_
+
+#include <somobj.idl>
+#include <snglicls.idl>
+
+typedef string ISOString;
+interface ODPartHandlerRegistry;
+#ifdef __PRIVATE__
+interface ODPartHandlerRegistryInt;
+#endif
+
+interface RegistryManager  : SOMObject
+{
+	ODPartHandlerRegistry GetODPartHandlerRegistry();
+	#ifdef __PRIVATE__
+	ODPartHandlerRegistry RefreshODPartHandlerRegistry();
+	#endif
+
+	#ifdef __SOMIDL__
+
+	implementation
+	{
+		metaclass=SOMMSingleInstance;
+		dllname="odregsty.dll";
+	#ifdef __PRIVATE__
+		functionprefix=RegistryManager;
+		ODPartHandlerRegistryInt partHandlerRegistry;
+		somInit : override;
+		somUninit : override;
+	#endif    
+		releaseorder:
+			GetODPartHandlerRegistry,
+			RefreshODPartHandlerRegistry;
+	};
+	#endif
+};
+#endif
+
+

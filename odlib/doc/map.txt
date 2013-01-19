@@ -1,0 +1,157 @@
+SOM.DLL
+	SOMObject						somobj.idl
+	SOMClass						somcls.idl		SOMObject
+	SOMClassMgr						somcm.idl		SOMObject
+
+ODSOMUC.DLL	previously SOMUC.DLL
+	somf_MLinkable					mlink.idl		SOMObject
+	somf_TPrimitiveLinkedList		tpll.idl		SOMObject
+	somf_TPrimitiveLinkedListIterator tpllitr.idl	SOMObject
+
+ODCORE.DLL
+	ODTestModuleB					testmodb.idl	SOMObject
+	ODTestModule					TestModl.idl	ODTestModuleB
+	M_ODObject						ODObject.idl	SOMClass
+	M_ODPart						Part.idl		SOMClass
+	ODObject						ODObject.idl	
+	ODRefCntObject					RefCtobj.idl	ODObject
+	ODExtension						Extensn.idl		ODRefCntObject
+	ODPersistentObject				PstObj.idl		ODRefCntObject
+	ODPart							Part.idl		ODPersistentObject
+	ODBaseSession					ODSessnB.idl	ODObject
+	ODSession						ODSessn.idl		ODBaseSession
+	ODEmbeddedFramesIterator		EmbFrItr.idl	ODObject
+	ODHelp							ODHelp.idl		ODObject
+	ODInfo							Info.idl		ODObject
+	ODNameSpace						NamSpac.idl		ODObject
+	ODNameSpaceManager				NmSpcMg.idl		ODObject
+	ODObjectIterator				ObjctItr.idl	ODObject
+	ODObjectNameSpace				ObjectNS.idl	ODNameSpace
+	ODSettingsExtension				Settings.idl	ODExtension
+	ODValueIterator					ValueItr.idl	ODObject
+	ODValueNameSpace				ValueNS.idl		ODNameSpace
+
+ODSTORAG.DLL
+	ODPlatformTypeList				PfTypLs.idl		ODObject
+	ODPlatformTypeListIterator		PfTlItr.idl		ODObject
+	ODStorageSystem					ODStor.idl		ODObject
+	ODStorageUnitCursor				SUCursor.idl	ODObject
+	ODStorageUnitRefIterator		SURefItr.idl	ODObject
+	ODStorageUnitView				SUView.idl		ODObject
+	ODTypeList						TypeList.idl	ODObject
+	ODContainer						ODCtr.idl		ODRefCntObject
+	ODDraft							Draft.idl		ODRefCntObject
+	ODDocument						Document.idl	ODRefCntObject
+	ODStorageUnit					StorageU.idl	ODRefCntObject
+	ODTypeListIterator				TypLsItr.idl	ODObject
+
+ODLAYOUT.DLL
+	ODFacet							Facet.idl		ODObject
+	ODFrame							Frame.idl		ODPersistentObject
+	ODFacetIterator					FacetItr.idl	ODObject
+	ODFrameFacetIterator			FrFaItr.idl		ODObject
+	M_ODFacet						Facet.idl		SOMClass
+
+ODUI.DLL
+	ODDispatcher					Disptch.idl		ODObject
+	ODWindow						Window.idl		ODRefCntObject
+	ODWindowState					WinStat.idl		ODObject
+	ODArbitrator					Arbitrat.idl	ODObject
+	ODDispatchModule				DispMod.idl		ODObject
+	ODFocusModule					FocusMod.idl	ODObject
+	ODFocusOwnerIterator			FocusOwn.idl	ODObject
+	ODFocusSet						FocusSet.idl	ODObject
+	ODFocusSetIterator				FocusItr.idl	ODObject
+	ODMenuBar						MenuBar.idl		ODRefCntObject
+	ODPopup							Popup.idl		ODMenuBar
+	ODUndo							Undo.idl		ODObject
+	ODWindowIterator				WinIter.idl		ODObject
+	ODExclusiveFocusModule			ExcFocus.idl	ODFocusModule
+	ODWinMenuAdapter				MenuAdW.idl		ODObject
+	ODStandardDispatchModule		StdDisp.idl		ODDispatchModule
+	ODStdWinDispatchModule			StdDispW.idl	ODDispatchModule
+	
+ODBINDNG.DLL
+	ODBinding						ODBindng.idl	ODObject
+	NoPart							NoPart.idl		ODPart
+	ODPartWrapper					PartWrap.idl	ODPart
+
+ODIMAGNG.DLL
+	ODBaseCanvas					CanvasB.idl		ODObject
+	ODCanvas						Canvas.idl		ODBaseCanvas
+	ODPlatformCanvas				PlatCanv.idl	ODObject
+	ODBaseShape						ShapeB.idl		ODRefCntObject
+	ODShape							Shape.idl		ODBaseShape
+	ODBaseTransform					TrnsfrmB.idl	ODRefCntObject
+	ODTransform						Trnsform.idl	ODBaseTransform
+	ODWin32Canvas					WinPCanv.idl	ODPlatformCanvas
+	ODWin32StandardCanvas			WinSCanv.idl	ODWin32Canvas
+	ODWin32WindowCanvas				WinWCanv.idl	ODWin32Canvas
+
+ODDATAX.DLL
+	ODClipboard						Clipbd.idl		ODObject
+	ODDragAndDrop					DragDrop.idl	ODObject
+	ODDragItemIterator				DgItmIt.idl		ODObject
+	ODLinkIterator					LinkItr.idl		ODObject
+	ODLinkManager					LinkMgr.idl		ODObject
+	ODTranslation					Translt.idl		ODObject
+	ODBaseLinkSource				LinkSrcB.idl	ODPersistentObject
+	ODLinkSource					LinkSrc.idl		ODBaseLinkSource
+	ODBaseLinkSpec					LinkSpcB.idl	ODObject
+	ODLinkSpec						LinkSpec.idl	ODBaseLinkSpec
+	ODBaseLink						LinkB.idl		ODPersistentObject
+	ODLink							Link.idl		ODBaseLink
+	ODLinkSourceIterator			LkSrcItr.idl	ODObject
+
+ODDSSCR.DLL
+	ODScriptComponent
+	ODScriptExtension
+
+ODSHELL.DLL
+	OpenDocShell					ODShell.idl			SOMObject
+	ApplicationShell				AppShell.idl		OpenDocShell
+	WinShell						WinShell.idl		ApplicationShell
+	DocumentManager					DocMgr.idl			somf_MLinkable
+
+ODDSEVNT.DLL
+	ODDSConnection
+	ODDSEventMgr
+	ODDSEventMgrEnum
+	ODDSSink
+	ODDSSinkEnum
+
+ODBENTO.DLL
+	ODBentoContainer				CMCtr.idl			ODContainer
+	ODEmbeddedContainer				EmbedCtr.idl		ODBentoContainer
+	ODFileContainer					FileCtr.idl			ODBentoContainer
+	ODMemContainer					MemCtr.idl			ODBentoContainer
+	ODUpdateContainer				UpdatCtr.idl		ODMemContainer
+	CMDocument						CMDoc.idl			ODDocument
+	CMDraft							CMDraft.idl			ODDraft
+	CMLinkIterator					CMLkItr.idl			ODLinkIterator
+	CMLinkSourceIterator			CMLkSItr.idl		ODLinkSourceIterator
+	CMStorageUnit					CMSU.idl			ODStorageUnit
+	CMStorageUnitRefIterator		CMSURefI.idl		ODStorageUnitRefIterator
+	
+ODREGSTY.DLL
+	ODPartFileType					PartCat.idl			SOMObject
+	ODPartFileExtension				PartCat.idl			SOMObject
+	ODPartKind						PartKind.idl		SOMObject
+	ODPartHandlerInfo				PartInfo.idl		SOMObject
+	ODPartHandlerInfoInt			PartInfi.idl		ODPartHandlerInfo
+	ODPartHandlerRegistry			ODPrtReg.idl		SOMObject
+	ODPartHandlerRegistryInt		ODPrtRei.idl		ODPartHandlerRegistry
+	RegistryManager					RManager.idl		SOMObject
+
+unknown
+
+ODAIXCanvas						AIXPCanv.idl			ODPlatformCanvas
+ODAIXStandardCanvas				AIXSCanv.idl			ODAIXCanvas
+ODAIXWindowCanvas				AIXWCanv.idl			ODAIXCanvas
+AIXShell						AIXShell.idl			ApplicationShell
+ODTemplates
+ODOS2Canvas
+ODOS2StandardCanvas
+ODOS2WindowCanvas
+OS2Shell
+

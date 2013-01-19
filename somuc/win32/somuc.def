@@ -1,0 +1,15 @@
+LIBRARY	SOMUC
+VERSION 1.0
+
+EXPORTS
+	somf_MLinkableNewClass
+	somf_MLinkableClassData
+	somf_MLinkableCClassData
+	somf_TPrimitiveLinkedListClassData
+	somf_TPrimitiveLinkedListCClassData
+	somf_TPrimitiveLinkedListNewClass
+	somf_TPrimitiveLinkedListIteratorClassData
+	somf_TPrimitiveLinkedListIteratorCClassData
+	somf_TPrimitiveLinkedListIteratorNewClass
+	SOMInitModule			PRIVATE
+	DllMain					PRIVATE

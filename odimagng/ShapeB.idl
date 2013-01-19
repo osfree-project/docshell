@@ -1,0 +1,113 @@
+/**************************************************************************
+ *
+ *  Copyright 2008, Roger Brown
+ *
+ *  This file is part of Roger Brown's Toolkit.
+ *
+ *  This program is free software: you can redistribute it and/or modify it
+ *  under the terms of the GNU Lesser General Public License as published by the
+ *  Free Software Foundation, either version 3 of the License, or (at your
+ *  option) any later version.
+ * 
+ *  This program is distributed in the hope that it will be useful, but WITHOUT
+ *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ *  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ *  more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>
+ *
+ */
+
+/*
+ * $Id$
+ */
+
+#ifndef _SHAPEB_
+#define _SHAPEB_
+
+#include <RefCtObj.idl>
+
+#ifdef __PRIVATE__
+typedef somToken RealShape;
+#endif
+
+interface ODBaseShape : ODRefCntObject
+{
+	ODShape	NewShape();
+	ODShape	Copy();
+	ODGeometryMode	GetGeometryMode();
+	void SetGeometryMode(in ODGeometryMode mode);
+	ODShape SetRectangle(in ODRect rect);
+	void GetBoundingBox(out ODRect bounds);
+	void CopyPolygon(out ODPolygon copy);
+	ODShape SetPolygon(in ODPolygon polygon);
+	ODPlatformShape GetPlatformShape(in ODGraphicsSystem graphicsSystem);
+	void SetPlatformShape(in ODGraphicsSystem graphicsSystem,in ODPlatformShape platformShape);
+	void Reset();
+	void WriteShape(in ODStorageUnit storageUnit);
+	ODShape ReadShape(in ODStorageUnit storageUnit);
+	ODBoolean IsSameAs(in ODShape compareShape);
+	ODBoolean IsEmpty();
+	ODBoolean ContainsPoint(in ODPoint point);
+	ODBoolean IsRectangular();
+	ODBoolean HasGeometry();
+	void CopyFrom(in ODShape sourceShape);
+	ODShape Transform(in ODTransform transform);
+	ODShape InverseTransform(in ODTransform transform);
+	ODShape Subtract(in ODShape diffShape);
+	ODShape Intersect(in ODShape sectShape);
+	ODShape Union(in ODShape unionShape);
+	ODShape Outset(in ODCoordinate distance);
+
+#ifdef __PRIVATE__
+	void InitBaseShape();
+	RealShape *GetRealShape();
+#endif
+
+#ifdef __SOMIDL__
+	implementation
+	{
+		majorversion=1; 
+		minorversion=0;
+		dllname="odimagng.dll";
+	#ifdef __PRIVATE__
+		override:
+			somUninit,Release,somDumpSelfInt;
+		functionprefix="ShapeB_";
+		RealShape *fShape;
+		ODGeometryMode fMode;
+	#endif
+		releaseorder:
+			SetGeometryMode,
+			GetGeometryMode,
+			GetBoundingBox,
+			SetRectangle,
+			CopyPolygon,
+			SetPolygon,
+			GetPlatformShape,
+			SetPlatformShape,
+			WriteShape,
+			ReadShape,
+			IsSameAs,
+			IsEmpty,
+			ContainsPoint,
+			IsRectangular,
+			HasGeometry,
+			Copy,
+			CopyFrom,
+			Transform,
+			InverseTransform,
+			Subtract,
+			Intersect,
+			Union,
+			Outset,
+			NewShape,
+			Reset,
+			InitBaseShape,
+			GetRealShape;
+	};
+#endif
+};
+
+#endif

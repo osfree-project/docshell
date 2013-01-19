@@ -1,0 +1,3 @@
+NAME odbindng
+DEPENDS odui odregsty
+PROVIDES odbindng

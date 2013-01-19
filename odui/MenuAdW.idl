@@ -1,0 +1,157 @@
+/**************************************************************************
+ *
+ *  Copyright 2008, Roger Brown
+ *
+ *  This file is part of Roger Brown's Toolkit.
+ *
+ *  This program is free software: you can redistribute it and/or modify it
+ *  under the terms of the GNU Lesser General Public License as published by the
+ *  Free Software Foundation, either version 3 of the License, or (at your
+ *  option) any later version.
+ * 
+ *  This program is distributed in the hope that it will be useful, but WITHOUT
+ *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ *  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ *  more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>
+ *
+ */
+
+/*
+ * $Id$
+ */
+
+#ifndef _WINMENUADAPTER_
+#define _WINMENUADAPTER_
+
+#include <Part.idl>
+
+#if defined(_PLATFORM_WIN32_) && !defined(_PLATFORM_X11_)
+
+#ifdef __PRIVATE__
+typedef somToken ODMenuItemList;
+typedef somToken MenuAdapter;
+#endif /* __PRIVATE__ */
+
+interface ODWinMenuAdapter : ODObject
+{
+	struct ODWinMenuItemAdapter {
+		ODMenuItemID        id;
+		ODWinMenuAdapter    parentAdapter;
+		ODWinMenuAdapter    subMenuAdapter;
+
+		ODBoolean           enabled;
+		ODBoolean           hidden;
+		ODBoolean           checked;
+		ODBoolean           separator;
+		string              text;
+	};
+
+    void Init(in ODMenuID id,in HMENU parentHMENU);
+    void AddItemsFromPlatMenuEx(in ODPlatformMenu platMenu, in ODUShort subMenuIDcount,in ODMenuIDInfo  *subMenuIDinfo);
+    ODMenuID MenuID();
+    ODBoolean IsMenuEnabled();
+    void DisableMenu();
+    void EnableMenu();
+    ODUShort GetMenuText(out string menuString);
+    ODBoolean SetMenuText(in string menuString);
+    ODUShort GetMenuItemText(in ODMenuItemID menuItemID,out string menuItemString);
+    ODBoolean SetMenuItemText(in ODMenuItemID menuItemID,in string menuItemString);
+    ODBoolean SetHideMenuItem(in ODMenuItemID menuItemID);
+    ODBoolean SetShowMenuItem(in ODMenuItemID menuItemID);
+	ODBoolean CheckMenuItem(in ODMenuItemID menuItemID,in ODBoolean check);
+    ODBoolean EnableMenuItem(in ODMenuItemID menuItemID,in ODBoolean enable);
+    ODBoolean AddMenuItemBefore(in ODMenuItemID itemID,in ODPlatformMenuItem item, in ODMenuItemID beforeID);
+    ODBoolean AddMenuItemLast(in ODMenuItemID itemID,in ODPlatformMenuItem item);
+    ODBoolean AddSubMenuBeforeEx(in ODMenuID subMenuID,in ODPlatformMenu subMenu,in ODMenuItemID beforeID,in ODUShort subMenuIDcount,in ODMenuIDInfo *subMenuIDinfo);
+    ODBoolean AddSubMenuLastEx(in ODMenuID subMenuID,in ODPlatformMenu subMenu,in ODUShort subMenuIDcount,in ODMenuIDInfo  *subMenuIDinfo);
+    ODPlatformMenu GetSubMenu(in ODMenuID subMenuID);
+    ODBoolean ItemExists(in ODMenuItemID menuItemID);
+    ODBoolean IsItemEnabled(in ODMenuItemID menuItemID);
+    ODBoolean IsItemChecked(in ODMenuItemID menuItemID);
+    ODBoolean IsItemHidden(in ODMenuItemID menuItemID);
+    ODBoolean RemoveMenuItem(in ODMenuItemID menuItemID);
+    ODBoolean GetPlatMenuItem(in ODWinMenuItemAdapter* itemAd,out ODPlatformMenuItem platMenuItem);
+    ODBoolean GetPlatMenu(out ODPlatformMenu platMenu);
+    ODBoolean GetSubMenuAdapter	(in ODMenuID subMenuID,out ODWinMenuAdapter subMenuAd);
+    ODUShort  GetPosInParentMenu();
+    void GetParentAdapter(out ODWinMenuAdapter parentAd);
+    void SetParentAdapter(in ODWinMenuAdapter parentAd);
+
+#ifdef __PRIVATE__
+	typedef sequence<ODWinMenuAdapter> ODWinMenuAdapterSeq;
+	ODBoolean GetSubMenuIDInfo(inout ODWinMenuAdapterSeq info);	   
+    ODPart GetPart();
+    void SetPart(in ODPart part);
+    ODBoolean GetMenuItemAdapter(in ODMenuItemID id,out ODWinMenuItemAdapter* itemAd);
+    ODBoolean GetMenuItemPosition(in ODMenuItemID id,out ODUShort pos);
+	MenuAdapter *GetMenuAdapter();
+	ODPlatformMenu GetMenu();
+#endif /* __PRIVATE__ */
+
+#ifdef __SOMIDL__
+    implementation
+    {
+		majorversion=1;
+		minorversion=0;
+		dllname="odui.dll";
+#ifdef __PRIVATE__
+		functionprefix=MenuAdW_;
+		override: somInit, somUninit;
+		MenuAdapter fMenuAdapter;
+		ODMenuItemList fMenuItems;
+		HMENU fParentHMENU;
+		HMENU fMenuHMENU;
+		ODPart fPart;
+		ODWinMenuAdapter fParentAdapter;
+		string fMenuLabel;
+		ODBoolean fMenuIsEnabled;
+#endif /* __PRIVATE__ */
+	releaseorder:
+	    Init,
+	    AddItemsFromPlatMenuEx,
+	    MenuID,
+	    IsMenuEnabled,
+	    DisableMenu,
+	    EnableMenu,
+	    GetMenuText,
+	    SetMenuText,
+	    GetMenuItemText,
+	    SetMenuItemText,
+	    SetHideMenuItem,
+	    SetShowMenuItem,
+	    CheckMenuItem,
+	    EnableMenuItem,
+	    AddMenuItemBefore,
+	    AddMenuItemLast,
+	    AddSubMenuBeforeEx,
+	    AddSubMenuLastEx,
+	    GetSubMenu,
+	    ItemExists,
+	    IsItemEnabled,
+	    IsItemChecked,
+	    IsItemHidden,
+	    RemoveMenuItem,
+	    GetPlatMenuItem,
+	    GetPlatMenu,
+	    GetSubMenuAdapter,
+		GetParentAdapter,
+	    SetParentAdapter,
+	    GetPosInParentMenu,
+	    GetSubMenuIDInfo,
+	    GetPart,
+	    SetPart,
+	    GetMenuItemAdapter,
+	    GetMenuItemPosition,
+		GetMenuAdapter,
+		GetMenu;
+    };
+#endif /* __SOMIDL__ */
+};
+
+#endif /* _PLATFORM_WIN32_ && !_PLATFORM_X11_ */
+
+#endif /* _WINMENUADAPTER_ */
+

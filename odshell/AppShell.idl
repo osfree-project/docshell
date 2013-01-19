@@ -1,0 +1,126 @@
+/**************************************************************************
+ *
+ *  Copyright 2008, Roger Brown
+ *
+ *  This file is part of Roger Brown's Toolkit.
+ *
+ *  This program is free software: you can redistribute it and/or modify it
+ *  under the terms of the GNU Lesser General Public License as published by the
+ *  Free Software Foundation, either version 3 of the License, or (at your
+ *  option) any later version.
+ * 
+ *  This program is distributed in the hope that it will be useful, but WITHOUT
+ *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ *  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ *  more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>
+ *
+ */
+
+/*
+ * $Id$
+ */
+
+#ifndef _APPSHELLSHELL_
+#define _APPSHELLSHELL_
+
+#include <somobj.idl>
+#include <ODShell.idl>
+#include <ODTypesM.idl>
+
+interface  DocumentManager;
+interface ApplicationShell :  OpenDocShell
+{
+    ODSLong Go(in long argc,in char **argv);
+    void ProcessArgs(in long argc,in char **argv,in char *fileName,in char *partKind,out ODUShort actionFlag);
+    ODBoolean OpenDocument(in DocumentManager docMgr,in char *fileName,in char *partKind, in ODUShort actionFlag);
+    void CreateMenuBar();
+    void InitWindowSystem();
+    void Exec(in char *str);
+    ODSLong MainLoop();
+    void DocumentNew();
+    void DocumentOpen();
+    void DocumentSave();
+    void DocumentSaveAs();
+    void DocumentRevert();
+    void DocumentDraftCreate();
+    void DocumentDraftHistory();
+    void DocumentInfo();
+    void DocumentPageSetup(in ODEventData* event);
+    void DocumentPrint(in ODEventData* event);
+    void DocumentClose();
+    void DocumentAbout();
+    void UpdateUndoMenus();
+    void SendEventToRootPart(in ODEventData* event);
+    void CloseCleanup();
+    void SetExecString(in char *execString);
+    char *GetExecString();
+    ODBoolean IsValidFileName(in char *docName);
+    ODBoolean HandleMenuEvent(in ODEventData *event);
+    ODBoolean HandleCloseEvent(in ODEventData *event);
+    ODBoolean HandleHelpEvent(in ODEventData *event);
+    void AdjustMenu();
+    ODULong GetEventType(in ODEventData *event);
+    ODULong GetEventSubType(in ODEventData *event);
+    ODPlatformWindow GetEventWindow(in ODEventData *event);
+
+	/* rogerb added methods */
+
+	ODULong ConfirmCloseDlg();
+	ODULong ConfirmExitDlg();
+
+#ifdef __SOMIDL__
+    implementation
+    {
+        majorversion=1; 
+		minorversion=0;
+		dllname="odshell.dll";
+#ifdef __PRIVATE__
+        functionprefix = AppShell_;
+		override: DispatchEvent;
+#endif
+        releaseorder:
+            Go,
+            ProcessArgs,
+            OpenDocument,
+            CreateMenuBar,
+            InitWindowSystem,
+			Exec,
+            MainLoop,
+            DocumentNew,
+            DocumentOpen,
+            DocumentSave,
+            DocumentSaveAs,
+            DocumentRevert,
+            DocumentDraftCreate,
+            DocumentDraftHistory,
+            DocumentInfo,
+            DocumentPageSetup,
+            DocumentPrint,
+            DocumentClose,
+            DocumentAbout,
+    	    UpdateUndoMenus,
+            SendEventToRootPart,
+            CloseCleanup,
+            SetExecString,
+            GetExecString,
+            IsValidFileName,
+            HandleMenuEvent,
+            HandleCloseEvent,
+            HandleHelpEvent,
+            AdjustMenu,
+            GetEventType,
+            GetEventSubType,
+            GetEventWindow,
+			ConfirmCloseDlg,
+			ConfirmExitDlg;
+
+        #ifdef __PRIVATE__
+	    char	fExecString[256];
+        #endif
+  };
+#endif
+};
+#endif

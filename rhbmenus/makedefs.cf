@@ -1,0 +1,3 @@
+NAME rhbmenus
+DEPENDS buildenv
+PROVIDES rhbmenus

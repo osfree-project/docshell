@@ -1,0 +1,56 @@
+/**************************************************************************
+ *
+ *  Copyright 2008, Roger Brown
+ *
+ *  This file is part of Roger Brown's Toolkit.
+ *
+ *  This program is free software: you can redistribute it and/or modify it
+ *  under the terms of the GNU Lesser General Public License as published by the
+ *  Free Software Foundation, either version 3 of the License, or (at your
+ *  option) any later version.
+ * 
+ *  This program is distributed in the hope that it will be useful, but WITHOUT
+ *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ *  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ *  more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>
+ *
+ */
+
+/*
+ * $Id$
+ */
+
+#ifndef MLink_idl
+#define MLink_idl
+
+#include <somobj.idl>
+
+interface somf_MLinkable : SOMObject
+{
+	somf_MLinkable somfMLinkableInit(in somf_MLinkable n,in somf_MLinkable p);
+	somf_MLinkable somfGetNext();
+	void somfSetNext(in somf_MLinkable aLink);
+	somf_MLinkable somfGetPrevious();
+	void somfSetPrevious(in somf_MLinkable aLink);
+#ifdef __SOMIDL__
+	implementation 
+	{
+		releaseorder: somfGetNext,somfSetNext,somfGetPrevious,somfSetPrevious,somfMLinkableInit;
+		majorversion=2;
+		minorversion=1;
+		filestem=mlink;
+		dllname="somuc.dll";
+
+#ifdef __PRIVATE__
+		functionprefix=mlink_;
+		somf_MLinkable fNext;
+		somf_MLinkable fPrevious;
+		override: somInit;
+#endif
+	};
+#endif
+};
+#endif

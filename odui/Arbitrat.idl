@@ -1,0 +1,91 @@
+/**************************************************************************
+ *
+ *  Copyright 2008, Roger Brown
+ *
+ *  This file is part of Roger Brown's Toolkit.
+ *
+ *  This program is free software: you can redistribute it and/or modify it
+ *  under the terms of the GNU Lesser General Public License as published by the
+ *  Free Software Foundation, either version 3 of the License, or (at your
+ *  option) any later version.
+ * 
+ *  This program is distributed in the hope that it will be useful, but WITHOUT
+ *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ *  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ *  more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>
+ *
+ */
+
+/*
+ * $Id$
+ */
+
+#ifndef _ARBITRAT_
+#define _ARBITRAT_
+
+#include <ODObject.idl>
+
+interface  ODFocusModule;
+interface  ODFocusSet;
+interface  ODFocusOwnerIterator;
+interface  ODFrame;
+
+#ifdef __PRIVATE__
+interface  ODSession;
+typedef somToken DictionaryList;
+#endif
+
+interface ODArbitrator :  ODObject
+{    
+	ODBoolean RequestFocusSet(in ODFocusSet focusSet,in ODFrame requestingFrame);
+	ODBoolean RequestFocus(in ODTypeToken focus,in ODFrame requestingFrame);
+	void RelinquishFocusSet(in ODFocusSet focusSet,in ODFrame relinquishingFrame);
+	void RelinquishFocus(in ODTypeToken focus,in ODFrame relinquishingFrame);
+	void TransferFocus(in ODTypeToken focus,in ODFrame transferringFrame,in ODFrame newOwner);
+	void TransferFocusSet(in ODFocusSet focusSet,in ODFrame transferringFrame,in ODFrame newOwner);
+	ODFrame AcquireFocusOwner(in ODTypeToken focus);
+	ODFocusOwnerIterator CreateOwnerIterator(in ODTypeToken focus);
+	void RegisterFocus(in ODTypeToken focus,in ODFocusModule focusModule);
+	void UnregisterFocus(in ODTypeToken focus);
+	ODBoolean IsFocusRegistered(in ODTypeToken focus);
+	ODBoolean IsFocusExclusive(in ODTypeToken focus);
+	ODFocusModule GetFocusModule(in ODTypeToken focus);
+	ODFocusSet CreateFocusSet();
+#ifdef __PRIVATE__
+	void InitArbitrator(in ODSession session);
+#endif
+#ifdef __SOMIDL__
+	implementation
+	{
+		majorversion=1; 
+		minorversion=0;
+		dllname="odui.dll";
+#ifdef __PRIVATE__
+		functionprefix=Arbitrat_;
+		override: somUninit,Purge;
+		ODSession fSession;
+		DictionaryList *fFocusModules;
+#endif
+		releaseorder:
+			RequestFocusSet,
+			RequestFocus,
+			RelinquishFocusSet,
+			RelinquishFocus,
+			TransferFocus,
+			TransferFocusSet,
+			AcquireFocusOwner,
+			CreateOwnerIterator,
+			RegisterFocus,
+			UnregisterFocus,
+			IsFocusRegistered,
+			IsFocusExclusive,
+			GetFocusModule,
+			CreateFocusSet,
+			InitArbitrator;
+	};
+#endif
+};
+#endif

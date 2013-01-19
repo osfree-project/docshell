@@ -1,0 +1,290 @@
+/**************************************************************************
+ *
+ *  Copyright 2008, Roger Brown
+ *
+ *  This file is part of Roger Brown's Toolkit.
+ *
+ *  This program is free software: you can redistribute it and/or modify it
+ *  under the terms of the GNU Lesser General Public License as published by the
+ *  Free Software Foundation, either version 3 of the License, or (at your
+ *  option) any later version.
+ * 
+ *  This program is distributed in the hope that it will be useful, but WITHOUT
+ *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ *  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ *  more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>
+ *
+ */
+
+/*
+ * $Id$
+ */
+
+#ifndef _FACET_
+#define _FACET_
+
+#include <ODObject.idl>
+#include <somcls.idl>
+
+#ifdef __PRIVATE__
+typedef somToken FacetNode;
+#endif
+
+interface ODFacet;
+
+interface M_ODFacet : SOMClass
+{
+#ifdef _PLATFORM_X11_
+	ODFacet clsGetFacetFromWidget(in somToken w);
+#else
+	ODFacet clsGetFacetFromHWND(in ODPlatformWindow hwnd);
+#endif
+
+#ifdef __SOMIDL__
+	implementation
+	{
+		majorversion=1;
+		minorversion=0;
+		dllname="odlayout.idl";
+#ifdef __PRIVATE__
+		functionprefix="M_Facet_";
+#endif
+		releaseorder: 
+#ifdef _PLATFORM_X11_
+			clsGetFacetFromWidget;
+#else
+			clsGetFacetFromHWND;
+#endif
+	};
+#endif
+};
+
+interface ODFacet : ODObject
+{
+	ODFrame GetFrame();
+	ODFacet CreateEmbeddedFacet(
+			in ODFrame frame,
+			in ODShape clipShape,
+			in ODTransform externalTransform,
+			in ODCanvas canvas,
+			in ODCanvas biasCanvas,
+			in ODFacet siblinFacet,
+			in ODFramePosition position);
+	void RemoveFacet(in ODFacet facet);
+	void MoveBefore(in ODFacet child,in ODFacet sibling);
+	void MoveBehind(in ODFacet child,in ODFacet sibling);
+	ODFacet GetContainingFacet();
+	ODFacetIterator CreateFacetIterator(
+		in ODTraversalType traversalType,
+		in ODSiblingOrder siblingOrder);
+	ODShape CreateShape();
+	ODShape AcquireClipShape(in ODCanvas biasCanvas);
+	void ChangeGeometry(in ODShape clipShape,
+			in ODTransform transform,
+			in ODCanvas biasCanvas);
+	ODShape AcquireAggregateClipShape(in ODCanvas biasCanvas);
+	ODShape AcquireWindowAggregateClipShape(in ODCanvas biasCanvas);
+	ODShape AcquireActiveShape(in ODCanvas biasCanvas);
+	void ChangeActiveShape(in ODShape activeShape,in ODCanvas biasCanvas);
+	ODTransform CreateTransform();
+	ODTransform AcquireExternalTransform(in ODCanvas biasCanvas);
+	ODTransform AcquireFrameTransform(in ODCanvas biasCanvas);
+	ODTransform AcquireContentTransform(in ODCanvas biasCanvas);
+	ODTransform AcquireWindowFrameTransform(in ODCanvas biasCanvas);
+	ODTransform AcquireWindowContentTransform(in ODCanvas biasCanvas);
+	ODCanvas CreateCanvas(in ODGraphicsSystem graphicsSystem,
+				in ODPlatformCanvas platformCanvas,
+				in ODBoolean isDynamic,
+				in ODBoolean isOffscreen);
+	ODBoolean HasCanvas();
+	ODCanvas GetCanvas();
+	void ChangeCanvas(in ODCanvas canvas);
+	ODWindow GetWindow();
+	ODInfoType GetPartInfo();
+	void SetPartInfo(in ODInfoType partInfo);
+	ODDragResult DragEnter(in ODPoint point,in ODDragItemIterator dragInfo,in ODCanvas biasCanvas);
+	ODDragResult DragWithin(in ODPoint point,in ODDragItemIterator dragInfo,in ODCanvas biasCanvas);
+	void DragLeave(in ODPoint point,in ODCanvas biasCanvas);
+	ODDropResult Drop(in ODPoint point,in ODDragItemIterator dragInfo,in ODCanvas biasCanvas);
+	void Update(in ODShape invalidShape,in ODCanvas biasCanvas);
+	void Invalidate(in ODShape invalidShape,in ODCanvas biasCanvas);
+	void Validate(in ODShape validShape,in ODCanvas biasCanvas);
+	void Draw(in ODShape invalidShape,in ODCanvas biasCanvas);
+	void DrawChildren(in ODShape invalidShape,in ODCanvas biasCanvas);
+	void DrawChildrenAlways(in ODShape invalidShape,in ODCanvas biasCanvas);
+	void DrawnIn(in ODShape shape,in ODCanvas biasCanvas);
+	void InvalidateActiveBorder();
+	void DrawActiveBorder();
+	ODBoolean ContainsPoint(in ODPoint point,in ODCanvas biasCanvas);
+	ODBoolean ActiveBorderContainsPoint(in ODPoint point,in ODCanvas biasCanvas);
+	ODBoolean IsSelected();
+	void SetSelected(in ODBoolean isSelected);
+	ODHighlight GetHighlight();
+	void ChangeHighlight(in ODHighlight highlight);
+	
+#ifdef _PLATFORM_X11_
+	Widget GetFacetWidget();
+	ODBoolean IsEventInActiveBorder(in ODEventData event);
+	ODPlatformCanvas CreatePlatformCanvas(in Display *display,
+				in Pixmap pixmap,in GC gc);
+#else
+	ODPlatformWindow GetFacetHWND();
+	ODPlatformCanvas CreatePlatformCanvas(in somToken hdc);
+#endif
+
+#ifdef __PRIVATE__
+	void InternalTransformChanged();
+	void InvalidateAggregateClipShape();
+	void InvalidateAggregateTransforms();
+	void InitFacet(in ODFrame frame,
+					in ODShape clipShape,
+					in ODTransform externalTransform,
+					in ODCanvas canvas,
+					in ODCanvas biasCanvas);
+	void InitChildFacet(in FacetNode *node,
+					in ODFrame frame,
+					in ODShape clipShape,
+					in ODTransform externalTransform,
+					in ODCanvas canvas,
+					in ODCanvas biasCanvas);
+	FacetNode *GetNode();
+	ODBoolean NeedsUpdate();
+	void SetNeedsUpdate(in ODBoolean needsUpdate);
+
+#ifdef _PLATFORM_X11_
+	Widget CreateFacetWidget(in Widget parentWidget,in ODPlatformCanvas platformCanvas);
+	void CreateActiveBorderWidget();
+	void SetFacetWidgetSize();
+	void SetFacetWidgetRegion(in ODBoolean isUsedShape);
+	void SetFacetWidgetWinPos(in ODPlatformWindow childWindow,in ODPlatformWindow sibling,in ODBoolean moveBefore);
+#else
+	ODPlatformWindow CreateFacetWindow(in ODPlatformWindow parentHWND);
+	void SetFacetWindowPos(in ODPlatformWindow facetHWnd,in ODPlatformWindow sibling);
+	void SetFacetWindowRgn(in ODBoolean isUsedShape);
+#endif
+
+#endif
+
+#ifdef __SOMIDL__
+	implementation
+	{
+		majorversion=1;
+		minorversion=0;
+		dllname="odlayout.dll";
+#ifdef __PRIVATE__
+		functionprefix="Facet_";
+		override: somUninit;
+		ODFrame fFrame;
+		ODShape fClipShape;
+		ODShape fActiveShape;
+		ODTransform fExternalTransform;
+		ODCanvas fCanvas;
+		ODInfoType fPartInfo;
+		ODBoolean fIsSelected;
+		ODHighlight fHighlight;
+		FacetNode fNode;
+		ODBoolean fNeedsUpdate;
+		ODBoolean fIsUpdating;
+		ODShape fAggregateClipShape;
+		ODShape fWindowAggregateClipShape;
+		ODTransform fFrameTransform;
+		ODTransform fContentTransform;
+		ODTransform fWindowFrameTransform;
+		ODTransform fWindowContentTransform;
+		ODShape fActiveBorderShape;
+	#ifdef _PLATFORM_X11_
+		Widget fActiveBorderWidget;
+		Widget fFacetWidget;
+		ODShape fExposeShape;
+		long fExposeCount;
+		unsigned short fWidgetWidth;
+		unsigned short fWidgetHeight;
+	#endif
+	#ifdef _PLATFORM_WIN32_
+		ODRgnHandle fUsedShapeRgn;
+	#endif
+		ODBoolean fIsRegionSet;
+#endif
+		metaclass=M_ODFacet;
+		releaseorder:
+			GetFrame,
+			CreateEmbeddedFacet,
+			RemoveFacet,
+			MoveBefore,
+			MoveBehind,
+			GetContainingFacet,
+			CreateFacetIterator,
+			CreateShape,
+			AcquireClipShape,
+			ChangeGeometry,
+			AcquireAggregateClipShape,
+			AcquireWindowAggregateClipShape,
+			AcquireActiveShape,
+			ChangeActiveShape,
+			CreateTransform,
+			AcquireExternalTransform,
+			AcquireFrameTransform,
+			AcquireContentTransform,
+			AcquireWindowFrameTransform,
+			AcquireWindowContentTransform,
+			CreateCanvas,
+			HasCanvas,
+			GetCanvas,
+			ChangeCanvas,
+			GetWindow,
+			GetPartInfo,
+			SetPartInfo,
+			DragEnter,
+			DragWithin,
+			DragLeave,
+			Drop,
+			Update,
+			Invalidate,
+			Validate,
+			Draw,
+			DrawChildren,
+			DrawChildrenAlways,
+			DrawnIn,
+			InvalidateActiveBorder,
+			DrawActiveBorder,
+			ContainsPoint,
+			ActiveBorderContainsPoint,
+			IsSelected,
+			SetSelected,
+			GetHighlight,
+			ChangeHighlight,
+	#ifdef _PLATFORM_X11_
+			GetFacetWidget,
+			IsEventInActiveBorder,
+			CreatePlatformCanvas,
+	#else
+			GetFacetHWND,
+			CreatePlatformCanvas,
+	#endif 
+			InternalTransformChanged,
+			InvalidateAggregateClipShape,
+			InvalidateAggregateTransforms,
+			InitFacet,
+			InitChildFacet,
+			GetNode,
+			NeedsUpdate,
+			SetNeedsUpdate,
+		#ifdef _PLATFORM_X11_
+			CreateFacetWidget,
+			CreateActiveBorderWidget,
+			SetFacetWidgetSize,
+			SetFacetWidgetRegion,
+			SetFacetWidgetWinPos;
+		#else
+			CreateFacetWindow,
+			SetFacetWindowPos,
+			SetFacetWindowRgn;
+		#endif
+	};
+#endif
+};
+
+#endif

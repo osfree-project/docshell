@@ -1,0 +1,82 @@
+/**************************************************************************
+ *
+ *  Copyright 2008, Roger Brown
+ *
+ *  This file is part of Roger Brown's Toolkit.
+ *
+ *  This program is free software: you can redistribute it and/or modify it
+ *  under the terms of the GNU Lesser General Public License as published by the
+ *  Free Software Foundation, either version 3 of the License, or (at your
+ *  option) any later version.
+ * 
+ *  This program is distributed in the hope that it will be useful, but WITHOUT
+ *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ *  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ *  more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>
+ *
+ */
+
+/*
+ * $Id$
+ */
+
+#ifndef _NMSPCMG_
+#define _NMSPCMG_
+
+#include <ODObject.idl>
+
+interface ODNameSpace;
+#ifdef __PRIVATE__
+interface ODSession;
+typedef somToken Preferences;
+typedef somToken NameSpaceManagerList;
+#endif
+
+interface ODNameSpaceManager: ODObject
+{
+	ODNameSpace CreateNameSpace(in ODISOStr spaceName,in ODNameSpace inheritsFrom,in ODULong numExpectedEntries,in ODNSTypeSpec type);
+	void DeleteNameSpace(in ODNameSpace theNameSpace);
+	ODNameSpace HasNameSpace(in ODISOStr spaceName);
+
+#ifdef __PRIVATE__
+	void InitNameSpaceManager(in ODSession session);
+	ODBoolean SynchNSTable();
+	Preferences *GetPreferences();
+	ODULong	GetMaxISOStrLength();
+	void SetMaxISOStrLength(in ODULong newMax);
+	NameSpaceManagerList *GetNameSpaceList();
+#endif
+
+#ifdef __SOMIDL__
+	implementation
+	{
+		majorversion=1;
+		minorversion=0;
+		dllname="odcore.dll";
+	#ifdef __PRIVATE__
+		functionprefix="NmSpcMg_";
+		override: somUninit;
+		ODULong fMaxISOStrLength;
+		NameSpaceManagerList fNameSpaceManagerList;
+		ODSession fSession;
+	#endif
+		releaseorder:
+			CreateNameSpace,
+			DeleteNameSpace,
+			HasNameSpace,	
+			InitNameSpaceManager,
+			SynchNSTable,
+			GetPreferences,
+			GetMaxISOStrLength,
+			SetMaxISOStrLength,
+			GetNameSpaceList;
+	};
+#endif
+
+};
+
+#endif
+

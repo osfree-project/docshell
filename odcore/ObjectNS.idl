@@ -1,0 +1,57 @@
+/**************************************************************************
+ *
+ *  Copyright 2008, Roger Brown
+ *
+ *  This file is part of Roger Brown's Toolkit.
+ *
+ *  This program is free software: you can redistribute it and/or modify it
+ *  under the terms of the GNU Lesser General Public License as published by the
+ *  Free Software Foundation, either version 3 of the License, or (at your
+ *  option) any later version.
+ * 
+ *  This program is distributed in the hope that it will be useful, but WITHOUT
+ *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ *  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ *  more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>
+ *
+ */
+
+/*
+ * $Id$
+ */
+
+#ifndef _OBJECTNS_
+#define _OBJECTNS_
+
+#include <NamSpac.idl>
+
+interface ODObjectIterator;
+
+interface ODObjectNameSpace : ODNameSpace
+{
+	void Register(in ODISOStr key,in ODObject object);
+	ODBoolean GetEntry(in ODISOStr key,out ODObject object);
+	ODObjectIterator CreateIterator();
+#ifdef __PRIVATE__
+	void InitObjectNameSpace(in ODNameSpaceManager mgr,in ODNameSpace parent,in ODULong numExpectedEntries,in ODISOStr name);
+#endif
+#ifdef __SOMIDL__
+	implementation
+	{
+		majorversion=1;
+		minorversion=0;
+		dllname="odcore.dll";
+	#ifdef __PRIVATE__
+		functionprefix="ObjectNS_";
+		override: somUninit;
+	#endif
+		releaseorder:
+			Register,GetEntry,CreateIterator,InitObjectNameSpace;
+	};
+#endif
+};
+
+#endif

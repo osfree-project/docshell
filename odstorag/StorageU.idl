@@ -1,0 +1,157 @@
+/**************************************************************************
+ *
+ *  Copyright 2008, Roger Brown
+ *
+ *  This file is part of Roger Brown's Toolkit.
+ *
+ *  This program is free software: you can redistribute it and/or modify it
+ *  under the terms of the GNU Lesser General Public License as published by the
+ *  Free Software Foundation, either version 3 of the License, or (at your
+ *  option) any later version.
+ * 
+ *  This program is distributed in the hope that it will be useful, but WITHOUT
+ *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ *  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ *  more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>
+ *
+ */
+
+/*
+ * $Id$
+ */
+
+#ifndef _STORAGEU_
+#define _STORAGEU_
+
+#include <RefCtObj.idl>
+
+interface ODDraft;
+interface ODSession;
+interface ODPart;
+interface ODStorageUnitCursor;
+interface ODStorageUnitView;
+interface ODStorageUnitRefIterator;
+
+interface ODStorageUnit : ODRefCntObject
+{
+	ODDraft	GetDraft();
+	ODSession GetSession();
+	ODBoolean Exists(in ODPropertyName propertyName,in ODValueType valueType,in ODValueIndex valueIndex);
+	ODBoolean ExistsWithCursor(in ODStorageUnitCursor cursor);
+	ODULong CountProperties();	
+	ODULong CountValues();
+	ODStorageUnit Focus(in ODPropertyName propertyName,in ODPositionCode propertyPosCode,in ODValueType valueType,in ODValueIndex valueIndex,in ODPositionCode valuePosCode);	
+	ODStorageUnit FocusWithCursor(in ODStorageUnitCursor cursor);
+	ODStorageUnit Externalize();
+	ODStorageUnit Internalize();
+	ODID GetID();
+	ODStorageUnitName GetName();
+	void SetName(in ODStorageUnitName name);
+	ODStorageUnit AddProperty(in ODPropertyName propertyName);
+	ODStorageUnit AddValue(in ODValueType type);
+	ODStorageUnit Remove();
+	void CloneInto(in ODDraftKey key,in ODStorageUnit destStorageUnit,in ODID scopeID);
+	ODStorageUnitView CreateView();
+	ODStorageUnitCursor	CreateCursorWithFocus();
+	ODStorageUnitCursor CreateCursor(in ODPropertyName propertyName,in ODValueType valueType,in ODValueIndex valueIndex);	
+	ODPropertyName GetProperty();
+	ODValueType GetType();
+	void SetType(in ODValueType valueType);
+	void SetOffset(in ODULong offset);
+	ODULong GetOffset();
+	ODULong GetValue(in ODULong length,out ODByteArray value);
+	void SetValue(in ODByteArray value);
+	void InsertValue(in ODByteArray value);
+	void DeleteValue(in ODULong length);
+	ODULong GetSize();
+	ODBoolean IsValidStorageUnitRef(in ODStorageUnitRef aRef);
+	void GetStrongStorageUnitRef(in ODStorageUnitID embeddedSUID,out ODStorageUnitRef strongRef);
+	void GetWeakStorageUnitRef(in ODStorageUnitID embeddedSUID,out ODStorageUnitRef weakRef);
+	ODBoolean IsStrongStorageUnitRef(in ODStorageUnitRef ref);
+	ODBoolean IsWeakStorageUnitRef(in ODStorageUnitRef ref);
+	ODStorageUnit RemoveStorageUnitRef(in ODStorageUnitRef aRef);
+	ODStorageUnitID GetIDFromStorageUnitRef(in ODStorageUnitRef aRef);
+	ODStorageUnitRefIterator CreateStorageUnitRefIterator();
+	void SetStorageUnitRef(in ODStorageUnitID embeddedSUID,in ODStorageUnitRef ref);
+	ODULong GetGenerationNumber();
+	ODULong IncrementGenerationNumber();
+	ODBoolean IsPromiseValue();
+	void SetPromiseValue(in ODValueType valueType,in ODULong offset,in ODByteArray value,in ODPart sourcePart);	
+	ODULong GetPromiseValue(in ODValueType valueType,in ODULong offset,in ODULong length,out ODByteArray value,out ODPart sourcePart);	
+	void ClearAllPromises();
+	void ResolveAllPromises();
+	ODStorageUnitKey Lock(in ODStorageUnitKey key);
+	void Unlock(in ODStorageUnitKey key);
+
+#ifdef __PRIVATE__
+	void InitStorageUnit(in ODDraft draft,in ODStorageUnitID suid);
+#endif
+
+#ifdef __SOMIDL__
+	implementation
+	{
+		majorversion=1; 
+		minorversion=0;
+		dllname="odstorag.dll";
+#ifdef __PRIVATE__
+  		functionprefix = StorageU_;
+		override: somUninit,Acquire,Release,Purge;
+#endif
+		releaseorder:
+			InitStorageUnit,
+			GetDraft,
+			GetSession,
+			Exists,
+			ExistsWithCursor,
+			CountProperties,
+			CountValues,
+			Focus,
+			FocusWithCursor,
+			Externalize,
+			Internalize,
+			GetID,
+			GetName,
+			SetName,
+			AddProperty,
+			AddValue,
+			Remove,
+			CloneInto,
+			CreateView,
+			CreateCursor,
+			CreateCursorWithFocus,
+			GetProperty,
+			GetType,
+			SetType,
+			SetOffset,
+			GetOffset,
+			GetValue,
+			SetValue,
+			InsertValue,
+			DeleteValue,
+			GetSize,
+			IsValidStorageUnitRef,
+			GetStrongStorageUnitRef,
+			GetWeakStorageUnitRef,
+			IsStrongStorageUnitRef,
+			IsWeakStorageUnitRef,
+			RemoveStorageUnitRef,
+			GetIDFromStorageUnitRef,
+			CreateStorageUnitRefIterator,
+ 			SetStorageUnitRef,
+			GetGenerationNumber,
+			IncrementGenerationNumber,
+			IsPromiseValue,
+			SetPromiseValue,
+			GetPromiseValue,
+			ClearAllPromises,
+			ResolveAllPromises,
+			Lock,
+			Unlock;
+  };
+#endif
+};
+
+#endif

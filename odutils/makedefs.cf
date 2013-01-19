@@ -1,0 +1,3 @@
+NAME odutils
+DEPENDS odpubutl
+PROVIDES odutils

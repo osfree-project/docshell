@@ -1,0 +1,75 @@
+/**************************************************************************
+ *
+ *  Copyright 2008, Roger Brown
+ *
+ *  This file is part of Roger Brown's Toolkit.
+ *
+ *  This program is free software: you can redistribute it and/or modify it
+ *  under the terms of the GNU Lesser General Public License as published by the
+ *  Free Software Foundation, either version 3 of the License, or (at your
+ *  option) any later version.
+ * 
+ *  This program is distributed in the hope that it will be useful, but WITHOUT
+ *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ *  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ *  more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>
+ *
+ */
+
+/*
+ * $Id$
+ */
+
+#ifndef _UNDO_
+#define _UNDO_
+
+#include <ODObject.idl>
+
+interface  ODPart;
+
+interface ODUndo :  ODObject
+{
+#ifdef __PRIVATE__
+   void InitUndo();
+#endif
+   void AddActionToHistory(in ODPart whichPart,in ODActionData actionData,in  ODActionType actionType,in ODName undoActionLabel,in  ODName redoActionLabel);
+   void Undo();
+   void Redo();
+   void MarkActionHistory();
+   void ClearActionHistory(in ODRespectMarksChoices respectMarks);
+   void ClearRedoHistory();
+   ODBoolean PeekUndoHistory(out ODPart part,out ODActionData actionData,out ODActionType actionType,out ODName actionLabel);
+   ODBoolean PeekRedoHistory(out ODPart part,out ODActionData actionData,out ODActionType actionType,out ODName actionLabel);
+   void AbortCurrentTransaction ();
+#ifdef __SOMIDL__
+    implementation
+    {
+		majorversion=1;
+		minorversion=0;
+		dllname="odui.dll";
+
+#ifdef __PRIVATE__
+		functionprefix=Undo_;
+		override: Purge,somUninit;
+#endif
+		releaseorder:
+			InitUndo,
+			AddActionToHistory,
+			Undo,
+			Redo,
+			MarkActionHistory,
+			ClearActionHistory,
+			ClearRedoHistory,
+			PeekUndoHistory,
+			PeekRedoHistory,
+			AbortCurrentTransaction ;
+    };
+#endif
+};
+#endif
+
+
+
