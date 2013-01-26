@@ -31,11 +31,7 @@
 static char szOpenDoc[]="OpenDoc";
 
 #ifdef _PLATFORM_X11_
-#include <X11/Shell.h>
-#include <X11/StringDefs.h>
-#include <rhbmenus.h>
-#include <rhbmenuw.h>
-#include <rhbxtutl.h>
+#include <Xm/XmAll.h>
 /* not really sure what this is for... */
 static char ODWinStatMapNotifyPropertyAtom[]="OpenDoc:WinStat:MyMapNotifyProperty:String";
 #else
@@ -44,6 +40,40 @@ static char kODDocumentWindowClass[]="ODDocumentWindowClass";
 
 
 #ifdef _PLATFORM_X11_
+static void closeAppCallback(Widget w,XtPointer closure,XtPointer call_data)
+{
+	somPrintf("closeAppCallback %p\n",w);
+	exit(0);
+}
+
+static void closeCallback(Widget w,XtPointer closure,XtPointer call_data)
+{
+	ODSession SOMSTAR fSession=(void *)closure;
+	Environment ev;
+	SOM_InitEnvironment(&ev);
+	somPrintf("closeCallback %p,%p\n",w,closure);
+	if (fSession)
+	{
+		WindowSystemData *wsd=ODSession_GetWindowSystemData(fSession,&ev);
+		wsd->closeCallBack(w,closure,call_data);
+	}
+	SOM_UninitEnvironment(&ev);
+}
+
+static void saveCallback(Widget w,XtPointer closure,XtPointer call_data)
+{
+	ODSession SOMSTAR fSession=(void *)closure;
+	Environment ev;
+	SOM_InitEnvironment(&ev);
+	somPrintf("closeCallback %p,%p\n",w,closure);
+	if (fSession)
+	{
+		WindowSystemData *wsd=ODSession_GetWindowSystemData(fSession,&ev);
+		wsd->saveYourselfCallBack(w,closure,call_data);
+	}
+	SOM_UninitEnvironment(&ev);
+}
+
 /* this is formally in WinUtilM.cpp, but putting here
 	because I don't like the API name... */
 
@@ -1393,7 +1423,19 @@ static void WinStat_event_handler(
 }
 #endif
 
+#ifdef _PLATFORM_X11_
 static char szMainWindow[]="mainWindow";
+
+static void MapNotifyEventHandler(Widget widget,XtPointer client_data,XEvent *event,Boolean *cont)
+{
+	somPrintf("MapNotifyEventHandler(%d)\n",event->xany.type);
+
+	if (event->xany.type==MapNotify)
+	{
+		somPrintf("Map notify\n");
+	}
+}
+#endif
 
 SOM_Scope ODPlatformWindow SOMLINK WinStat_CreatePlatformWindow(
 		ODWindowState SOMSTAR somSelf,
@@ -1402,6 +1444,8 @@ SOM_Scope ODPlatformWindow SOMLINK WinStat_CreatePlatformWindow(
 {
 	ODWindowStateData *somThis=ODWindowStateGetData(somSelf);
 	struct WindowListItem *item=SOMCalloc(sizeof(*item),1);
+
+somPrintf("step %s:%d\n",__FILE__,__LINE__);
 
 	/* this is the really whizzy stuff,
 		for windows create a normal window,
@@ -1413,122 +1457,112 @@ SOM_Scope ODPlatformWindow SOMLINK WinStat_CreatePlatformWindow(
 #ifdef _PLATFORM_X11_
 	if (item)
 	{
-		Cardinal argc=0;
-		Arg args[10];
 		Screen *screen=ODWindowState_GetScreen(somSelf,ev);
 		Display *display=ODWindowState_GetDisplay(somSelf,ev);
+/*		Dimension height=(XHeightOfScreen(screen)*2)/3;
+		Dimension width=XWidthOfScreen(screen)/2;*/
 
-		XtSetArg(args[argc],XtNinput,(XtArgVal)True); argc++;
-		XtSetArg(args[argc],XtNmappedWhenManaged,(XtArgVal)0); argc++;
-		XtSetArg(args[argc],XtNiconName,szOpenDoc); argc++;
-		XtSetArg(args[argc],XtNtitle,szOpenDoc); argc++;
-
-		if (screen)
-		{
-			XtSetArg(args[argc],XtNscreen,(XtArgVal)screen); argc++;
-		}
-
-		item->shell=XtAppCreateShell(szOpenDoc,szOpenDoc,
-				openDocShellWidgetClass
-		/*		topLevelShellWidgetClass */
-				/*applicationShellWidgetClass*/,display,args,argc);
+		item->shell=XtVaAppCreateShell(szOpenDoc,szOpenDoc,topLevelShellWidgetClass,display,
+/*				XmNwidth,width,
+				XmNheight,height,*/
+				XmNtitle,szOpenDoc,
+				XmNiconName,szOpenDoc,
+				XmNmappedWhenManaged,0,
+				XmNdeleteResponse,XmDO_NOTHING,
+				XmNscreen,screen,
+				NULL
+				);
 
 		if (item->shell)
 		{
-			ODSession SOMSTAR session=somThis->fSession;
-			Dimension minX=0,minY=0;
+			Atom XaWmDestroyWindow,XaWmSaveYourself;
 
-			argc=0;
+			XaWmDestroyWindow=XmInternAtom(display,"WM_DELETE_WINDOW",False);
+			XaWmSaveYourself=XmInternAtom(display,"WM_SAVE_YOURSELF",False);
 
-			XtSetArg(args[argc],ODSession_somGetClassName(session),(XtArgVal)session); argc++;
+			somPrintf("atoms are %ld,%ld\n",XaWmDestroyWindow,XaWmSaveYourself);
 
-			item->mainWindow=ODCreateWindowFrameWidget(szMainWindow,item->shell,args,argc);
+			XmAddWMProtocols(item->shell,&XaWmDestroyWindow,1);
+			XmAddWMProtocolCallback(item->shell,XaWmDestroyWindow,closeCallback,somThis->fSession);
+
+			XmAddWMProtocols(item->shell,&XaWmSaveYourself,1);
+			XmAddWMProtocolCallback(item->shell,XaWmSaveYourself,saveCallback,somThis->fSession);
+
+somPrintf("step %s:%d\n",__FILE__,__LINE__); fflush(stdout); fflush(stderr);
+			XtAddEventHandler(item->shell,StructureNotifyMask,False,MapNotifyEventHandler,somSelf);
+
+somPrintf("step %s:%d, shell=%p\n",__FILE__,__LINE__,item->shell);
+			item->mainWindow=XtVaCreateManagedWidget(szMainWindow,xmMainWindowWidgetClass,item->shell,NULL);
+
+somPrintf("step %s:%d\n",__FILE__,__LINE__); fflush(stdout); fflush(stderr);
 
 			if (item->mainWindow)
 			{
-/* let the border width come from the resources */
-/*				Dimension borderSize=1; */
-				argc=0;
 
-/*				XtSetArg(args[argc],XtNborderWidth,(XtArgVal)borderSize); argc++;*/
-
+somPrintf("step %s:%d\n",__FILE__,__LINE__); fflush(stdout); fflush(stderr);
 				if (!isFloating)
 				{
-#if defined(_WIN32)&&defined(_DEBUG)
-					Font hf=odui_CreateDebugFont();
-					if (hf)
-					{
-						XtSetArg(args[argc],XtNfont,(XtArgVal)hf); argc++;
-						XtSetArg(args[argc],XmNshadowThickness,(XtArgVal)5); argc++;
-					}
-#endif
+					XmString doc=XmStringCreateSimple("Document");
+					XmString closeApp=XmStringCreateSimple("Close");
+					Widget menu;
+					
+					item->menuBar=XmVaCreateSimpleMenuBar(item->mainWindow,"menubar",
+									XmVaCASCADEBUTTON,doc,'D',
+									NULL);
 
-					item->menuBar=RhubarbCreateMenuBarWidget("menubar",item->mainWindow,args,argc);
+					menu=XmVaCreateSimplePulldownMenu(item->menuBar,"file_menu",0,
+						closeAppCallback,
+						XmVaPUSHBUTTON,closeApp,'C',NULL,NULL,
+						NULL);
 
-					if (item->menuBar)
-					{
-						if (somThis->fBaseMenuBar)
-						{
-							ODX11MenuAdapter SOMSTAR x11=ODMenuBar_GetMenu(somThis->fBaseMenuBar,ev,ID_BASEMENUBAR);
+					XmStringFree(doc);
+					XmStringFree(closeApp);
 
-							if (x11)
-							{
-								XtWidgetGeometry ans;
-								ODX11MenuAdapter_DisplayMenu(x11,ev,item->menuBar);
-
-								XtQueryGeometry(item->menuBar,NULL,&ans);
-
-								minX+=ans.width;
-								minY+=ans.height;
-							}
-						}
-					}
+					XtManageChild(item->menuBar);
 				}
 
-				argc=0;
+somPrintf("step %s:%d\n",__FILE__,__LINE__); fflush(stdout); fflush(stderr);
 
-/*				XtSetArg(args[argc],XtNborderWidth,(XtArgVal)borderSize); argc++;*/
-/*				XtSetArg(args[argc],szMainWindow,(XtArgVal)item->mainWindow); argc++;*/
 
-				item->drawingArea=RhubarbCreateDrawingArea(item->mainWindow,"drawingarea",args,argc);
+				item->drawingArea=XtVaCreateManagedWidget("drawingarea",
+						xmDrawingAreaWidgetClass,
+						item->mainWindow,
+						XmNmarginWidth,0,
+						XmNmarginHeight,0,
+						NULL);
+somPrintf("step %s:%d\n",__FILE__,__LINE__); fflush(stdout); fflush(stderr);
 
-				XtAddEventHandler(item->drawingArea,
-					ButtonPressMask|
-					ButtonReleaseMask,
-					0,
-					WinStat_event_handler,item->drawingArea);
-
-				/* add the PointerMotion and ButtonMotion as raw
-					so they don't add network traffic unless the
-					mouse is actually captured */
-
-				XtAddRawEventHandler(item->drawingArea,
-					PointerMotionMask|
-					ButtonMotionMask,
-					0,
-					WinStat_event_handler,item->drawingArea);
-
-				if (minY)
 				{
-						/* little drawing area */
-					minY+=(minY<<1);
+					XtAddEventHandler(item->drawingArea,
+						ButtonPressMask|
+						ButtonReleaseMask,
+						0,
+						WinStat_event_handler,item->drawingArea);
+
+					/* add the PointerMotion and ButtonMotion as raw
+						so they don't add network traffic unless the
+						mouse is actually captured */
+
+					XtAddRawEventHandler(item->drawingArea,
+						PointerMotionMask|
+						ButtonMotionMask,
+						0,
+						WinStat_event_handler,item->drawingArea);
 				}
 			}
+somPrintf("step %s:%d\n",__FILE__,__LINE__);
 
-			if (minX && minY)
-			{
-				argc=0;
-				XtSetArg(args[argc],XtNminWidth,(XtArgVal)(int)minX); argc++;
-				XtSetArg(args[argc],XtNminHeight,(XtArgVal)(int)minY); argc++;
+			XmMainWindowSetAreas(item->mainWindow,item->menuBar,NULL,NULL,NULL,item->drawingArea);
 
-				XtSetValues(item->shell,args,argc);
-			}
-
+somPrintf("step %s:%d\n",__FILE__,__LINE__);
 			XtRealizeWidget(item->shell);
+somPrintf("step %s:%d\n",__FILE__,__LINE__);
 
 			item->window=XtWindow(item->shell);
+somPrintf("step %s:%d\n",__FILE__,__LINE__);
 		}
 	}
+somPrintf("step %s:%d\n",__FILE__,__LINE__);
 #else
 	if (item)
 	{
@@ -1600,6 +1634,7 @@ SOM_Scope ODPlatformWindow SOMLINK WinStat_CreatePlatformWindow(
 		ODLL_addLast(&somThis->fWindowList,item);
 	}
 
+somPrintf("step %s:%d %d\n",__FILE__,__LINE__,(int)item->window);
 	return item->window;
 }
 
@@ -2252,6 +2287,38 @@ SOM_Scope ODPopup SOMSTAR SOMLINK WinStat_CreatePopupMenuEx(
 	ODPopup SOMSTAR mb=ODPopupNew();
 	if (mb) ODPopup_InitPopupEx(mb,ev,somThis->fSession,popupMenu,subMenuIDcount,subMenuIDinfo);
 	return mb;
+}
+#endif
+
+#ifdef _PLATFORM_X11_
+SOM_Scope _IDL_SEQUENCE_somToken SOMLINK WinStat_GetWidgetChildren(
+	ODWindowState SOMSTAR somSelf,
+	Environment *ev,
+	/* in */ Widget w)
+{
+	_IDL_SEQUENCE_somToken result={0,0,NULL};
+	Widget *children=NULL;
+	Cardinal count=0;
+
+	XtVaGetValues(w,
+		XtNchildren,&children,
+		XtNnumChildren,&count,
+		NULL);
+	
+	if (count)
+	{
+		result._length=count;
+		result._maximum=count;
+		result._buffer=SOMCalloc(count,sizeof(result._buffer[0]));
+		while (count--)
+		{
+			result._buffer[count]=children[count];
+		}
+	}
+
+	somPrintf("GetWidgetChildren returned %ld widgets\n",result._length);
+
+	return result;
 }
 #endif
 

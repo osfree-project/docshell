@@ -33,6 +33,7 @@
 #include <odui.h>
 
 #ifdef _PLATFORM_X11_
+#include <Xm/XmAll.h>
 #else
 typedef struct CDropTarget CDropTarget;
 #endif
@@ -651,21 +652,31 @@ SOM_Scope void SOMLINK Window_CommonInitWindow(
 					if (somThis->fMainWindowWidget)
 					{
 						XtVaGetValues(somThis->fMainWindowWidget,
-							XtNnumChildren,&count,
-							XtNchildren,&list,
+							XmNworkWindow,&somThis->fDrawingAreaWidget,
 							NULL);
-
-						switch (count)
-						{
-						case 1:
-							somThis->fDrawingAreaWidget=list[0];
-							break;
-						case 2:
-							somThis->fDrawingAreaWidget=list[1];
-							break;
-						}
+					}
+					else
+					{
+						somPrintf("error %s:%d, no main window\n",__FILE__,__LINE__);
+						exit(1);
 					}
 				}
+				else
+				{
+					somPrintf("error %s:%d, count not 1\n",__FILE__,__LINE__);
+					exit(1);
+				}
+
+				if (!somThis->fDrawingAreaWidget)
+				{
+					somPrintf("error %s:%d, no drawing area widget\n",__FILE__,__LINE__);
+					exit(1);
+				}
+			}
+			else
+			{
+				somPrintf("error %s:%d, no top level widget\n",__FILE__,__LINE__);
+				exit(1);
 			}
 		}
 #else
@@ -1052,16 +1063,17 @@ SOM_Scope void SOMLINK Window_HandleActivateEvent(
 			ODWindowState SOMSTAR winState=ODSession_GetWindowState(somThis->fSession,ev);
 			somThis->fFocusInReceived=kODTrue;
 			ODWindowState_SaveActiveWindow(winState,ev,somSelf);
-/*			somPrintf("ODWindow gained focus,%p\n",somSelf);*/
+			somPrintf("ODWindow gained focus,%p\n",somSelf);
 		}
 		break;
 	case FocusOut:
 		if (!somThis->fFocusInReceived)
 		{
+			somPrintf("ODWindow already lost focus,%p\n",somSelf);
 			return;
 		}
 		somThis->fFocusInReceived=kODFalse;
-/*		somPrintf("ODWindow lost focus,%p\n",somSelf);*/
+		somPrintf("ODWindow lost focus,%p\n",somSelf);
 		break;
 	default:
 		somPrintf("ODWindow::HandleActivateEvent(), unexpected originalType %d\n",eventInfo->originalType);

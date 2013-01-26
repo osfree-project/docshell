@@ -84,9 +84,16 @@ SOM_Scope void SOMLINK ExcFocus_UnsetFocusOwnership(
 		somPrintf("Release key focus\n");
 	}
 
-	prev=somThis->fFrame;
-	somThis->fFrame=NULL;
-	ODSafeReleaseObject(prev);
+	if (frame==somThis->fFrame)
+	{
+		prev=somThis->fFrame;
+		somThis->fFrame=NULL;
+		ODSafeReleaseObject(prev);
+	}
+	else
+	{
+		somPrintf("UnsetFocusOwnerShip current=%p, claimed=%p\n",somThis->fFrame,frame);
+	}
 }
 /* overridden method ::ODFocusModule::TransferFocusOwnership */
 SOM_Scope void SOMLINK ExcFocus_TransferFocusOwnership(

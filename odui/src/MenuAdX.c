@@ -29,11 +29,7 @@
 #define ODX11MenuAdapter_Class_Source
 #include <odui.h>
 
-#if defined(_PLATFORM_X11_)
-
-typedef struct RHBMENU RHBMENU;
 #include <MenuAdX.ih>
-#include <rhbmenus.h>
 
 static char *dupl_string(const char *str)
 {
@@ -51,34 +47,6 @@ static char *dupl_string(const char *str)
 	return NULL;
 }
 
-#ifdef _PLATFORM_X11_
-static unsigned long pos_before(ODX11MenuAdapterData *somThis,ODMenuItemID before,struct ODMenuItem **ref)
-{
-	struct ODMenuItem *p=somThis->fMenuItems.fFirstItem;
-	unsigned long pos=0;
-
-	*ref=kODNULL;
-
-	while (p)
-	{
-		if (p->item.id==before)
-		{
-			*ref=p;
-
-			return pos;
-		}
-
-		pos++;
-
-		p=p->fNextItem;
-	}
-
-	return pos;
-}
-#endif
-
-
-#ifdef _PLATFORM_X11_
 static void add_before(ODX11MenuAdapterData *somThis,struct ODMenuItem *p,struct ODMenuItem *ref)
 {
 	if (ref)
@@ -100,7 +68,6 @@ static void add_before(ODX11MenuAdapterData *somThis,struct ODMenuItem *p,struct
 		ODLL_addLast(&somThis->fMenuItems,p);
 	}
 }
-#endif
 
 /* overridden methods for ::ODX11MenuAdapter */
 /* overridden method ::SOMObject::somInit */
@@ -120,10 +87,6 @@ SOM_Scope void SOMLINK MenuAdX_somUninit(
 	{
 		ODX11MenuAdapter_RemoveMenuItem(somSelf,&ev,somThis->fMenuItems.fFirstItem->item.id);
 	}
-	if (somThis->fMenu)
-	{
-		RHBMENU_Release(somThis->fMenu);
-	}
 	SOM_UninitEnvironment(&ev);
 	ODX11MenuAdapter_parent_ODObject_somUninit(somSelf);
 }
@@ -138,7 +101,7 @@ SOM_Scope void SOMLINK MenuAdX_Init(
 	ODX11MenuAdapterData *somThis=ODX11MenuAdapterGetData(somSelf);
 	somThis->fMenuID=id;
 	somThis->fSession=session;
-	somThis->fMenu=RhubarbCreateMenu(id,NULL);
+	somThis->fMenuIsEnabled=kODTrue;
 }
 /* introduced method ::ODX11MenuAdapter::Copy */
 SOM_Scope ODX11MenuAdapter SOMSTAR SOMLINK MenuAdX_Copy(
@@ -151,17 +114,8 @@ SOM_Scope ODX11MenuAdapter SOMSTAR SOMLINK MenuAdX_Copy(
 	struct ODMenuItem *p=somThis->fMenuItems.fFirstItem;
 	ODX11MenuAdapter_Init(__result,ev,somThis->fMenuID,somThis->fSession);
 
-	if (somThis->fMenu->title._length)
-	{
-		char buf[256];
-		size_t len=somThis->fMenu->title._length;
-		if (len >= sizeof(buf)) len=sizeof(buf)-1;
-		memcpy(buf,somThis->fMenu->title._buffer,len);
-		buf[len]=0;
-		ODX11MenuAdapter_SetMenuText(__result,ev,buf);
-	}
+	ODX11MenuAdapter_SetMenuText(__result,ev,somThis->fMenuLabel);
 
-#ifdef _PLATFORM_X11_
 	while (p)
 	{
 		ODPlatformMenuItem item={0,NULL};
@@ -181,7 +135,6 @@ SOM_Scope ODX11MenuAdapter SOMSTAR SOMLINK MenuAdX_Copy(
 
 		p=p->fNextItem;
 	}
-#endif
 
 	return __result;
 }
@@ -223,33 +176,6 @@ SOM_Scope ODUShort SOMLINK MenuAdX_GetMenuText(
 	return __result;
 }
 
-static struct ODMenuItem *GetPosInParent(ODX11MenuAdapter SOMSTAR somSelf,struct RHBMENU_ITEM **ppos)
-{
-	ODX11MenuAdapterData *somThis=ODX11MenuAdapterGetData(somSelf);
-	struct ODMenuItem *item=NULL;
-	if (somThis->fParentAdapter)
-	{
-		ODX11MenuAdapterData *parent=ODX11MenuAdapterGetData(somThis->fParentAdapter);
-		unsigned long pos=0;
-		item=parent->fMenuItems.fFirstItem;
-		while (item)
-		{
-			if (item->item.subMenuAdapter==somSelf)
-			{
-				*ppos=RHBMENU_GetItem(parent->fMenu,pos);
-
-				break;
-			}
-
-			pos++;
-
-			item=item->fNextItem;
-		}
-	}
-
-	return item;
-}
-
 /* introduced method ::ODX11MenuAdapter::SetMenuText */
 SOM_Scope ODBoolean SOMLINK MenuAdX_SetMenuText(
 	ODX11MenuAdapter SOMSTAR somSelf,
@@ -257,17 +183,11 @@ SOM_Scope ODBoolean SOMLINK MenuAdX_SetMenuText(
 	/* in */ string menuString)
 {
 	ODX11MenuAdapterData *somThis=ODX11MenuAdapterGetData(somSelf);
-	RHBMENU_SetText(somThis->fMenu,menuString);
-	if (somThis->fParentAdapter)
+	if (somThis->fMenuLabel)
 	{
-		struct RHBMENU_ITEM *mi=NULL;
-		/*struct ODMenuItem *item=*/GetPosInParent(somSelf,&mi);
-		if (mi)
-		{
-			RHBMENU_SetItemText(mi,menuString);
-		}
-		/* set item in parent */
+		SOMFree(somThis->fMenuLabel);
 	}
+	somThis->fMenuLabel=dupl_string(menuString);
 	return kODTrue;
 }
 /* introduced method ::ODX11MenuAdapter::GetMenuItemText */
@@ -281,29 +201,6 @@ SOM_Scope ODUShort SOMLINK MenuAdX_GetMenuItemText(
 	return __result;
 }
 
-static struct ODMenuItem *get_item(ODX11MenuAdapterData *somThis,ODMenuItemID id,struct RHBMENU_ITEM **p)
-{
-	struct ODMenuItem *item=somThis->fMenuItems.fFirstItem;
-	unsigned long pos=0;
-	while (item)
-	{
-		if (item->item.id==id)
-		{
-			if (p)
-			{
-				*p=RHBMENU_GetItem(somThis->fMenu,pos);
-			}
-
-			break;
-		}
-
-		pos++;
-
-		item=item->fNextItem;
-	}
-	return item;
-}
-
 /* introduced method ::ODX11MenuAdapter::SetMenuItemText */
 SOM_Scope ODBoolean SOMLINK MenuAdX_SetMenuItemText(
 	ODX11MenuAdapter SOMSTAR somSelf,
@@ -311,27 +208,8 @@ SOM_Scope ODBoolean SOMLINK MenuAdX_SetMenuItemText(
 	/* in */ ODMenuItemID menuItemID,
 	/* in */ string menuItemString)
 {
-	ODX11MenuAdapterData *somThis=ODX11MenuAdapterGetData(somSelf);
+/*	ODX11MenuAdapterData *somThis=ODX11MenuAdapterGetData(somSelf);*/
 	ODBoolean __result=kODFalse;
-	struct RHBMENU_ITEM *p=NULL;
-	struct ODMenuItem *item=get_item(somThis,menuItemID,&p);
-	if (item)
-	{
-		char *q=item->item.text;
-		item->item.text=dupl_string(menuItemString);
-		if (p)
-		{
-			if (menuItemString && menuItemString[0])
-			{
-				p->flags&=~RHBMENU_SEPARATOR;
-			}
-			RHBMENU_SetItemText(p,menuItemString);
-			RHBMENU_UpdateItem(p,RHBMENU_UPDATE_SIZE|RHBMENU_UPDATE_TEXT);
-		}
-
-		if (q) SOMFree(q);
-		__result=kODTrue;
-	}
 	return __result;
 }
 /* introduced method ::ODX11MenuAdapter::SetHideMenuItem */
@@ -362,29 +240,11 @@ SOM_Scope ODBoolean SOMLINK MenuAdX_CheckMenuItem(
 	/* in */ ODBoolean check)
 {
 	ODBoolean __result=kODFalse;
-	ODX11MenuAdapterData *somThis=ODX11MenuAdapterGetData(somSelf);
-	struct RHBMENU_ITEM *p=NULL;
-	struct ODMenuItem *item=get_item(somThis,menuItemID,&p);
+	ODX11MenuAdapter_ODX11MenuItemAdapter *p=NULL;
 
-	if (item)
-	{
-		unsigned long flags=p->flags;
-
-		if (check)
-		{
-			flags|=RHBMENU_CHECKED;
-		}
-		else
-		{
-			flags&=~RHBMENU_CHECKED;
-		}
-
-		if (flags != p->flags)
-		{
-			p->flags=flags;
-			RHBMENU_UpdateItem(p,RHBMENU_UPDATE_CHECKED);
-		}
-
+	if (ODX11MenuAdapter_GetMenuItemAdapter(somSelf,ev,menuItemID,&p))
+	{	
+		p->checked=check;		
 		__result=kODTrue;
 	}
 
@@ -398,29 +258,11 @@ SOM_Scope ODBoolean SOMLINK MenuAdX_EnableMenuItem(
 	/* in */ ODBoolean enable)
 {
 	ODBoolean __result=kODFalse;
-	ODX11MenuAdapterData *somThis=ODX11MenuAdapterGetData(somSelf);
-	struct RHBMENU_ITEM *p=NULL;
-	struct ODMenuItem *item=get_item(somThis,menuItemID,&p);
+	ODX11MenuAdapter_ODX11MenuItemAdapter *p=NULL;
 
-	if (item)
-	{
-		unsigned long flags=p->flags;
-
-		if (enable)
-		{
-			flags&=~RHBMENU_DISABLED;
-		}
-		else
-		{
-			flags|=RHBMENU_DISABLED;
-		}
-
-		if (flags != p->flags)
-		{
-			p->flags=flags;
-			RHBMENU_UpdateItem(p,RHBMENU_UPDATE_ENABLE);
-		}
-
+	if (ODX11MenuAdapter_GetMenuItemAdapter(somSelf,ev,menuItemID,&p))
+	{	
+		p->enabled=enable;		
 		__result=kODTrue;
 	}
 
@@ -434,19 +276,15 @@ SOM_Scope ODBoolean SOMLINK MenuAdX_AddMenuItemBefore(
 	/* in */ ODPlatformMenuItem *item,
 	/* in */ ODMenuItemID beforeID)
 {
-#ifdef _PLATFORM_X11_
 	ODX11MenuAdapterData *somThis=ODX11MenuAdapterGetData(somSelf);
 	struct ODMenuItem *ref=kODNULL;
-	unsigned long pos=pos_before(somThis,beforeID,&ref);
 	struct ODMenuItem *p=SOMCalloc(sizeof(*p),1);
 	p->item.id=itemID;
 	p->item.text=dupl_string(item->text);
+	p->item.enabled=1;
+	p->item.separator=((!(item->text))||(!(item->text[0])));
 	add_before(somThis,p,ref);
-	RHBMENU_InsertItem(somThis->fMenu,pos,item->text,itemID);
 	return kODTrue;
-#else
-	return kODFalse;
-#endif
 }
 /* introduced method ::ODX11MenuAdapter::AddMenuItemLast */
 SOM_Scope ODBoolean SOMLINK MenuAdX_AddMenuItemLast(
@@ -455,18 +293,14 @@ SOM_Scope ODBoolean SOMLINK MenuAdX_AddMenuItemLast(
 	/* in */ ODMenuItemID itemID,
 	/* in */ ODPlatformMenuItem *item)
 {
-#ifdef _PLATFORM_X11_
 	ODX11MenuAdapterData *somThis=ODX11MenuAdapterGetData(somSelf);
-	unsigned long pos=RHBMENU_Count(somThis->fMenu);
 	struct ODMenuItem *p=SOMCalloc(sizeof(*p),1);
 	p->item.id=itemID;
 	p->item.text=dupl_string(item->text);
+	p->item.enabled=1;
+	p->item.separator=((!(item->text))||(!(item->text[0])));
 	ODLL_addLast(&somThis->fMenuItems,p);
-	RHBMENU_InsertItem(somThis->fMenu,pos,item->text,itemID);
 	return kODTrue;
-#else
-	return kODFalse;
-#endif
 }
 /* introduced method ::ODX11MenuAdapter::AddSubMenuBefore */
 SOM_Scope ODBoolean SOMLINK MenuAdX_AddSubMenuBefore(
@@ -476,25 +310,13 @@ SOM_Scope ODBoolean SOMLINK MenuAdX_AddSubMenuBefore(
 	/* in */ ODPlatformMenu subMenu,
 	/* in */ ODMenuItemID beforeID)
 {
-#ifdef _PLATFORM_X11_
 	RHBOPT_ASSERT(SOMObject_somIsA(somSelf,_ODX11MenuAdapter));
 	RHBOPT_ASSERT(SOMObject_somIsA(subMenu,_ODX11MenuAdapter));
 
 	{
 		ODX11MenuAdapterData *somThis=ODX11MenuAdapterGetData(somSelf);
 		struct ODMenuItem *p=SOMCalloc(sizeof(*p),1);
-		ODX11MenuAdapterData *somThat=ODX11MenuAdapterGetData(subMenu);
 		struct ODMenuItem *ref=kODNULL;
-		unsigned long pos=pos_before(somThis,beforeID,&ref);
-		struct RHBMENU_ITEM *item;
-		char buf[256]={'*',0};
-
-		if (somThat->fMenu->title._length)
-		{
-			size_t len=somThat->fMenu->title._length;
-			if (len >= sizeof(buf)) len=sizeof(buf)-1;
-			memcpy(buf,somThat->fMenu->title._buffer,len);
-		}
 
 		p->item.subMenuAdapter=subMenu;
 		p->item.id=subMenuID;
@@ -502,18 +324,9 @@ SOM_Scope ODBoolean SOMLINK MenuAdX_AddSubMenuBefore(
 		ODX11MenuAdapter_SetParentAdapter(subMenu,ev,somSelf);
 
 		add_before(somThis,p,ref);
-
-		RHBMENU_InsertItem(somThis->fMenu,pos,buf,subMenuID);
-
-		item=RHBMENU_GetItem(somThis->fMenu,pos);
-
-		RHBMENU_SetPopup(item,somThat->fMenu);
 	}
 
 	return kODTrue;
-#else
-	return kODFalse;
-#endif
 }
 /* introduced method ::ODX11MenuAdapter::AddSubMenuLast */
 SOM_Scope ODBoolean SOMLINK MenuAdX_AddSubMenuLast(
@@ -522,41 +335,20 @@ SOM_Scope ODBoolean SOMLINK MenuAdX_AddSubMenuLast(
 	/* in */ ODMenuID subMenuID,
 	/* in */ ODPlatformMenu subMenu)
 {
-#ifdef _PLATFORM_X11_
 	RHBOPT_ASSERT(SOMObject_somIsA(somSelf,_ODX11MenuAdapter));
 	RHBOPT_ASSERT(SOMObject_somIsA(subMenu,_ODX11MenuAdapter));
 
 	{
 		ODX11MenuAdapterData *somThis=ODX11MenuAdapterGetData(somSelf);
 		struct ODMenuItem *p=SOMCalloc(sizeof(*p),1);
-		ODX11MenuAdapterData *somThat=ODX11MenuAdapterGetData(subMenu);
-		unsigned long pos=RHBMENU_Count(somThis->fMenu);
-		struct RHBMENU_ITEM *item;
-		char buf[256]={'*',0};
-
-		if (somThat->fMenu->title._length)
-		{
-			size_t len=somThat->fMenu->title._length;
-			if (len >= sizeof(buf)) len=sizeof(buf)-1;
-			memcpy(buf,somThat->fMenu->title._buffer,len);
-		}
 
 		p->item.subMenuAdapter=subMenu;
 		p->item.id=subMenuID;
 
 		ODLL_addLast(&somThis->fMenuItems,p);
-
-		RHBMENU_InsertItem(somThis->fMenu,pos,buf,subMenuID);
-
-		item=RHBMENU_GetItem(somThis->fMenu,pos);
-
-		RHBMENU_SetPopup(item,somThat->fMenu);
 	}
 
 	return kODTrue;
-#else
-	return kODFalse;
-#endif
 }
 /* introduced method ::ODX11MenuAdapter::GetSubMenu */
 SOM_Scope ODPlatformMenu SOMLINK MenuAdX_GetSubMenu(
@@ -564,7 +356,6 @@ SOM_Scope ODPlatformMenu SOMLINK MenuAdX_GetSubMenu(
 	Environment *ev,
 	/* in */ ODMenuID subMenuID)
 {
-#ifdef _PLATFORM_X11_
 	ODX11MenuAdapterData *somThis=ODX11MenuAdapterGetData(somSelf);
 	struct ODMenuItem *p=somThis->fMenuItems.fFirstItem;
 	if (somThis->fMenuID==subMenuID) return somSelf;
@@ -584,8 +375,7 @@ SOM_Scope ODPlatformMenu SOMLINK MenuAdX_GetSubMenu(
 
 		p=p->fNextItem;
 	}
-#endif
-	return kODNULL;
+	return NULL;
 }
 /* introduced method ::ODX11MenuAdapter::ItemExists */
 SOM_Scope ODBoolean SOMLINK MenuAdX_ItemExists(
@@ -638,17 +428,11 @@ SOM_Scope ODBoolean SOMLINK MenuAdX_RemoveMenuItem(
 	{
 		if (p->item.id==menuItemID)
 		{
-			struct RHBMENU_ITEM *item=RHBMENU_GetItem(somThis->fMenu,pos);
-			struct RHBMENU *popup=RHBMENU_SetPopup(item,NULL);
 			SOMObject SOMSTAR m=p->item.subMenuAdapter;
-
-			(void)popup;
 
 			p->item.subMenuAdapter=NULL;
 
 			ODLL_remove(&somThis->fMenuItems,p);
-
-			RHBMENU_RemoveItem(somThis->fMenu,pos);
 
 			if (m)
 			{
@@ -699,16 +483,142 @@ SOM_Scope void SOMLINK MenuAdX_SetParentAdapter(
 	ODX11MenuAdapterData *somThis=ODX11MenuAdapterGetData(somSelf);
 	somThis->fParentAdapter=parentAd;
 }
+
+static void cascadeBtnDestroyCallback(Widget w, XtPointer client_data, XtPointer call_data)
+{
+    ODX11MenuAdapterData *somThis = (ODX11MenuAdapterData *) client_data;
+
+	if (somThis)
+	{
+	    if (somThis->fMenuCascadeButtonWidget==w)
+		{
+			somThis->fMenuCascadeButtonWidget=kODNULL;
+		}
+	}
+}
+
+static void paneDestroyCallback(Widget w, XtPointer client_data, XtPointer call_data)
+{
+    ODX11MenuAdapterData *somThis = (ODX11MenuAdapterData *) client_data;
+
+	if (somThis)
+	{
+	    if (somThis->fMenuPaneRowColWidget==w)
+		{
+			somThis->fMenuPaneRowColWidget=kODNULL;
+		}
+	}
+}
+
+static void itemDestroyCallback(Widget w, XtPointer client_data, XtPointer call_data)
+{
+	struct ODMenuItem *p=(void *)client_data;
+
+	if (p)
+	{
+	    if (p->item.widget==w)
+		{
+			p->item.widget=kODNULL;
+		}
+	}
+}
+
 /* introduced method ::ODX11MenuAdapter::DisplayMenu */
+
 SOM_Scope void SOMLINK MenuAdX_DisplayMenu(
 	ODX11MenuAdapter SOMSTAR somSelf,
 	Environment *ev,
 	/* in */ Widget mbar)
 {
 	ODX11MenuAdapterData *somThis=ODX11MenuAdapterGetData(somSelf);
-	if (somThis->fMenu && mbar)
+	if (somThis && mbar)
 	{
-		RHBMENU_Display(somThis->fMenu,mbar);
+		XmString str=NULL;
+		Arg args[8];
+		int argc=0;
+		struct ODMenuItem *p=somThis->fMenuItems.fFirstItem;
+		Widget old=somThis->fMenuPaneRowColWidget;
+
+		somThis->fMenuPaneRowColWidget=XmCreatePulldownMenu(mbar,"menu_pane",NULL,0);
+
+		XtAddCallback(somThis->fMenuPaneRowColWidget,XmNdestroyCallback,paneDestroyCallback,somThis);
+
+		while (p)
+		{
+			if (p->item.subMenuAdapter)
+			{
+				ODX11MenuAdapter_DisplayMenu(p->item.subMenuAdapter,ev,somThis->fMenuPaneRowColWidget);
+			}
+			else
+			{
+				if (p->item.separator)
+				{
+					p->item.widget=XmCreateSeparator(somThis->fMenuPaneRowColWidget,"",NULL,0);
+					XtAddCallback(p->item.widget,XmNdestroyCallback,itemDestroyCallback,p);
+					XtManageChild(p->item.widget);
+				}
+				else
+				{
+					str=XmStringCreateLocalized(p->item.text);
+
+					argc=0;
+
+					XtSetArg(args[argc],XmNlabelString,str); argc++;
+					XtSetArg(args[argc],XmNsensitive,p->item.enabled); argc++;
+					XtSetArg(args[argc],XmNset,p->item.checked); argc++;
+					XtSetArg(args[argc],XmNindicatorSize,8); argc++;
+					XtSetArg(args[argc],XmNmarginRight,8); argc++;
+				
+					p->item.widget=XmCreateToggleButton(somThis->fMenuPaneRowColWidget,"",args,argc);
+
+					XmStringFree(str);
+
+					str=NULL;
+
+					XtAddCallback(p->item.widget,XmNdestroyCallback,itemDestroyCallback,p);
+
+					if (!(p->item.hidden))
+					{
+						XtManageChild(p->item.widget);
+					}
+				}
+			}
+
+			p=p->fNextItem;
+		}
+
+		argc=0;
+
+		if (somThis->fMenuCascadeButtonWidget)
+		{
+			Widget w=somThis->fMenuCascadeButtonWidget;
+			somThis->fMenuCascadeButtonWidget=NULL;
+			XtDestroyWidget(w);
+		}
+
+		if (somThis->fMenuLabel)
+		{
+			str=XmStringCreateLocalized(somThis->fMenuLabel);
+			XtSetArg(args[argc],XmNlabelString,str); argc++;
+			XtSetArg(args[argc],XmNsubMenuId,somThis->fMenuPaneRowColWidget); argc++;
+		}
+
+		somThis->fMenuCascadeButtonWidget=XmCreateCascadeButton(mbar,"menu_cb",args,argc);
+
+		XtAddCallback(somThis->fMenuCascadeButtonWidget,XmNdestroyCallback,cascadeBtnDestroyCallback,somThis);
+		XtManageChild(somThis->fMenuCascadeButtonWidget);
+
+		XtSetSensitive(somThis->fMenuCascadeButtonWidget,somThis->fMenuIsEnabled);
+
+		if (str) 
+		{
+			XmStringFree(str);
+		}
+
+		if (old)
+		{
+			XtDestroyWidget(old);
+		}
 	}
 }
 /* introduced method ::ODX11MenuAdapter::DisplayAsPopup */
@@ -720,9 +630,8 @@ SOM_Scope void SOMLINK MenuAdX_DisplayAsPopup(
 	/* in */ short y)
 {
 	ODX11MenuAdapterData *somThis=ODX11MenuAdapterGetData(somSelf);
-	if (somThis->fMenu && parent)
+	if (somThis && parent)
 	{
-		RHBMENU_ShowPopup(somThis->fMenu,parent,x,y);
 	}
 }
 /* introduced method ::ODX11MenuAdapter::GetPart */
@@ -730,8 +639,9 @@ SOM_Scope ODPart SOMSTAR SOMLINK MenuAdX_GetPart(
 	ODX11MenuAdapter SOMSTAR somSelf,
 	Environment *ev)
 {
-	ODPart SOMSTAR __result=NULL;
-	return __result;
+	ODX11MenuAdapterData *somThis=ODX11MenuAdapterGetData(somSelf);
+
+	return somThis->fPart;
 }
 /* introduced method ::ODX11MenuAdapter::SetPart */
 SOM_Scope void SOMLINK MenuAdX_SetPart(
@@ -739,6 +649,9 @@ SOM_Scope void SOMLINK MenuAdX_SetPart(
 	Environment *ev,
 	/* in */ ODPart SOMSTAR part)
 {
+	ODX11MenuAdapterData *somThis=ODX11MenuAdapterGetData(somSelf);
+
+	somThis->fPart=part;
 }
 /* introduced method ::ODX11MenuAdapter::GetMenuItemAdapter */
 SOM_Scope ODBoolean SOMLINK MenuAdX_GetMenuItemAdapter(
@@ -747,7 +660,31 @@ SOM_Scope ODBoolean SOMLINK MenuAdX_GetMenuItemAdapter(
 	/* in */ ODMenuItemID id,
 	/* out */ ODX11MenuAdapter_ODX11MenuItemAdapter **itemAd)
 {
-	return kODNULL;
+	ODX11MenuAdapterData *somThis=ODX11MenuAdapterGetData(somSelf);
+	struct ODMenuItem *p=somThis->fMenuItems.fFirstItem;
+
+	while (p)
+	{
+		if (p->item.id==id)
+		{
+			itemAd[0]=&(p->item);
+
+			return kODTrue;
+		}
+		else
+		{
+			if (p->item.subMenuAdapter)
+			{
+				if (ODX11MenuAdapter_GetMenuItemAdapter(p->item.subMenuAdapter,ev,id,itemAd))
+				{
+					return kODTrue;
+				}
+			}
+		}
+
+		p=p->fNextItem;
+	}
+
+	return kODFalse;
 }
 
-#endif /* _PLATFORM_X11_ */

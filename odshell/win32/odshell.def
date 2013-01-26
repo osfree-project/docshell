@@ -35,8 +35,5 @@ EXPORTS
 	DocumentManagerCClassData
 	DocumentManagerClassData
 	DocumentManagerNewClass
-	AIXShellCClassData
-	AIXShellClassData
-	AIXShellNewClass
 	InitShellPlugIn
 	InstallShellPlugIn

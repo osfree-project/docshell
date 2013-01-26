@@ -29,6 +29,8 @@ then
 	if test -d /opt/somtk
 	then
 		SOMBASE=/opt/somtk
+	else
+		SOMBASE="$OUTDIR"
 	fi
 fi
 

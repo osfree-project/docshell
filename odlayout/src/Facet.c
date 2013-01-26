@@ -1353,7 +1353,7 @@ SOM_Scope Widget SOMLINK Facet_CreateFacetWidget(
 			ODPlatformCanvas SOMSTAR platformCanvas)
 {
 	Dimension border=0,offsetx=0,offsety=0,lWidth=0,lHeight=0;
-/*	WidgetClass widgetClass=XtClass(parentWidget);*/
+	WidgetClass widgetClass=XtClass(parentWidget);
 	ODFacetData *somThis=ODFacetGetData(somSelf);
 	ODTransform SOMSTAR xform=kODNULL;
 	ODRect bounds={0,0,0,0};
@@ -1370,9 +1370,9 @@ SOM_Scope Widget SOMLINK Facet_CreateFacetWidget(
 	Pixel foreground=XBlackPixelOfScreen(screen),
 		  background=XWhitePixelOfScreen(screen),
 		  borderColor=XBlackPixelOfScreen(screen);
+	const char *str=XtName(parentWidget);
 
-/*	somPrintf("CreateFacetWidget %s:%d\n",__FILE__,__LINE__);*/
-
+	somPrintf("CreateFacetWidget %s:%d, %s\n",__FILE__,__LINE__,str);
 
 	/* inherit the major graphical items
 		from our parent */
@@ -1430,8 +1430,8 @@ SOM_Scope Widget SOMLINK Facet_CreateFacetWidget(
 		XtSetArg(args[argc],XtNfont,(XtArgVal)font); argc++;
 	}
 
-/*	newWidget=XtCreateManagedWidget("FacetWidget",widgetClass,parentWidget,args,argc);*/
-	newWidget=RhubarbCreateDrawingArea(parentWidget,"FacetWidget",args,argc);
+	newWidget=XtCreateManagedWidget("FacetWidget",widgetClass,parentWidget,args,argc);
+/*	newWidget=RhubarbCreateDrawingArea(parentWidget,"FacetWidget",args,argc);*/
 
 	XtAddCallback(newWidget,XmNexposeCallback,facet_expose,(XtPointer)somSelf);
 	XtAddCallback(newWidget,XmNresizeCallback,facet_resize,(XtPointer)somSelf);

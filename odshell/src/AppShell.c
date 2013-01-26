@@ -52,6 +52,8 @@ SOM_Scope ODBoolean SOMLINK AppShell_DispatchEvent(
 		}
 		break;
 	case kODEvtActivate:
+		somPrintf("kODEvtActivate\n");
+
 		switch (ApplicationShell_GetEventSubType(somSelf,ev,event))
 		{
 		case kODEvtInactive:
@@ -836,6 +838,8 @@ SOM_Scope ODBoolean SOMLINK AppShell_HandleCloseEvent(
 	ODPlatformWindow window=ApplicationShell_GetEventWindow(somSelf,ev,event);
 	DocumentManager SOMSTAR docMgr=ApplicationShell_GetActiveDocumentManager(somSelf,ev);
 	ODBoolean handled=kODFalse;
+
+	somPrintf("AppShell_HandleCloseEvent... %p %ld\n",docMgr,(long)window);
 
 	if (docMgr && window)
 	{

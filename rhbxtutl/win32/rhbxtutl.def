@@ -24,15 +24,4 @@ VERSION 2.39
 EXPORTS
 	RhubarbCreateSolidBrush
 	RhubarbCreateGreyBitmap
-	RhubarbCreateMenuBarWidget
-	RhubarbCreateMenu
-	RhubarbCreateMenuItemWidget
-	RhubarbCreateArrowCursor
-	RhubarbCreateDrawingArea
-	RhubarbCreateSeparator
-	RhubarbCreateToggleButton
-	RhubarbCreateCascadeButton
-	RhubarbCreateRowColumn
-	RhubarbCreateMainWindow
-	RhubarbCreatePulldownMenu
 	RhubarbFrameRectangle

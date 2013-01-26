@@ -28,7 +28,6 @@
 #include <rhbxtutl.h>
 #include <dither.h>
 #include <stdio.h>
-#include <rhbarrow.h>
 
 Pixmap RhubarbCreateSolidBrush(
 		Display *d,
@@ -204,50 +203,6 @@ Pixmap RhubarbCreateGreyBitmap(Screen *screen,unsigned short darkness)
 				XRootWindowOfScreen(screen),
 				(char *)bitmap,16,16);
 }
-
-Cursor RhubarbCreateArrowCursor(Screen *screen)
-{
-	Display *display=XDisplayOfScreen(screen);
-	Drawable drawable=XRootWindowOfScreen(screen);
-	Pixmap mask=XCreateBitmapFromData(display,drawable,
-					(void *)arrow_bits,
-					arrow_width,arrow_height>>1);
-	Pixmap src=XCreateBitmapFromData(display,drawable,
-					(void *)(arrow_bits+(sizeof(arrow_bits)>>1)),
-					arrow_width,arrow_height>>1);
-	XColor colours[2];
-	Cursor cur;
-
-	colours[0].pixel=XBlackPixelOfScreen(screen) /*widget->menu.foreground_pixel*/;
-	colours[0].flags=0;
-	colours[0].red=0;
-	colours[0].green=0;
-	colours[0].blue=0;
-
-	colours[1].pixel=XWhitePixelOfScreen(screen) /*widget->core.background_pixel*/;
-	colours[1].flags=0;
-	colours[1].red=0xffff;
-	colours[1].blue=0xffff;
-	colours[1].green=0xffff;
-
-	/* ensure correct mapping of colours */
-	XQueryColors(display,
-		XDefaultColormapOfScreen(screen) /*canvas->colormap*/,
-		colours,2);
-
-	cur=XCreatePixmapCursor(display,src,mask,colours,colours+1,
-		arrow_x_hot,arrow_y_hot);
-
-	XFreePixmap(display,mask);
-	XFreePixmap(display,src);
-
-	return cur;
-}
-
-#ifdef _WIN32
-#	undef RHBOPT_ASSERT
-#	define RHBOPT_ASSERT(x)   if (!(x)) __asm int 3
-#endif
 
 void RhubarbFrameRectangle(Display *display,
 									Drawable drawable,

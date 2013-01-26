@@ -33,7 +33,6 @@ interface  ODX11MenuAdapter;
 
 #ifdef __PRIVATE__
 typedef somToken ODMenuItemList;
-typedef somToken RHBMENU;
 #endif /* __PRIVATE__ */
 
 #if defined(_PLATFORM_X11_)
@@ -141,8 +140,9 @@ interface ODX11MenuAdapter : ODObject
 	    ODPart fPart;
 	    string fMenuLabel;
 		ODMenuID fMenuID;
-	    RHBMENU *fMenu;
 	    ODX11MenuAdapter	fParentAdapter;
+		Widget fMenuCascadeButtonWidget;
+		Widget fMenuPaneRowColWidget;
 	#endif /* __PRIVATE__ */
 
     };

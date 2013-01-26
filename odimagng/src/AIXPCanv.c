@@ -29,8 +29,6 @@
 
 #include <odimagng.h>
 
-#if defined(_PLATFORM_X11_)
-
 #include <AIXPCanv.ih>
 
 SOM_Scope Pixmap SOMLINK AIXPCanv_GetPixmap(
@@ -58,11 +56,7 @@ SOM_Scope ODGraphicsSystem SOMLINK AIXPCanv_GetSystemType(
 		ODAIXCanvas SOMSTAR somSelf,
 		Environment *ev)
 {
-#ifdef _PLATFORM_X11_
 	return kODX11;
-#else
-	return 40;
-#endif
 }
 
 SOM_Scope ODBoolean SOMLINK AIXPCanv_HasWindow(
@@ -131,4 +125,3 @@ SOM_Scope ODPlatformCanvasType SOMLINK AIXPCanv_GetPlatformCanvasType(
 	return kODNoPlatformCanvas;
 }
 
-#endif /* _PLATFORM_X11_ */

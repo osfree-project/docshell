@@ -55,9 +55,7 @@ OBJS=$(INTDIR)/odui.o \
 	$(INTDIR)/FocusOwn.o \
 	$(INTDIR)/FocusSet.o \
 	$(INTDIR)/FocusItr.o \
-	$(INTDIR)/ExcFocus.o \
-	$(INTDIR)/odShellX.o \
-	$(INTDIR)/odFrameX.o
+	$(INTDIR)/ExcFocus.o
 
 all: all-$(HAVE_LIBXT)
 

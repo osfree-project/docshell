@@ -36,6 +36,11 @@ typedef struct FrameFacetNode FrameFacetNode;
 
 #include <rhbsomex.h>
 #include <ODTypes.h>
+
+#ifdef _PLATFORM_X11_
+#	include <Xm/XmAll.h>
+#endif
+
 #include <Polygon.h>
 #include <Frame.h>
 #include <Facet.h>

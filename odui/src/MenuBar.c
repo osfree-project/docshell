@@ -37,16 +37,26 @@ static ODMenuAdapter SOMSTAR GetMenuAdapter(ODMenuBar SOMSTAR somSelf,
 			    ODMenuID menu)
 {
     ODMenuBarData *somThis=ODMenuBarGetData(somSelf);
+	ODX11MenuAdapter SOMSTAR result=NULL;
+	unsigned long i=0;
 
-	if (menu)
+	while (i < somThis->fMenus._length)
 	{
-		if (somThis->fBaseMenuBar)
+		ODX11MenuAdapter SOMSTAR obj=somThis->fMenus._buffer[i++];
+		if (ODX11MenuAdapter_MenuID(obj,ev)==menu)
 		{
-			return ODX11MenuAdapter_GetSubMenu(somThis->fBaseMenuBar,ev,menu);
+			result=obj;
+			break;
+		}
+		obj=ODX11MenuAdapter_GetSubMenu(obj,ev,menu);
+		if (obj)
+		{
+			result=obj;
+			break;
 		}
 	}
 
-	return somThis->fBaseMenuBar;
+	return result;
 } 
 #else
 typedef ODWinMenuAdapter ODMenuAdapter;
@@ -138,13 +148,32 @@ SOM_Scope void SOMLINK MenuBar_somUninit(
 {
 	ODMenuBarData *somThis=ODMenuBarGetData(somSelf);
 
+#ifdef _PLATFORM_X11_
+	if (somThis->fMenus._maximum)
+	{
+		unsigned long i=somThis->fMenus._length;
+
+		while (i--)
+		{
+			ODX11MenuAdapter SOMSTAR menu=somThis->fMenus._buffer[i];
+
+			ODDeleteObject(menu);
+		}
+
+		SOMFree(somThis->fMenus._buffer);
+
+		somThis->fMenus._buffer=NULL;
+		somThis->fMenus._length=0;
+		somThis->fMenus._maximum=0;
+	}
+#else
 	if (somThis->fBaseMenuBar)
 	{
-		ODMenuAdapter SOMSTAR menu=somThis->fBaseMenuBar;
+		ODWinMenuAdapter SOMSTAR menu=somThis->fBaseMenuBar;
 		somThis->fBaseMenuBar=NULL;
-
 		ODDeleteObject(menu);
 	}
+#endif
 
 	ODMenuBar_parent_ODRefCntObject_somUninit(somSelf);
 }
@@ -155,36 +184,42 @@ SOM_Scope void SOMLINK MenuBar_Display(
 	Environment *ev)
 {
 	ODMenuBarData *somThis=ODMenuBarGetData(somSelf);
+
+	somPrintf("MenuBar_Display %s:%d\n",__FILE__,__LINE__);
+
 	if (somThis->fSession)
 	{
 		ODWindowState SOMSTAR winState=ODSession_GetWindowState(somThis->fSession,ev);
 		if (winState)
 		{
 			ODWindow SOMSTAR window=ODWindowState_AcquireActiveWindow(winState,ev);
+	somPrintf("MenuBar_Display %s:%d\n",__FILE__,__LINE__);
 			if (window)
 			{
 #ifdef _PLATFORM_X11_
-/*				Widget topWidget=ODWindow_GetTopLevelShellWidget(window,ev);*/
 				Widget mainWidget=ODWindow_GetMainWindowWidget(window,ev);
-/*				Widget drawWidget=ODWindow_GetDrawingAreaWidget(window,ev);*/
+				Widget oldMenuW=NULL,newMenuW;
+				unsigned long i=0;
 
-				if (mainWidget)
+				XtVaGetValues(mainWidget,XmNmenuBar,&oldMenuW,NULL);
+
+				newMenuW=XmCreateMenuBar(mainWidget,"",NULL,0);
+
+				while (i < somThis->fMenus._length)
 				{
-					Cardinal count=0;
-					WidgetList list=NULL;
-					XtVaGetValues(mainWidget,
-							XtNnumChildren,&count,
-							XtNchildren,&list,
-							NULL);
+					ODX11MenuAdapter adapter=somThis->fMenus._buffer[i++];
 
-					if (count)
-					{
-						if (somThis->fBaseMenuBar)
-						{
-							ODX11MenuAdapter_DisplayMenu(somThis->fBaseMenuBar,ev,list[0]);
-						}
-					}
-				}		
+					ODX11MenuAdapter_DisplayMenu(adapter,ev,newMenuW);
+				}
+
+				XtManageChild(newMenuW);
+
+				XtVaSetValues(mainWidget,XmNmenuBar,newMenuW,NULL);
+
+				if (oldMenuW) 
+				{
+					XtDestroyWidget(oldMenuW);
+				}
 #else
 				HWND hwndFrame=ODWindow_GetPlatformWindow(window,ev);
 				if (hwndFrame)
@@ -231,6 +266,32 @@ SOM_Scope ODMenuBar SOMSTAR SOMLINK MenuBar_Copy(
 	}
 	return result;
 }
+
+#ifdef _PLATFORM_X11_
+static void growSeq(_IDL_SEQUENCE_ODX11MenuAdapter *seq)
+{
+	if (seq->_length==seq->_maximum)
+	{
+		ODX11MenuAdapter SOMSTAR *b=seq->_buffer;
+
+		seq->_maximum+=4;
+		seq->_buffer=SOMCalloc(seq->_maximum,sizeof(seq->_buffer[0]));
+
+		if (b)
+		{
+			unsigned long i=seq->_length;
+
+			while (i--)
+			{
+				seq->_buffer[i]=b[i];
+			}
+
+			SOMFree(b);
+		}
+	}
+}
+#endif
+
 /* introduced method ::ODMenuBar::AddMenuLast */
 SOM_Scope void SOMLINK MenuBar_AddMenuLast(
 	ODMenuBar SOMSTAR somSelf,
@@ -241,21 +302,24 @@ SOM_Scope void SOMLINK MenuBar_AddMenuLast(
 {
 #ifdef _PLATFORM_X11_
 	ODMenuBarData *somThis=ODMenuBarGetData(somSelf);
-	if (somThis->fBaseMenuBar)
-	{
-		ODX11MenuAdapter_SetPart(menu,ev,part);		
-		if (somThis->fHelpMenuExists)
-		{
-			ODX11MenuAdapter_AddSubMenuBefore(somThis->fBaseMenuBar,ev,menuID,menu,IDMS_HELP);
-		}
-		else
-		{
-			ODX11MenuAdapter_AddSubMenuLast(somThis->fBaseMenuBar,ev,menuID,menu);
 
-			if (menuID==IDMS_HELP)
-			{
-				somThis->fHelpMenuExists=kODTrue;
-			}
+	ODX11MenuAdapter_SetPart(menu,ev,part);		
+			
+	growSeq(&(somThis->fMenus));
+
+	if (somThis->fHelpMenuExists && somThis->fMenus._length)
+	{
+		ODX11MenuAdapter SOMSTAR help=somThis->fMenus._buffer[somThis->fMenus._length-1];
+		somThis->fMenus._buffer[somThis->fMenus._length-1]=menu;
+		somThis->fMenus._buffer[somThis->fMenus._length++]=help;		
+	}
+	else
+	{
+		somThis->fMenus._buffer[somThis->fMenus._length++]=menu;
+
+		if (menuID==IDMS_HELP)
+		{
+			somThis->fHelpMenuExists=kODTrue;
 		}
 	}
 #else
@@ -285,19 +349,26 @@ SOM_Scope ODPlatformMenu SOMLINK MenuBar_GetMenu(
 	Environment *ev,
 	/* in */ ODMenuID menu)
 {
+#ifdef _PLATFORM_X11_
+	return GetMenuAdapter(somSelf,ev,menu);
+#else
 	ODMenuBarData *somThis=ODMenuBarGetData(somSelf);
 	ODPlatformMenu pm=0;
-
 	if (menu==ID_BASEMENUBAR)
 	{
-#ifdef _PLATFORM_X11_
-		pm=somThis->fBaseMenuBar;
-#else
 		pm=ODWinMenuAdapter_GetMenu(somThis->fBaseMenuBar,ev);
-#endif
 	}
-
+	else
+	{
+		ODWinMenuAdapter SOMSTAR adp=GetMenuAdapter(somSelf,ev,menu);
+		if (adp)
+		{
+			pm=ODWinMenuAdapter_GetMenu(adp,ev);
+		}
+	}
 	return pm;
+#endif
+
 }
 /* introduced method ::ODMenuBar::IsValid */
 SOM_Scope ODBoolean SOMLINK MenuBar_IsValid(
@@ -795,24 +866,25 @@ SOM_Scope void SOMLINK MenuBar_InitMenuBar(
 	/* in */ ODSession SOMSTAR session,
 	/* in */ ODPlatformMenuBar menuBar)
 {
+#ifdef _PLATFORM_X11_
 	ODMenuBarData *somThis=ODMenuBarGetData(somSelf);
 	ODMenuBar_InitRefCntObject(somSelf,ev);
 	somThis->fSession=session;
-
-#ifdef _PLATFORM_X11_
 	if (menuBar)
 	{
 		ODMenuBarData *somThat=ODMenuBarGetData(menuBar);
-		if (somThat->fBaseMenuBar)
+		unsigned long i=0;
+		somThis->fMenus._length=somThat->fMenus._length;
+		somThis->fMenus._maximum=somThat->fMenus._maximum;
+		somThis->fMenus._buffer=SOMCalloc(sizeof(somThis->fMenus._buffer[0]),somThis->fMenus._maximum);
+		while (i < somThat->fMenus._length)
 		{
-			somThis->fBaseMenuBar=ODX11MenuAdapter_Copy(somThat->fBaseMenuBar,ev);
-			somThis->fHelpMenuExists=somThat->fHelpMenuExists;
+			somThis->fMenus._buffer[i]=
+				ODX11MenuAdapter_Copy(somThat->fMenus._buffer[i],ev);
+
+			i++;
 		}
-	}
-	else
-	{
-		somThis->fBaseMenuBar=ODX11MenuAdapterNew();
-		ODX11MenuAdapter_Init(somThis->fBaseMenuBar,ev,0,somThis->fSession);
+		somThis->fHelpMenuExists=somThat->fHelpMenuExists;
 	}
 #else
 	ODMenuBar_InitMenuBarEx(somSelf,ev,session,menuBar,0,NULL);
@@ -895,10 +967,10 @@ SOM_Scope ODPlatformMenu SOMLINK MenuBar_GetRootMenu(
 	ODMenuBar SOMSTAR somSelf,
 	Environment *ev)
 {
-	ODMenuBarData *somThis=ODMenuBarGetData(somSelf);
 #ifdef _PLATFORM_X11_
-	return somThis->fBaseMenuBar;
+	return NULL;
 #else
+	ODMenuBarData *somThis=ODMenuBarGetData(somSelf);
 	return ODWinMenuAdapter_GetMenu(somThis->fBaseMenuBar,ev);
 #endif
 }

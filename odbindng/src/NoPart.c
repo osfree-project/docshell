@@ -36,6 +36,10 @@ typedef struct NoPartFacetInfo NoPartFacetInfo;
 typedef struct NoPartFrameInfo NoPartFrameInfo;
 
 #include <NoPart.ih>
+#include <Arbitrat.h>
+#include <FocusSet.h>
+#include <Foci.h>
+#include <MenuBar.h>
 
 #ifdef _PLATFORM_X11_
 #include <X11/StringDefs.h>
@@ -99,6 +103,7 @@ struct NoPartFrameInfo
 	struct NoPartFrameInfo *fPrevItem;
 	struct NoPartFacetInfo *fFirstItem;
 	struct NoPartFacetInfo *fLastItem;
+	ODBoolean hasMenuFocus,hasKeyFocus,hasSelectionFocus,hasModalFocus;
 };
 
 struct NoPartFacetInfo
@@ -391,6 +396,7 @@ SOM_Scope void SOMLINK NoPartInitPart(
 	somThis->fSession=ODStorageUnit_GetSession(storageUnit,ev);
 	somThis->fPartWrapper=partWrapper;
 	NoPart_parent_ODPart_InitPart(somSelf,ev,storageUnit,partWrapper);
+	NoPart_Initialize(somSelf,ev);
 }
 /* overridden method ::ODPart::InitPartFromStorage */
 SOM_Scope void SOMLINK NoPartInitPartFromStorage(
@@ -403,6 +409,7 @@ SOM_Scope void SOMLINK NoPartInitPartFromStorage(
 	somThis->fSession=ODStorageUnit_GetSession(storageUnit,ev);
 	somThis->fPartWrapper=partWrapper;
 	NoPart_parent_ODPart_InitPartFromStorage(somSelf,ev,storageUnit,partWrapper);
+	NoPart_Initialize(somSelf,ev);
 }
 /* overridden method ::ODPart::DisplayFrameAdded */
 SOM_Scope void SOMLINK NoPartDisplayFrameAdded(
@@ -410,16 +417,52 @@ SOM_Scope void SOMLINK NoPartDisplayFrameAdded(
 	Environment *ev,
 	/* in */ ODFrame SOMSTAR frame)
 {
-/*	NoPartData *somThis=NoPartGetData(somSelf);*/
+	NoPartData *somThis=NoPartGetData(somSelf);
+	NoPartFrameInfo *info=ODFrame_GetPartInfo(frame,ev);
+	if (!info)
+	{
+		info=SOMCalloc(1,sizeof(*info));
+		ODLL_addLast(somThis,info);
+	}
 }
+
+static void release_foci(NoPartData *somThis,Environment *ev,ODFrame SOMSTAR frame,NoPartFrameInfo *frinfo)
+{
+	ODArbitrator SOMSTAR arb=ODSession_GetArbitrator(somThis->fSession,ev);
+
+	if (frinfo->hasSelectionFocus)
+	{
+		frinfo->hasSelectionFocus=kODFalse;
+
+		ODArbitrator_RelinquishFocus(arb,ev,somThis->fSelectionFocus,frame);		
+	}
+
+	if (frinfo->hasKeyFocus)
+	{
+		frinfo->hasKeyFocus=kODFalse;
+
+		ODArbitrator_RelinquishFocus(arb,ev,somThis->fKeyFocus,frame);		
+	}
+
+	if (frinfo->hasMenuFocus)
+	{
+		frinfo->hasMenuFocus=kODFalse;
+
+		ODArbitrator_RelinquishFocus(arb,ev,somThis->fMenuFocus,frame);		
+	}
+}
+
 /* overridden method ::ODPart::DisplayFrameRemoved */
 SOM_Scope void SOMLINK NoPartDisplayFrameRemoved(
 	NoPart SOMSTAR somSelf,
 	Environment *ev,
 	/* in */ ODFrame SOMSTAR frame)
 {
-/*	NoPartData *somThis=NoPartGetData(somSelf);*/
-
+	NoPartData *somThis=NoPartGetData(somSelf);
+	NoPartFrameInfo *frinfo=ODFrame_GetPartInfo(frame,ev);
+	release_foci(somThis,ev,frame,frinfo);
+	ODLL_remove(somThis,frinfo);
+	SOMFree(frinfo);
 }
 /* overridden method ::ODPart::DisplayFrameConnected */
 SOM_Scope void SOMLINK NoPartDisplayFrameConnected(
@@ -437,6 +480,7 @@ SOM_Scope void SOMLINK NoPartDisplayFrameClosed(
 {
 	NoPartData *somThis=NoPartGetData(somSelf);
 	NoPartFrameInfo *frinfo=ODFrame_GetPartInfo(frame,ev);
+	release_foci(somThis,ev,frame,frinfo);
 	ODLL_remove(somThis,frinfo);
 	SOMFree(frinfo);
 }
@@ -1253,26 +1297,39 @@ SOM_Scope void SOMLINK NoPartFacetAdded(
 
 #ifdef _PLATFORM_X11_
 	fainfo->screen=XDefaultScreenOfDisplay(display);
+	somPrintf("trace %s:%d\n",__FILE__,__LINE__);
 	fainfo->border_pixel=XBlackPixelOfScreen(fainfo->screen);
+	somPrintf("trace %s:%d\n",__FILE__,__LINE__);
 	fainfo->foreground_pixel=XBlackPixelOfScreen(fainfo->screen);
+	somPrintf("trace %s:%d\n",__FILE__,__LINE__);
 	fainfo->background_pixel=XWhitePixelOfScreen(fainfo->screen);
+	somPrintf("trace %s:%d\n",__FILE__,__LINE__);
 	fainfo->scrollColour=fainfo->background_pixel;
+	somPrintf("trace %s:%d\n",__FILE__,__LINE__);
 	fainfo->growColour=fainfo->background_pixel;
+	somPrintf("trace %s:%d\n",__FILE__,__LINE__);
 	map=XDefaultColormapOfScreen(fainfo->screen);
+	somPrintf("trace %s:%d\n",__FILE__,__LINE__);
 	depth=XDefaultDepthOfScreen(fainfo->screen);
+	somPrintf("trace %s:%d\n",__FILE__,__LINE__);
 	window=XRootWindowOfScreen(fainfo->screen);
 
+	somPrintf("trace %s:%d\n",__FILE__,__LINE__);
+	somPrintf("trace %s:%d\n",__FILE__,__LINE__);
 	fainfo->useBitmaps=kODTrue;
 
+	somPrintf("trace %s:%d\n",__FILE__,__LINE__);
 	if (widget)
 	{
 		Screen *scr=XtScreen(widget);
 /*		Display *disp=XDisplayOfScreen(scr);*/
 
+	somPrintf("trace %s:%d\n",__FILE__,__LINE__);
 		depth=XDefaultDepthOfScreen(scr);
 		map=XDefaultColormapOfScreen(scr);
 		window=XtWindow(widget);
 
+	somPrintf("trace %s:%d\n",__FILE__,__LINE__);
 		XtVaGetValues(widget,
 			XtNforeground,&fainfo->foreground_pixel,
 			XtNbackground,&fainfo->background_pixel,
@@ -1282,11 +1339,13 @@ SOM_Scope void SOMLINK NoPartFacetAdded(
 			XtNcolormap,&map,
 			XtNdepth,&depth,
 			NULL);
+	somPrintf("trace %s:%d\n",__FILE__,__LINE__);
 
 		fainfo->scrollColour=fainfo->background_pixel;
 		fainfo->growColour=fainfo->background_pixel;
 		fainfo->screen=scr;
 
+	somPrintf("trace %s:%d\n",__FILE__,__LINE__);
 /*		if (depth > 4)
 		{
 			Pixel foreground,background,border,workarea,
@@ -1309,10 +1368,12 @@ SOM_Scope void SOMLINK NoPartFacetAdded(
 		}*/
 	}
 
+	somPrintf("trace %s:%d\n",__FILE__,__LINE__);
 	get_brush(fainfo->screen,map,gc,depth,0x80,0,0x40,&fainfo->workarea);
 	get_brush(fainfo->screen,map,gc,depth,0x0,0x80,0x80,&fainfo->background);
 	get_brush(fainfo->screen,map,gc,depth,0x0,0x40,0x40,&fainfo->shadow);
 
+	somPrintf("trace %s:%d\n",__FILE__,__LINE__);
 	fainfo->foreground_text=XWhitePixelOfScreen(fainfo->screen);
 	
 	fainfo->growBox=XCreateBitmapFromData(
@@ -1325,6 +1386,7 @@ SOM_Scope void SOMLINK NoPartFacetAdded(
 #endif
 	fainfo->text._buffer=(void *)szMessage;
 	fainfo->text._length=(int)strlen((char *)fainfo->text._buffer);
+	somPrintf("trace %s:%d\n",__FILE__,__LINE__);
 
 #ifdef _PLATFORM_X11_
 	XQueryTextExtents(display,
@@ -1333,6 +1395,7 @@ SOM_Scope void SOMLINK NoPartFacetAdded(
 			&fainfo->dir,&fainfo->fasr,&fainfo->fdr,&fainfo->cs);
 	RHBOPT_unused(window);
 #endif
+	somPrintf("trace %s:%d\n",__FILE__,__LINE__);
 
 }
 /* overridden method ::ODPart::FacetRemoved */
@@ -1414,6 +1477,7 @@ SOM_Scope ODBoolean SOMLINK NoPartBeginRelinquishFocus(
 	/* in */ ODFrame SOMSTAR ownerFrame,
 	/* in */ ODFrame SOMSTAR proposedFrame)
 {
+	somPrintf("NoPart::BeginRelinquishFocus\n");
 	return kODTrue;
 }
 /* overridden method ::ODPart::CommitRelinquishFocus */
@@ -1424,6 +1488,23 @@ SOM_Scope void SOMLINK NoPartCommitRelinquishFocus(
 	/* in */ ODFrame SOMSTAR ownerFrame,
 	/* in */ ODFrame SOMSTAR proposedFrame)
 {
+	NoPartData *somThis=NoPartGetData(somSelf);
+	NoPartFrameInfo *frinfo=ODFrame_GetPartInfo(ownerFrame,ev);
+	somPrintf("NoPart::CommitRelinquishFocus\n");
+	if (focus==somThis->fMenuFocus)
+	{
+		frinfo->hasMenuFocus=kODFalse;
+	}
+
+	if (focus==somThis->fKeyFocus)
+	{
+		frinfo->hasKeyFocus=kODFalse;
+	}
+
+	if (focus==somThis->fSelectionFocus)
+	{
+		frinfo->hasSelectionFocus=kODFalse;
+	}
 }
 /* overridden method ::ODPart::AbortRelinquishFocus */
 SOM_Scope void SOMLINK NoPartAbortRelinquishFocus(
@@ -1433,6 +1514,7 @@ SOM_Scope void SOMLINK NoPartAbortRelinquishFocus(
 	/* in */ ODFrame SOMSTAR ownerFrame,
 	/* in */ ODFrame SOMSTAR proposedFrame)
 {
+	somPrintf("NoPart::AbortRelinquishFocus\n");
 }
 /* overridden method ::ODPart::FocusAcquired */
 SOM_Scope void SOMLINK NoPartFocusAcquired(
@@ -1441,6 +1523,28 @@ SOM_Scope void SOMLINK NoPartFocusAcquired(
 	/* in */ ODTypeToken focus,
 	/* in */ ODFrame SOMSTAR ownerFrame)
 {
+	NoPartData *somThis=NoPartGetData(somSelf);
+	NoPartFrameInfo *frinfo=ODFrame_GetPartInfo(ownerFrame,ev);
+	
+	if (focus==somThis->fMenuFocus)
+	{
+		if (somThis->fMenuBar)
+		{
+			ODMenuBar_Display(somThis->fMenuBar,ev);
+		}
+
+		frinfo->hasMenuFocus=kODTrue;
+	}
+
+	if (focus==somThis->fKeyFocus)
+	{
+		frinfo->hasKeyFocus=kODTrue;
+	}
+
+	if (focus==somThis->fSelectionFocus)
+	{
+		frinfo->hasSelectionFocus=kODTrue;
+	}
 }
 /* overridden method ::ODPart::FocusLost */
 SOM_Scope void SOMLINK NoPartFocusLost(
@@ -1449,6 +1553,24 @@ SOM_Scope void SOMLINK NoPartFocusLost(
 	/* in */ ODTypeToken focus,
 	/* in */ ODFrame SOMSTAR ownerFrame)
 {
+	NoPartData *somThis=NoPartGetData(somSelf);
+	NoPartFrameInfo *frinfo=ODFrame_GetPartInfo(ownerFrame,ev);
+	somPrintf("NoPart::FocusLost\n");
+	
+	if (focus==somThis->fMenuFocus)
+	{
+		frinfo->hasMenuFocus=kODFalse;
+	}
+
+	if (focus==somThis->fKeyFocus)
+	{
+		frinfo->hasKeyFocus=kODFalse;
+	}
+
+	if (focus==somThis->fSelectionFocus)
+	{
+		frinfo->hasSelectionFocus=kODFalse;
+	}
 }
 /* overridden method ::ODPart::ExternalizeKinds */
 SOM_Scope void SOMLINK NoPartExternalizeKinds(
@@ -1779,6 +1901,16 @@ SOM_Scope void SOMLINK NoPartsomInit(
 SOM_Scope void SOMLINK NoPartsomUninit(
 	NoPart SOMSTAR somSelf)
 {
+	Environment ev;
+    NoPartData *somThis = NoPartGetData(somSelf);
+    NoPartMethodDebug("NoPart","NoPartsomUninit");
+	SOM_InitEnvironment(&ev);
+
+    ODDeleteObject(somThis->fFocusSet);
+    ODReleaseObject(&ev,somThis->fMenuBar);
+
+	SOM_UninitEnvironment(&ev);
+
 	NoPart_parent_ODPart_somUninit(somSelf);
 }
 /* introduced methods for ::NoPart */
@@ -1787,7 +1919,47 @@ SOM_Scope void SOMLINK NoPartInitialize(
 	NoPart SOMSTAR somSelf,
 	Environment *ev)
 {
+	ODArbitrator SOMSTAR arb;
+	ODWindowState SOMSTAR ws;
+    NoPartData *somThis = NoPartGetData(somSelf);
+    NoPartMethodDebug("NoPart","NoPartInitialize");
+
+	somThis->fPartSU=NoPart_GetStorageUnit(somSelf,ev);
+	somThis->fSession=ODStorageUnit_GetSession(somThis->fPartSU,ev);
+
+	somThis->fSelectionFocus =ODSession_Tokenize(somThis->fSession,ev,kODSelectionFocus);
+	somThis->fMenuFocus      =ODSession_Tokenize(somThis->fSession,ev,kODMenuFocus);
+	somThis->fKeyFocus       =ODSession_Tokenize(somThis->fSession,ev,kODKeyFocus);
+	somThis->fModalFocus     =ODSession_Tokenize(somThis->fSession,ev,kODModalFocus);
+
+	arb=ODSession_GetArbitrator(somThis->fSession,ev);
+
+	if (!arb)
+	{
+		somPrintf("arb failed to be created\n");
+		exit(1);
+	}
+
+	somThis->fFocusSet=ODArbitrator_CreateFocusSet(arb,ev);
+
+	if (!(somThis->fFocusSet))
+	{
+		somPrintf("focus set failed to be created\n");
+		exit(1);
+	}
+
+	ODFocusSet_Add(somThis->fFocusSet,ev,somThis->fKeyFocus);
+	ODFocusSet_Add(somThis->fFocusSet,ev,somThis->fMenuFocus);
+	ODFocusSet_Add(somThis->fFocusSet,ev,somThis->fSelectionFocus);
+
+	somThis->fFrameView=ODSession_Tokenize(somThis->fSession,ev,kODViewAsFrame);
+	somThis->fMainPresentation=ODSession_Tokenize(somThis->fSession,ev,kODPresDefault);
+
+	ws=ODSession_GetWindowState(somThis->fSession,ev);
+
+	somThis->fMenuBar=ODWindowState_CopyBaseMenuBar(ws,ev);
 }
+
 /* introduced method ::NoPart::CheckAndAddProperties */
 SOM_Scope void SOMLINK NoPartCheckAndAddProperties(
 	NoPart SOMSTAR somSelf,
@@ -1820,7 +1992,25 @@ SOM_Scope ODBoolean SOMLINK NoPartActivateFrame(
 	Environment *ev,
 	/* in */ ODFrame SOMSTAR frame)
 {
-	return kODFalse;
+	NoPartData *somThis=NoPartGetData(somSelf);
+	ODArbitrator SOMSTAR arb=ODSession_GetArbitrator(somThis->fSession,ev);
+	ODBoolean result=kODFalse;
+	somPrintf("NoPart::activate frame\n");
+	somPrintf("arb=%p\n",arb);
+	somPrintf("focusSet=%p\n",somThis->fFocusSet);
+	somPrintf("frame=%p\n",frame);
+
+	if (ODArbitrator_RequestFocusSet(arb,ev,somThis->fFocusSet,frame))
+	{
+		somPrintf("request focus returned true\n");
+
+		NoPart_FocusAcquired(somSelf,ev,somThis->fSelectionFocus,frame);
+		NoPart_FocusAcquired(somSelf,ev,somThis->fMenuFocus,frame);
+		NoPart_FocusAcquired(somSelf,ev,somThis->fKeyFocus,frame);
+		result=kODTrue;
+	}
+
+	return result;
 }
 /* introduced method ::NoPart::MakeWindow */
 SOM_Scope ODWindow SOMSTAR SOMLINK NoPartMakeWindow(
@@ -1836,6 +2026,9 @@ SOM_Scope void SOMLINK NoPartActivatingWindow(
 	Environment *ev,
 	/* in */ ODFrame SOMSTAR frame)
 {
+	somPrintf("NoPart::activate window\n");
+
+	NoPart_ActivateFrame(somSelf,ev,frame);
 }
 /* introduced method ::NoPart::DeactivatingWindow */
 SOM_Scope void SOMLINK NoPartDeactivatingWindow(
@@ -1843,4 +2036,5 @@ SOM_Scope void SOMLINK NoPartDeactivatingWindow(
 	Environment *ev,
 	/* in */ ODFrame SOMSTAR frame)
 {
+	somPrintf("NoPart::activate window\n");
 }

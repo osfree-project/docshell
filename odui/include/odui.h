@@ -65,8 +65,7 @@ typedef struct ODMenuItemList ODMenuItemList;
 typedef struct ODMenuList ODMenuList;
 
 #ifdef _PLATFORM_X11_
-#include <X11/StringDefs.h>
-#include <X11/Shell.h>
+#include <Xm/XmAll.h>
 #endif
 
 #include <Polygon.h>
@@ -179,8 +178,3 @@ struct ODMenuItem
 
 SOMEXTERN ODFacet SOMSTAR GetActiveFacetWithBorderUnderPoint(Environment* ev,ODFrame SOMSTAR frame,ODWindow SOMSTAR window,const ODPoint *windowPoint);
 
-#ifdef _PLATFORM_X11_
-extern WidgetClass openDocShellWidgetClass;
-#endif
-
-#include <oduiex.h>

@@ -22,6 +22,7 @@ include $(MAKEDEFS)
 
 
 all:
+	OUTDIR="$(OUTDIR)" \
 	SC="$(SC)" \
 	PDL="$(PDL)" \
 	SOMTKLIBS="$(SOMTKLIBS)" \

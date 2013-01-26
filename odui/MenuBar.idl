@@ -137,7 +137,7 @@ interface ODMenuBar : ODRefCntObject
 		ODSession fSession;
 		ODULong fGeneration;
 	#ifdef _PLATFORM_X11_
-		ODX11MenuAdapter fBaseMenuBar;
+		sequence<ODX11MenuAdapter> fMenus;
 	#else
 		ODWinMenuAdapter fBaseMenuBar;
 		HMODULE fMOD;

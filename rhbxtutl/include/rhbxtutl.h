@@ -32,7 +32,6 @@ extern "C" {
 
 extern Pixmap RhubarbCreateSolidBrush(Display *d,Window w,Colormap cmap,GC gc,Cardinal depth,XColor *colour);
 extern Pixmap RhubarbCreateGreyBitmap(Screen *,unsigned short);
-extern Cursor RhubarbCreateArrowCursor(Screen *);
 extern void   RhubarbFrameRectangle(Display *,
 									Drawable,
 									GC,
@@ -40,81 +39,6 @@ extern void   RhubarbFrameRectangle(Display *,
 									Pixel,Pixel,
 									Dimension,
 									Dimension);
-
-extern Widget RhubarbCreateDrawingArea(Widget parent,const char *name,Arg *argv,Cardinal argc);
-extern Widget RhubarbCreateRowColumn(Widget parent,const char *name,Arg *argv,Cardinal argc);
-extern Widget RhubarbCreatePulldownMenu(Widget parent,const char *name,Arg *argv,Cardinal argc);
-extern Widget RhubarbCreateCascadeButton(Widget parent,const char *name,Arg *argv,Cardinal argc);
-extern Widget RhubarbCreateToggleButton(Widget parent,const char *name,Arg *argv,Cardinal argc);
-extern Widget RhubarbCreateSeparator(Widget parent,const char *name,Arg *argv,Cardinal argc);
-extern Widget RhubarbCreateMainWindow(Widget parent,const char *name,Arg *argv,Cardinal argc);
-
-#ifndef XmNuserData
-
-typedef struct
-{
-    int     reason;
-    XEvent  *event;
-    Window  window;
-} XmDrawingAreaCallbackStruct;
-
-typedef struct
-{
-    int     reason;
-    XEvent  *event;
-} XmAnyCallbackStruct;
-
-#	define XmNmappedWhenManaged     XtNmappedWhenManaged
-#	define XmNwidth                 XtNwidth
-#	define XmNheight                XtNheight
-#	define XmNtitle                 XtNtitle
-#	define XmNiconName              XtNiconName
-
-#	define XmNexposeCallback		"exposeCallback"
-#	define XmNinputCallback			"inputCallback"
-#	define XmNresizeCallback		"resizeCallback"
-#	define XmNuserData				"userData"
-#	define XmNtopShadowColor		"topShadowColor"
-#	define XmNbottomShadowColor		"bottomShadowColor"
-#	define XmNshadowThickness		"shadowThickness"
-#	define XmNmargin				"margin"
-#	define XmNmarginBottom			"marginBottom"
-#	define XmNmarginHeight			"marginHeight"
-#	define XmNmarginLeft			"marginLeft"
-#	define XmNmarginRight			"marginRight"
-#	define XmNmarginTop				"marginTop"
-#	define XmNmarginWidth			"marginWidth"
-#	define XmNset 					"set"
-#	define XmNvalueChangedCallback 	"valueChangedCallback"
-#	define XmNindicatorSize			"indicatorSize"
-#	define XmNmnemonic				"mnemonic"
-#	define XmNsubMenuId 			"subMenuId"
-#	define XmNmenuBar				"menuBar"
-#	define XmNcommandWindow			"commandWindow"
-#	define XmNhorizontalScrollBar	"horizontalScrollBar"
-#	define XmNverticalScrollBar		"verticalScrollBar"
-#	define XmNworkWindow			"workWindow"
-
-#	define XmCTopShadowColor		"TopShadowColor"
-#	define XmCBottomShadowColor		"BottomShadowColor"
-#	define XmCShadowThickness		"ShadowThickness"
-#	define XmCMarginBottom			"MarginBottom"
-#	define XmCMarginHeight			"MarginHeight"
-#	define XmCMarginLeft			"MarginLeft"
-#	define XmCMarginRight			"MarginRight"
-#	define XmCMarginTop				"MarginTop"
-#	define XmCMarginWidth			"MarginWidth"
-#	define XmCMenuWidget			"MenuWidget"
-#	define XmCSet					"Set"
-#	define XmCIndicatorSize			"IndicatorSize"
-#	define XtCMarginLeft			"MarginLeft"
-#	define XtCMarginRight			"MarginRight"
-#	define XtCMarginTop				"MarginTop"
-#	define XtCMarginBottom			"MarginBottom"
-#	define XtCMarginWidth			"MarginWidth"
-#	define XtCMarginHeight			"MarginHeight"
-
-#endif
 
 #ifdef __cplusplus
 }

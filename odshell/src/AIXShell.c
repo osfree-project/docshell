@@ -35,40 +35,6 @@
 	#include <unistd.h>
 #endif
 
-#ifdef _PLATFORM_X11_
-	#ifdef _WIN32
-	static int filter_event(MSG *msg)
-	{
-		switch (msg->message)
-		{
-		case WM_ACTIVATE:
-			return 1;
-		}
-
-		return 0;
-	}
-	#endif
-#else
-	/* stubbing out bits */
-	typedef SOMObject ODX11MenuAdapter;
-	typedef SOMObject ODX11PlatformMenu;
-	#define ODMenuBar_CreateX11PlatformMenu(x,y,z)		(NULL)
-	#define ODX11PlatformMenu_AddMenuItemLast(a,b,c,d)
-	#define ODX11PlatformMenu_CheckMenuItem(a,b,c,d)
-	#define ODX11PlatformMenu_EnableMenuItem(a,b,c,d)
-	#define ODX11PlatformMenu_InsertMenuItem(a,b,c,d)
-	#define ODX11PlatformMenu_InsertSubmenu(a,b,c,d)
-	#define ODX11PlatformMenu_somFree(a)		SOMObject_somFree(a)
-	#define	ODX11PlatformMenuNew()						(NULL)
-	#define ODX11PlatformMenu_InitMenu(a,b,c,d)
-	#define ODX11MenuAdapter_SetMenuText(a,b,c)
-	#define ODX11MenuAdapter_CheckMenuItem(a,b,c,d)
-	#define ODX11MenuAdapter_EnableMenuItem(a,b,c,d)
-	#define ODX11MenuAdapter_MenuID(a,b)			(0)
-	#define ODX11MenuAdapter_AddSubMenuLast(a,b,c,d)
-	#define ODX11MenuAdapter_AddMenuItemLast(a,b,c,d)
-#endif
-
 #if defined(HAVE_XTDEFAULTAPPCONTEXT) && !defined(USE_THREADS)
 	#define USE_DEFAULT_APPCTX
 	extern XtAppContext _XtDefaultAppContext(void);
@@ -79,7 +45,7 @@
 static char *fallback_resources[]={
 	"OpenDoc.mainWindow.width: 400",
 	"OpenDoc.mainWindow.height: 200",
-	"OpenDoc.mainWindow.menubar.borderWidth: 1",
+/*	"OpenDoc.mainWindow.menubar.borderWidth: 1",*/
 	NULL
 };
 
@@ -115,47 +81,27 @@ struct menu_creator
 
 static ODX11MenuAdapter SOMSTAR make_Drafts(struct menu_builder *builder,Environment *ev)
 {
-#ifdef _PLATFORM_X11_
 	return AIXShell_CreateDraftsSubmenu(builder->shell,ev,builder->menuBar);
-#else
-	return NULL;
-#endif
 }
 
 static ODX11MenuAdapter SOMSTAR make_Links(struct menu_builder *builder,Environment *ev)
 {
-#ifdef _PLATFORM_X11_
 	return AIXShell_CreateLinksSubmenu(builder->shell,ev,builder->menuBar);
-#else
-	return NULL;
-#endif
 }
 
 static ODX11MenuAdapter SOMSTAR make_ShowAs(struct menu_builder *builder,Environment *ev)
 {
-#ifdef _PLATFORM_X11_
 	return AIXShell_CreateShowAsSubmenu(builder->shell,ev,builder->menuBar);
-#else
-	return NULL;
-#endif
 }
 
 static ODX11MenuAdapter SOMSTAR make_popupShowAs(struct menu_builder *builder,Environment *ev)
 {
-#ifdef _PLATFORM_X11_
 	return AIXShell_CreateShowAsPopupSubmenu(builder->shell,ev,builder->menuBar);
-#else
-	return NULL;
-#endif
 }
 
 static ODX11MenuAdapter SOMSTAR make_popupHelp(struct menu_builder *builder,Environment *ev)
 {
-#ifdef _PLATFORM_X11_
 	return AIXShell_CreateHelpPopupSubmenu(builder->shell,ev,builder->menuBar);
-#else
-	return NULL;
-#endif
 }
 
 static struct menu_builder_static items_Document[]={
@@ -261,15 +207,9 @@ static ODX11MenuAdapter SOMSTAR menu_builder(
 
 	while (i--)
 	{
-#ifdef _PLATFORM_X11_
 		ODPlatformMenuItem item={0,NULL};
-#else
-		ODPlatformMenuItem item;
-#endif
 		item.id=sd->itemId;
-#ifdef _PLATFORM_X11_
 		item.text=sd->menuItemString;
-#endif
 
 		if (sd->submenu)
 		{
@@ -315,17 +255,12 @@ static void menu_creator(AIXShell SOMSTAR somSelf,Environment *ev,ODMenuBar SOMS
 
 	if (menu)
 	{
-#ifdef _PLATFORM_X11_
 		ODMenuBar_AddMenuLast(menuBar,ev,c->menuID,menu,NULL);	/* part==NULL because we're the shell */
-#endif
 	}
 }
 
-#ifdef _PLATFORM_X11_
 static void AIXShell_saveYourselfCallback(Widget w,XtPointer data,XtPointer event)
 {
-	somPrintf("AIXShell_saveYourselfCallback()\n");
-
 	if (gActiveAIXShell)
 	{
 		Environment ev;
@@ -340,19 +275,23 @@ static void AIXShell_saveYourselfCallback(Widget w,XtPointer data,XtPointer even
 		somPrintf("AIXShell_closeCallback() - not running!!!!\n");
 	}
 }
-#endif
 
-#ifdef _PLATFORM_X11_
 static void AIXShell_closeCallback(Widget w,XtPointer data,XtPointer event)
 {
-	somPrintf("AIXShell_closeCallback()\n");
-
 	if (gActiveAIXShell)
 	{
 		Environment ev;
+		ODEventData eventData;
+
+		memset(&eventData,0,sizeof(eventData));
+
 		SOM_InitEnvironment(&ev);
 
-		AIXShell_HandleCloseEvent(gActiveAIXShell,&ev,(ODEventData *)event);
+		eventData.xany.type=kODEvtClose;
+		eventData.xany.display=XtDisplay(w);
+		eventData.xany.window=XtWindow(w);
+
+		AIXShell_HandleCloseEvent(gActiveAIXShell,&ev,&eventData);
 
 		SOM_UninitEnvironment(&ev);
 	}
@@ -361,7 +300,6 @@ static void AIXShell_closeCallback(Widget w,XtPointer data,XtPointer event)
 		somPrintf("AIXShell_closeCallback() - not running!!!!\n");
 	}
 }
-#endif
 
 /* overridden methods for ::AIXShell */
 /* overridden method ::ApplicationShell::CreateMenuBar */
@@ -410,7 +348,6 @@ SOM_Scope void SOMLINK AIXShellInitWindowSystem(
 	AIXShell SOMSTAR somSelf,
 	Environment *ev)
 {
-#ifdef _PLATFORM_X11_
 /*	AIXShellData *somThis=AIXShellGetData(somSelf);*/
 	int argc=AIXShell_GetArgc(somSelf,ev);
 	char **argv=AIXShell_GetArgv(somSelf,ev);
@@ -420,7 +357,6 @@ SOM_Scope void SOMLINK AIXShellInitWindowSystem(
 	SOMClass SOMSTAR emanCls=_SOMEEMan;
 	SOM_IgnoreWarning(emanCls);
 #endif
-
 	somPrintf("AIXShell::InitWindowSystem(%d)\n",argc);
 
 	if (argc)
@@ -489,7 +425,6 @@ SOM_Scope void SOMLINK AIXShellInitWindowSystem(
 		somPrintf("XtOpenDisplay failed, %s:%d\n",__FILE__,__LINE__);
 		RHBOPT_throw_ODException(ev,DispatcherNotInitialized);
 	}
-#endif
 }
 /* overridden method ::ApplicationShell::Exec */
 SOM_Scope void SOMLINK AIXShellExec(
@@ -504,7 +439,6 @@ SOM_Scope ODSLong SOMLINK AIXShellMainLoop(
 	AIXShell SOMSTAR somSelf,
 	Environment *ev)
 {
-#ifdef _PLATFORM_X11_
 	AIXShellData *somThis=AIXShellGetData(somSelf);
 	ODSession SOMSTAR fSession=fSession=AIXShell_GetSession(somSelf,ev);
 	ODDispatcher SOMSTAR fDispatcher=ODSession_GetDispatcher(fSession,ev);
@@ -540,25 +474,6 @@ SOM_Scope ODSLong SOMLINK AIXShellMainLoop(
 				/* always put it through Xt just as if
 					it was XpAppMainLoop */
 
-#ifdef _WIN32
-				switch (event.message)
-#else
-				switch (event.type)
-#endif
-				{
-				case ButtonPress: somPrintf("ButtonPress...\n"); break;
-				case ButtonRelease: somPrintf("ButtonRelease...\n"); break;
-				case EnterNotify: somPrintf("EnterNotify...\n"); break;
-				case LeaveNotify: somPrintf("LeaveNotify...\n"); break;
-				}
-
-#ifdef _WIN32
-				if (filter_event(&event))
-				{
-					XtDispatchEvent(&event);
-				}
-				else
-#endif
 				if (!AIXShell_DispatchEvent(somSelf,ev,&event))
 				{
 					XtDispatchEvent(&event);
@@ -574,7 +489,6 @@ SOM_Scope ODSLong SOMLINK AIXShellMainLoop(
 	gActiveAIXShell=kODNULL;
 
 	somPrintf("AIXShell::MainLoop ended\n");
-#endif
 
 	return 0;
 }
@@ -591,7 +505,7 @@ SOM_Scope void SOMLINK AIXShellCloseCleanup(
 	Environment *ev)
 {
 	AIXShellData *somThis=AIXShellGetData(somSelf);
-#ifdef _PLATFORM_X11_
+
 	if (somThis->fEMan)
 	{
 		SOMEEMan_someShutdown(somThis->fEMan,ev);
@@ -611,11 +525,6 @@ SOM_Scope void SOMLINK AIXShellCloseCleanup(
 
 		ODDispatcher_Exit(fDispatcher,ev);
 	}
-#else
-#ifdef _M_IX86
-	__asm int 3;
-#endif
-#endif
 }
 /* overridden method ::ApplicationShell::GetEventType */
 SOM_Scope ODULong SOMLINK AIXShellGetEventType(
@@ -623,11 +532,7 @@ SOM_Scope ODULong SOMLINK AIXShellGetEventType(
 	Environment *ev,
 	/* in */ ODEventData *event)
 {
-#ifdef _WIN32
-	return event->message;
-#else
 	return event->type;
-#endif
 }
 
 /* overridden method ::ApplicationShell::GetEventSubType */
@@ -647,16 +552,7 @@ SOM_Scope ODPlatformWindow SOMLINK AIXShellGetEventWindow(
 	Environment *ev,
 	/* in */ ODEventData *event)
 {
-#ifdef _PLATFORM_X11_
-	#ifdef _WIN32
-		WindowSystemData *wsd=AIXShell_GetWindowSystemData(somSelf,ev);
-		return XWindowFromHWND(wsd->display,event->hwnd); /* need to swizzle this to Drawable */
-	#else
-		return event->xany.window;
-	#endif
-#else
-	return event->hwnd;
-#endif
+	return event->xany.window;
 }
 /* overridden method ::OpenDocShell::DispatchEvent */
 SOM_Scope ODBoolean SOMLINK AIXShellDispatchEvent(
@@ -665,7 +561,6 @@ SOM_Scope ODBoolean SOMLINK AIXShellDispatchEvent(
 	/* in */ ODEventData *event)
 {
 	ODBoolean __result=kODFalse;
-#ifdef _PLATFORM_X11_
 	ODEventType type=AIXShell_GetEventType(somSelf,ev,event);
 
 	switch (type)
@@ -688,7 +583,6 @@ SOM_Scope ODBoolean SOMLINK AIXShellDispatchEvent(
 		}
 		break;
 	}
-#endif
 
 	__result=AIXShell_parent_ApplicationShell_DispatchEvent(somSelf,ev,event);
 
@@ -733,9 +627,6 @@ SOM_Scope void SOMLINK AIXShellCreatePopupMenu(
 	Environment *ev,
 	/* in */ ODPopup SOMSTAR popupMenu)
 {
-#if 0
-	menu_creator(somSelf,ev,popupMenu,&popup_base);
-#else
 	struct menu_builder_static *sd=items_popup;
 	struct menu_builder builder;
 	unsigned int i=sizeof(items_popup)/sizeof(items_popup[0]);
@@ -748,15 +639,9 @@ SOM_Scope void SOMLINK AIXShellCreatePopupMenu(
 
 	while (i--)
 	{
-#ifdef _PLATFORM_X11_
 		ODPlatformMenuItem item={0,NULL};
-#else
-		ODPlatformMenuItem item;
-#endif
 		item.id=sd->itemId;
-#ifdef _PLATFORM_X11_
 		item.text=sd->menuItemString;
-#endif
 
 		if (sd->submenu)
 		{
@@ -766,9 +651,7 @@ SOM_Scope void SOMLINK AIXShellCreatePopupMenu(
 			{
 				ODMenuID id=ODX11MenuAdapter_MenuID(child,ev);
 				ODX11MenuAdapter_SetMenuText(child,ev,sd->menuItemString);
-#ifdef _PLATFORM_X11_
 				ODPopup_AddMenuLast(popupMenu,ev,id,child,NULL);
-#endif
 			}
 		}
 		else
@@ -778,7 +661,6 @@ SOM_Scope void SOMLINK AIXShellCreatePopupMenu(
 
 		sd++;
 	}
-#endif
 }
 /* introduced method ::AIXShell::CreateDraftsSubmenu */
 SOM_Scope ODPlatformMenu SOMLINK AIXShellCreateDraftsSubmenu(
@@ -792,13 +674,11 @@ SOM_Scope ODPlatformMenu SOMLINK AIXShellCreateDraftsSubmenu(
 	builder.menuBar=menuBar;
 	builder.shell=somSelf;
 
-#ifdef _PLATFORM_X11_
 	retVal=menu_builder(&builder,ev,DOC_DRAFTS,NULL,
 			items_Drafts,
 			sizeof(items_Drafts)/sizeof(items_Drafts[0]));
 
 	RHBOPT_ASSERT(SOMObject_somIsA(retVal,_ODX11MenuAdapter));
-#endif
 
 	return retVal;
 }
@@ -814,12 +694,10 @@ SOM_Scope ODPlatformMenu SOMLINK AIXShellCreateLinksSubmenu(
 	builder.menuBar=menuBar;
 	builder.shell=somSelf;
 
-#ifdef _PLATFORM_X11_
 	retVal=menu_builder(&builder,ev,EDIT_LINK_MENU,NULL,items_Links,
 			sizeof(items_Links)/sizeof(items_Links[0]));
 
 	RHBOPT_ASSERT(SOMObject_somIsA(retVal,_ODX11MenuAdapter));
-#endif
 
 	return retVal;
 }
@@ -835,12 +713,10 @@ SOM_Scope ODPlatformMenu SOMLINK AIXShellCreateShowAsSubmenu(
 	builder.menuBar=menuBar;
 	builder.shell=somSelf;
 
-#ifdef _PLATFORM_X11_
 	retVal=menu_builder(&builder,ev,VIEW_SHOWAS,NULL,items_ShowAs,
 			sizeof(items_ShowAs)/sizeof(items_ShowAs[0]));
 
 	RHBOPT_ASSERT(SOMObject_somIsA(retVal,_ODX11MenuAdapter));
-#endif
 
 	return retVal;
 }
@@ -856,12 +732,10 @@ SOM_Scope ODPlatformMenu SOMLINK AIXShellCreateShowAsPopupSubmenu(
 	builder.menuBar=popupMenu;
 	builder.shell=somSelf;
 
-#ifdef _PLATFORM_X11_
 	retVal=menu_builder(&builder,ev,VIEW_SHOWAS,NULL,items_ShowAs,
 			sizeof(items_ShowAs)/sizeof(items_ShowAs[0]));
 
 	RHBOPT_ASSERT(SOMObject_somIsA(retVal,_ODX11MenuAdapter));
-#endif
 
 	return retVal;
 }
@@ -877,12 +751,10 @@ SOM_Scope ODPlatformMenu SOMLINK AIXShellCreateHelpPopupSubmenu(
 	builder.menuBar=popupMenu;
 	builder.shell=somSelf;
 
-#ifdef _PLATFORM_X11_
 	retVal=menu_builder(&builder,ev,ID_HELPSUBMENU,NULL,items_popupHelp,
 			sizeof(items_popupHelp)/sizeof(items_popupHelp[0]));
 
 	RHBOPT_ASSERT(SOMObject_somIsA(retVal,_ODX11MenuAdapter));
-#endif
 
 	return retVal;
 }
@@ -921,7 +793,6 @@ SOM_Scope ODULong SOMLINK AIXShellConfirmCloseDlg(AIXShell SOMSTAR somSelf,Envir
 
 SOM_Scope void SOMLINK AIXShellsomUninit(AIXShell SOMSTAR somSelf)
 {
-#ifdef _PLATFORM_X11_
 	AIXShellData *somThis=AIXShellGetData(somSelf);
 	Environment ev;
 	WindowSystemData *wsd=NULL;
@@ -975,9 +846,4 @@ SOM_Scope void SOMLINK AIXShellsomUninit(AIXShell SOMSTAR somSelf)
 	SOM_UninitEnvironment(&ev);
 
 	AIXShell_parent_ApplicationShell_somUninit(somSelf);
-#else
-#ifdef _M_IX86
-	__asm int 3;
-#endif
-#endif
 }

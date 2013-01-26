@@ -25,12 +25,15 @@
 
 #include <rhbopt.h>
 
-#ifdef _WIN32
+#ifdef _PLATFORM_X11_
+#	include <Xm/XmAll.h>
+#else
 #	include <windows.h>
 #	include <objbase.h>
 #endif
 
 #include <rhbsomex.h>
+
 #include <ODDebug.h>
 #include <ODTypes.h>
 #include <ODUtils.h>
@@ -104,16 +107,26 @@
 SOMInitModule_proto(odbento);
 #endif
 
+#ifdef _PLATFORM_X11_
+static int checkMotif(void)
+{
+	void *pv=xmMainWindowWidgetClass;
+
+	return pv ? 0 : 1;
+}
+#endif
+
 static int DocShell_Main(int argc,char **argv,WindowSystemData *windowSystemData)
 {
 	SOMClassMgr SOMSTAR clsMgr=NULL;
 	int rc=1;
-#ifndef _PLATFORM_X11_
-	HRESULT hrOle;
-#endif
-
-#ifndef _PLATFORM_X11_
-	hrOle=OleInitialize(NULL);
+#ifdef _PLATFORM_X11_
+	if (checkMotif())
+	{
+		return 1;
+	}
+#else
+	HRESULT hrOle=OleInitialize(NULL);
 #endif
 
 	clsMgr=somEnvironmentNew();

@@ -26,10 +26,6 @@
 #include <rhbopt.h>
 #define ODStdX11DispatchModule_Class_Source
 
-#ifdef _WIN32
-	#include <windows.h>
-#endif
-
 #include <odui.h>
 #include <StdDispX.ih>
 #include <X11/Intrinsic.h>
@@ -47,15 +43,10 @@ SOM_Scope ODBoolean SOMLINK StdDispX_Dispatch(
 
 	switch (type)
 	{
-/*	case Expose:
+	case Expose:
 		handled=ODStdX11DispatchModule_DispatchUpdateEvent(somSelf,ev,event);
-		break;*/
-#ifdef WM_SIZE
-	case WM_SIZE:
-#endif
-#ifdef ConfigureNotify
+		break;
 	case ConfigureNotify:
-#endif
 		handled=ODStdX11DispatchModule_DispatchResizeEvent(somSelf,ev,event);
 		break;
 	case MotionNotify:
@@ -82,37 +73,12 @@ SOM_Scope ODBoolean SOMLINK StdDispX_Dispatch(
 		break;
 	case KeyPress:
 	case KeyRelease:
-#ifdef WM_CHAR
-	case WM_CHAR:
-#endif
-	case OD_HELP:
 		handled=ODStdX11DispatchModule_DispatchKeyEvent(somSelf,ev,event,eventInfo);
 		break;
-#if 0
 	case FocusIn:
-		/* tell shell we gained focus */
-		XtDispatchEvent(event);
-		/* fall through */
 	case FocusOut:
-		somPrintf("swizzling Focus[In/out] to kODEvtActivate\n");
-		ODEventData_type(event)=kODEvtActivate;
-		/* fall through */
-#endif
-	case kODEvtActivate:
+		somPrintf("FocusIn/FocusOut %d\n",event->type);
 		handled=ODStdX11DispatchModule_DispatchActivateEvent(somSelf,ev,event,eventInfo);
-#if 0
-		switch (type)
-		{
-		case FocusIn:
-			/* we already did the dispatch prior */
-			handled=kODTrue;
-			break;
-		case FocusOut:
-			/* let Widget shell know we lost focus */
-			handled=kODFalse;
-			break;
-		}
-#endif
 		break;
 	case kODEvtMenu:
 		handled=ODStdX11DispatchModule_DispatchMenuEvent(somSelf,ev,event,eventInfo);
@@ -214,37 +180,24 @@ SOM_Scope ODFacet SOMSTAR SOMLINK StdDispX_GetFirstFacetUnderPoint(
 
 static Widget get_mousePos(ODStdX11DispatchModuleData *somThis,Environment *ev,ODEventData *theEvent,ODEventInfo *eventInfo)
 {
-#ifdef _PLATFORM_X11_
-	#ifdef _WIN32
-		Display *display=ODWindowState_GetDisplay(somThis->fWindowState,ev);
-		ODPlatformWindow window=XWindowFromHWND(display,theEvent->hwnd);
-		Widget widget=XtWindowToWidget(display,window);
-		eventInfo->where.x=ODIntToFixed((short)LOWORD(theEvent->lParam));
-		eventInfo->where.y=ODIntToFixed((short)HIWORD(theEvent->lParam));
-	#else
-		ODPlatformWindow window=theEvent->xany.window;
-		Widget widget=XtWindowToWidget(theEvent->xany.display,window);
-		switch (theEvent->type)
-		{
-		case MotionNotify:
-			eventInfo->where.x=ODIntToFixed(theEvent->xmotion.x);
-			eventInfo->where.y=ODIntToFixed(theEvent->xmotion.y);
-			break;
-		case ButtonPress:
-		case ButtonRelease:
-			eventInfo->where.x=ODIntToFixed(theEvent->xbutton.x);
-			eventInfo->where.y=ODIntToFixed(theEvent->xbutton.y);
-			break;
-		}
-	#endif
+	ODPlatformWindow window=theEvent->xany.window;
+	Widget widget=XtWindowToWidget(theEvent->xany.display,window);
+	switch (theEvent->type)
+	{
+	case MotionNotify:
+		eventInfo->where.x=ODIntToFixed(theEvent->xmotion.x);
+		eventInfo->where.y=ODIntToFixed(theEvent->xmotion.y);
+		break;
+	case ButtonPress:
+	case ButtonRelease:
+		eventInfo->where.x=ODIntToFixed(theEvent->xbutton.x);	
+		eventInfo->where.y=ODIntToFixed(theEvent->xbutton.y);
+		break;
+	}
 
-		return widget;
-#else
-	return kODNULL;
-#endif
+	return widget;
 }
 
-#ifdef _PLATFORM_X11_
 static boolean is_child_of_or_same(Widget x,Widget y)
 {
 	while (x)
@@ -256,7 +209,6 @@ static boolean is_child_of_or_same(Widget x,Widget y)
 
 	return 0;
 }
-#endif
 
 /* introduced method ::ODStdX11DispatchModule::DispatchMouseDownEvent */
 SOM_Scope ODBoolean SOMLINK StdDispX_DispatchMouseDownEvent(
@@ -286,7 +238,6 @@ SOM_Scope ODBoolean SOMLINK StdDispX_DispatchMouseDownEvent(
 
 		if (theWin)
 		{
-#ifdef _PLATFORM_X11_
 			if (is_child_of_or_same(widget,ODWindow_GetDrawingAreaWidget(theWin,ev)))
 			{
 				somThis->fMouseDownFacet=kODNULL;
@@ -296,7 +247,6 @@ SOM_Scope ODBoolean SOMLINK StdDispX_DispatchMouseDownEvent(
 				handled=ODStdX11DispatchModule_DispatchMouseDownInContent(somSelf,
 						ev,theWin,theEvent,eventInfo);
 			}
-#endif
 
 			ODWindow_Release(theWin,ev);
 		}
@@ -406,13 +356,7 @@ SOM_Scope ODBoolean SOMLINK StdDispX_DispatchMouseDownInContent(
 	}
 	else
 	{
-#ifdef _WIN32
-		ODBoolean modified=(ODBoolean)((theEvent->wParam & MK_CONTROL) ||
-							(theEvent->wParam & MK_SHIFT) ||
-							(GetKeyState(VK_MENU) < 0));
-#else
 		ODBoolean modified=kODFalse;
-#endif
 
 		if (modified)
 		{
@@ -497,16 +441,6 @@ SOM_Scope ODBoolean SOMLINK StdDispX_DispatchKeyEvent(
 	case KeyRelease:
 		switch (ODEventData_keysym(theEvent))
 		{
-#ifdef _WIN32
-		case VK_PRIOR:
-		case VK_NEXT:
-		case VK_HOME:
-		case VK_END:
-		case VK_LEFT:
-		case VK_RIGHT:
-		case VK_UP:
-		case VK_DOWN:
-#else
 		case XK_Left:
 		case XK_Right:
 		case XK_Up:
@@ -516,7 +450,6 @@ SOM_Scope ODBoolean SOMLINK StdDispX_DispatchKeyEvent(
 		case XK_Next:
 		case XK_End:
 		case XK_Begin:
-#endif
 			handled=ODStdX11DispatchModule_SendToFocusOwner(somSelf,ev,theEvent,eventInfo,
 				somThis->fScrollingFocusToken,kODNULL);
 			break;
@@ -556,7 +489,8 @@ SOM_Scope ODBoolean SOMLINK StdDispX_DispatchResizeEvent(
 	/* in */ ODEventData *theEvent)
 {
 	ODBoolean __result=kODFalse;
-#if 1
+	somPrintf("DispatchResizeEvent %s:%d\n",__FILE__,__LINE__);
+#if 0
 #else
 	ODStdX11DispatchModuleData *somThis=ODStdX11DispatchModuleGetData(somSelf);
 	if (somThis->fWindowState)
@@ -591,14 +525,24 @@ SOM_Scope ODBoolean SOMLINK StdDispX_DispatchActivateEvent(
 	/* in */ ODEventInfo *eventInfo)
 {
 	ODBoolean __result=kODFalse;
+	XFocusChangeEvent *ev2=(void  *)theEvent;
 /*	ODStdX11DispatchModuleData *somThis=ODStdX11DispatchModuleGetData(somSelf);*/
-	ODWindow SOMSTAR odWindow=ODStdX11DispatchModule_AcquireODWindow(somSelf,ev,theEvent);
 
-	if (odWindow && !ev->_major)
+	somPrintf("StdDispX_DispatchActivateEvent\n");
+
+	if (ev2->mode==NotifyNormal)
 	{
-		ODWindow_HandleActivateEvent(odWindow,ev,theEvent,eventInfo);
-		ODSafeReleaseObject(odWindow);
-		__result=kODTrue;
+		ODWindow SOMSTAR odWindow=ODStdX11DispatchModule_AcquireODWindow(somSelf,ev,theEvent);
+
+		if (odWindow && !ev->_major)
+		{
+			ODEventType originalType=eventInfo->originalType;
+			ev2->type=kODEvtActivate;
+			ODWindow_HandleActivateEvent(odWindow,ev,theEvent,eventInfo);
+			ev2->type=originalType;
+			ODSafeReleaseObject(odWindow);
+			__result=kODTrue;
+		}
 	}
 
 	return __result;
@@ -825,32 +769,24 @@ SOM_Scope ODBoolean SOMLINK StdDispX_SendToFocusOwner(
 
 SOM_Scope ODWindow SOMSTAR SOMLINK StdDispX_AcquireODWindow(ODStdX11DispatchModule SOMSTAR somSelf,Environment *ev,ODEventData *theEvent)
 {
-#ifdef _PLATFORM_X11_
 	ODStdX11DispatchModuleData *somThis=ODStdX11DispatchModuleGetData(somSelf);
 	Display *display=ODWindowState_GetDisplay(somThis->fWindowState,ev);
+	ODPlatformWindow window=theEvent->xany.window;
+	Widget widget=XtWindowToWidget(theEvent->xany.display,window);
 
-	#ifdef _WIN32
-		ODPlatformWindow window=XWindowFromHWND(display,theEvent->hwnd);
-		Widget widget=XtWindowToWidget(display,window);
-	#else
-		ODPlatformWindow window=theEvent->xany.window;
-		Widget widget=XtWindowToWidget(theEvent->xany.display,window);
-	#endif
+	while (widget && !ev->_major)
+	{
+		window=XtWindow(widget);
 
-		while (widget && !ev->_major)
+		if (window && (display==XtDisplay(widget)))
 		{
-			window=XtWindow(widget);
+			ODWindow SOMSTAR odWin=ODWindowState_AcquireODWindow(somThis->fWindowState,ev,window);
 
-			if (window && (display==XtDisplay(widget)))
-			{
-				ODWindow SOMSTAR odWin=ODWindowState_AcquireODWindow(somThis->fWindowState,ev,window);
-
-				if (odWin) return odWin;
-			}
-
-			widget=XtParent(widget);
+			if (odWin) return odWin;
 		}
-#endif
+
+		widget=XtParent(widget);
+	}
 
 	return NULL;
 }

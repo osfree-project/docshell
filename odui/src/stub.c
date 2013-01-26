@@ -51,8 +51,6 @@
 #include <odstubs.h>
 #include <ODTypes.h>
 
-#include <oduiex.h>
-
 typedef somToken MenuAdapter;
 
 #include <Window.h>

@@ -29,8 +29,6 @@
 
 #include <odimagng.h>
 
-#if defined(_PLATFORM_X11_)
-
 #include <AIXSCanv.ih>
 
 SOM_Scope Display * SOMLINK AIXSCanv_GetDisplay(
@@ -156,5 +154,3 @@ SOM_Scope ODPlatformCanvasType SOMLINK AIXSCanv_GetPlatformCanvasType(
 {
 	return kODPlatformStandardCanvas;
 }
-
-#endif /* _PLATFORM_X11_ */

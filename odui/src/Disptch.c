@@ -61,26 +61,20 @@ typedef struct DispatchTable
 static ODEventType StdEventTypes[]=
 {
 #ifdef _PLATFORM_X11_
-	#ifdef EnterNotify
-		EnterNotify,
-		LeaveNotify,
-	#endif
-	#ifdef SelectionClear
-		SelectionClear,
-		SelectionRequest,
-		SelectionNotify,
-	#endif
-	#ifdef ConfigureNotify
-		ConfigureNotify,
-	#endif
+	EnterNotify,
+	LeaveNotify,
+	SelectionClear,
+	SelectionRequest,
+	SelectionNotify,
+	ConfigureNotify,
 	ClientMessage,
 	ButtonPress,
 	ButtonRelease,
 	KeyPress,
 	KeyRelease,
 	MotionNotify,
-/*	FocusIn,
-	FocusOut,*/
+	FocusIn,
+	FocusOut,
 #else
 	WM_RBUTTONDOWN,
 	WM_MBUTTONDOWN,

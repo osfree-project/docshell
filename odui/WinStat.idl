@@ -122,6 +122,7 @@ interface ODWindowState : ODObject
 	ODBoolean IsODWindowRootChild(in ODPlatformWindow aWindow);
 	ODWindow AcquireODWindowRootChild(in ODPlatformWindow aWindow);
 	void SaveActiveWindow(in ODWindow window);
+	sequence<Widget> GetWidgetChildren(in Widget w);
 #endif
 #endif
 
